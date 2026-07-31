@@ -25,13 +25,22 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  if (new URL(req.url).origin === 'https://api.github.com') return; // live data stays live
+
+  const url = new URL(req.url);
+  // Only ever cache this site's own assets over http(s).
+  // Never touch cross-origin responses: they are opaque, unverifiable,
+  // and caching them would let a third party persist content under our origin.
+  if (url.origin !== self.location.origin) return;
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return;
 
   e.respondWith(
     fetch(req)
       .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        // only cache clean, same-origin, successful responses
+        if (res && res.status === 200 && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        }
         return res;
       })
       .catch(() =>
