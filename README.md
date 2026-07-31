@@ -4,7 +4,7 @@ My personal site, built as an engineering spec sheet.
 
 **Live:** [gautamkhosla.com](https://gautamkhosla.com)
 
-One HTML file, one image, one service worker. No framework, no build step, no dependencies, no npm install. It loads in under a second and there is nothing in it that can rot.
+No framework, no build step, no npm install, no dependencies. Hand-written HTML, CSS, and JavaScript served straight from this repo. It loads in under a second and there is nothing in it that can rot.
 
 ## The idea
 
@@ -22,19 +22,31 @@ That switch is not decoration. Turn your wifi off and the site loads anyway from
 | Kill switch | Simulates a network outage. Wired to real `online` and `offline` browser events, so an actual outage triggers it too. |
 | Offline support | Service worker with a network-first strategy, so content is never stale but the site still works with zero connection. |
 | Live GitHub data | Public repo count and last push pulled from the GitHub API, with a 3.5s timeout and honest fallback to cached values. |
-| Daily evolution | Document revision, approval stamp, highlighted principle, and opening project all rotate on a date seed. Different every day, no server. |
+| Daily editions | Seven full palettes on a date seed. Paper, ink, accent, and every section channel colour change each day, deterministically. The masthead shows which edition you are looking at. |
 | Print to resume | Press Ctrl+P. The whole site collapses into a clean one page spec sheet with every project URL printed inline. |
-| Console | Press the backtick key. Try `whoami`, `outage`, `uptime`, `sudo hire`. |
+| Console | Press the backtick key. Try `whoami`, `outage`, `edition`, `uptime`, `sudo hire`. |
 
-Plus a boot sequence, a CAD crosshair cursor with live coordinates, a draggable ID badge, scroll-triggered reveals, and a live inspection log.
+Plus a boot sequence, a CAD crosshair cursor with live coordinates, a draggable ID badge, an animated project showcase, scroll-triggered reveals, and a live inspection log.
 
 ## Files
 
 ```
-index.html    everything: markup, styles, behaviour
-profile.jpg   800x800
-sw.js         service worker, network-first with cache fallback
+index.html            markup only, no inline script or style
+styles.css            all styling
+app.js                all behaviour
+sw.js                 service worker, network-first with cache fallback
+profile.jpg           800x800
+fonts/                Archivo and IBM Plex Mono, self-hosted woff2
+.well-known/          security.txt
 ```
+
+CSS and JS live in their own files rather than inline. That is a security decision, not a style one: it is what allows the Content Security Policy to forbid `unsafe-inline` entirely, which is the difference between a policy that looks strict and one that actually stops script injection.
+
+## Security
+
+Strict CSP with no `unsafe-inline` anywhere, zero third-party origins, self-hosted fonts, all dynamic and external data escaped before insertion, same-origin-only service worker caching, DNSSEC, and enforced HTTPS.
+
+Full posture and the rules for anything added later: [SECURITY.md](SECURITY.md).
 
 ## Running it
 
@@ -44,12 +56,14 @@ The service worker needs HTTPS, so true offline mode only works on the deployed 
 
 ## Tuning
 
-Two CSS variables at the top of `index.html` control the badge photo:
+Two CSS variables at the top of `styles.css` control the badge photo:
 
 ```css
---photo-zoom:1.18;   /* 1 = whole photo, higher = closer crop */
+--photo-zoom:1.06;   /* 1 = whole photo, higher = closer crop */
 --photo-focus:35%;   /* vertical focal point */
 ```
+
+Daily editions are the `THEMES` array in `app.js`. Add an object to lengthen the cycle; the rotation adapts on its own.
 
 ## Design notes
 
