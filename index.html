@@ -456,7 +456,7 @@
         <div class="sim-cell"><div class="k">OFFLINE BUFFER</div><div class="v" id="simBuf">0</div></div>
       </div>
     </div>
-    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices.</p>
+    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices. <b>And the switch is not just a toy:</b> turn your wifi off and reload this page. It still loads, and the switch flips itself.</p>
   </div>
 </section>
 
@@ -1086,6 +1086,26 @@
       });
     }, { passive:true });
   }
+
+  /* ================= TRUE OFFLINE SUPPORT =================
+     Service worker caches the site on first visit (network-first, so never stale).
+     Real network loss auto-flips the UPLINK switch: the toy becomes instrumentation. */
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => logLine('<b>OFFLINE CACHE</b>: armed'))
+        .catch(() => {});
+    });
+  }
+  addEventListener('offline', () => {
+    logLine('<b>REAL OUTAGE DETECTED</b>: serving from cache');
+    setOutage(true);
+  });
+  addEventListener('online', () => {
+    logLine('<b>NETWORK RESTORED</b>');
+    setOutage(false);
+  });
+  if (!navigator.onLine) setOutage(true);
 
   /* ---- stamp re-slam on click ---- */
   const stamp = document.querySelector('.stamp');
