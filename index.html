@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gautam Khosla — Failure-Aware Systems Engineer</title>
+<title>Gautam Khosla · Failure-Aware Systems Engineer</title>
 <meta name="description" content="Gautam Khosla builds failure-aware systems: edge AI on QNX RTOS, autonomous infrastructure with approval gates, and multi-tenant SaaS. Computer Engineering @ uOttawa.">
-<meta property="og:title" content="Gautam Khosla — Failure-Aware Systems Engineer">
+<meta property="og:title" content="Gautam Khosla · Failure-Aware Systems Engineer">
 <meta property="og:description" content="Systems that keep running when the network doesn't. Try cutting the uplink.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
@@ -82,12 +82,13 @@
 
   /* ===== HERO ===== */
   header { border-bottom:2px solid var(--ink); position:relative; overflow:hidden; }
-  .hero { display:grid; grid-template-columns:1fr 330px; gap:56px; padding:76px 0 64px; align-items:start; position:relative; }
-  @media (max-width:840px){ .hero{grid-template-columns:1fr;} }
+  .hero { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:48px; padding:76px 0 64px; align-items:start; position:relative; }
+  @media (max-width:1100px){ .hero{grid-template-columns:minmax(0,1fr) 260px; gap:32px;} }
+  @media (max-width:840px){ .hero{grid-template-columns:1fr; gap:48px;} }
   .doc-ref { font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:2px; color:var(--steel); display:flex; gap:22px; flex-wrap:wrap; margin-bottom:30px; }
   .doc-ref b { color:var(--orange); font-weight:600; }
 
-  h1 { font-size:clamp(46px,8.4vw,104px); font-weight:900; font-stretch:112%; line-height:.92; letter-spacing:-2.5px; text-transform:uppercase; margin-bottom:30px; }
+  h1 { font-size:clamp(38px,6.4vw,82px); font-weight:900; font-stretch:112%; line-height:.94; letter-spacing:-2px; text-transform:uppercase; margin-bottom:30px; }
   h1 .row { display:block; overflow:hidden; }
   h1 .row span { display:inline-block; transform:translateY(115%); transition:transform .9s cubic-bezier(.16,1,.3,1); }
   body.loaded h1 .row span { transform:translateY(0); }
@@ -127,7 +128,7 @@
   .badge-head .live { color:#4ADE80; animation:blink 2s ease-in-out infinite; }
   body.outage .badge-head .live { color:var(--orange); }
   @keyframes blink { 0%,100%{opacity:.45} 50%{opacity:1} }
-  .badge img { width:100%; display:block; filter:contrast(1.04); pointer-events:none; }
+  .badge img { width:100%; aspect-ratio:1/1; object-fit:cover; object-position:center 28%; display:block; filter:contrast(1.04); pointer-events:none; }
   .badge-foot { padding:12px 14px; border-top:2px solid var(--ink); }
   .badge-foot .nm { font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:.5px; }
   .badge-foot .rl { font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--steel); letter-spacing:1px; }
@@ -364,7 +365,7 @@
     .contact-links a::after { content:" · " attr(href); font-size:8.5pt; color:#6B7280; }
     .reveal { opacity:1 !important; transform:none !important; }
     a { text-decoration:none; color:#14151A; }
-    .spec h3 a::after { content:" — " attr(href); font-size:8pt; color:#6B7280; font-weight:400; text-transform:none; }
+    .spec h3 a::after { content:" · " attr(href); font-size:8pt; color:#6B7280; font-weight:400; text-transform:none; }
   }
 </style>
 </head>
@@ -404,9 +405,9 @@
         <h1>
           <span class="row"><span>Systems that</span></span>
           <span class="row"><span class="outline">keep running</span></span>
-          <span class="row"><span>when the net<wbr>work <span class="accent">doesn't.</span></span></span>
+          <span class="row"><span>when the network <span class="accent">doesn't.</span></span></span>
         </h1>
-        <p class="lede">I'm Gautam — Computer Engineering @ uOttawa. I build software around the assumption that networks drop, APIs die, and hardware misbehaves. <strong>Don't take my word for it — flip the UPLINK switch in the corner and watch this page handle its own outage.</strong> <span class="try-me">Try it</span></p>
+        <p class="lede">I'm Gautam, Computer Engineering @ uOttawa. I build software around the assumption that networks drop, APIs die, and hardware misbehaves. <strong>Don't take my word for it: flip the UPLINK switch in the corner and watch this page handle its own outage.</strong> <span class="try-me">Try it</span></p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#work">Inspect the work</a>
           <a class="btn btn-ghost" href="https://github.com/GautamTalksDev">GitHub</a>
@@ -432,8 +433,8 @@
 
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track" id="tickerTrack">
-      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>2,228</b> COMMITS / 12 MO</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>TOP 9</b> — McHACKS</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
-      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>2,228</b> COMMITS / 12 MO</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>TOP 9</b> — McHACKS</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
+      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>2,228</b> COMMITS / 12 MO</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>TOP 9</b> · McHACKS</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
+      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>2,228</b> COMMITS / 12 MO</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>TOP 9</b> · McHACKS</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
     </div>
   </div>
 </header>
@@ -455,7 +456,7 @@
         <div class="sim-cell"><div class="k">OFFLINE BUFFER</div><div class="v" id="simBuf">0</div></div>
       </div>
     </div>
-    <p class="sim-note reveal">This is the real AEGIS pipeline logic — detection → zone rules → state machine → alarm → async uplink — reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices.</p>
+    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices.</p>
   </div>
 </section>
 
@@ -514,7 +515,7 @@
           <div class="slide-txt">
             <div class="sk">SHOWCASE B/D · AUTONOMOUS INFRA</div>
             <h3>HyperShift</h3>
-            <div class="tg">Plain English in, infrastructure out — with a veto</div>
+            <div class="tg">Plain English in, infrastructure out, with a veto</div>
             <p>Five agents on a durable BullMQ pipeline, Zod contracts on every boundary, immutable audit log. The approval gate in the middle is load-bearing.</p>
             <a href="https://github.com/GautamTalksDev/HyperShift">OPEN REPO →</a>
           </div>
@@ -539,7 +540,7 @@
           <div class="slide-txt">
             <div class="sk">SHOWCASE C/D · MULTI-TENANT SAAS</div>
             <h3>MetaShift</h3>
-            <div class="tg">Detect, resolve, replay — across every tenant</div>
+            <div class="tg">Detect, resolve, replay, across every tenant</div>
             <p>Tenant-scoped Postgres RLS, JWT + API keys, WebSocket live events, audit log, usage metering. The operational surface, not the demo path.</p>
             <a href="https://github.com/GautamTalksDev/MetaShift">OPEN REPO →</a>
           </div>
@@ -561,7 +562,7 @@
               <rect x="280" y="130" width="120" height="34" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
               <text x="288" y="151" fill="#D7DBE4" font-family="monospace" font-size="10">SNOWFLAKE · ANALYTICS</text>
               <path class="flow" d="M235 118 H280 M235 142 H280" stroke="#FF4100" stroke-width="2" fill="none"/>
-              <text x="10" y="205" fill="#6B7280" font-family="monospace" font-size="9.5">ANALYTICS NEVER BLOCKS REAL-TIME READS — MLH AWARD</text>
+              <text x="10" y="205" fill="#6B7280" font-family="monospace" font-size="9.5">ANALYTICS NEVER BLOCKS REAL-TIME READS · MLH AWARD</text>
             </svg>
           </div>
           <div class="slide-txt">
@@ -588,8 +589,8 @@
           <h3><a href="https://github.com/GautamTalksDev/AEGIS">AEGIS</a><span class="net-tag edge">EDGE · SURVIVES OUTAGE</span></h3>
           <span class="tech">C++20 · QNX 8.0 RTOS · RASPBERRY PI 5 · TFLITE · NEXT.JS 14</span>
         </div>
-        <div class="tagline">Edge-AI worksite safety — the safety loop never touches the network</div>
-        <p>Real-time person and PPE detection running entirely on-device on a real-time operating system. The emergency voice was generated by ElevenLabs but is baked in at build time — <em>a safety alarm that needs an API call to speak is not a safety alarm.</em> GPIO and relay fire at SCHED_FIFO priority 30; audio follows at 8. Four QNX processes over MsgSend/MsgReceive, validated with mock generators, load testers, and a chaos harness.</p>
+        <div class="tagline">Edge-AI worksite safety. The safety loop never touches the network</div>
+        <p>Real-time person and PPE detection running entirely on-device on a real-time operating system. The emergency voice was generated by ElevenLabs but is baked in at build time: <em>a safety alarm that needs an API call to speak is not a safety alarm.</em> GPIO and relay fire at SCHED_FIFO priority 30; audio follows at 8. Four QNX processes over MsgSend/MsgReceive, validated with mock generators, load testers, and a chaos harness.</p>
       </div>
     </div>
 
@@ -600,8 +601,8 @@
           <h3><a href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a><span class="net-tag cloud">CLOUD</span></h3>
           <span class="tech">TYPESCRIPT · NODE · NEXT.JS 14 · TURBOREPO · BULLMQ · ZOD</span>
         </div>
-        <div class="tagline">Plain English in, deployed infrastructure out — with a human veto</div>
-        <p>Five specialized agents — Architect, Builder, Sentinel, SRE, FinOps — run as a durable pipeline with approval gates, rollback, workspace isolation, and an immutable audit log. Shared Zod contracts across every service boundary catch integration breakage at compile time. Autonomy is easy; <em>accountable autonomy</em> is the product.</p>
+        <div class="tagline">Plain English in, deployed infrastructure out, with a human veto</div>
+        <p>Five specialized agents (Architect, Builder, Sentinel, SRE, FinOps) run as a durable pipeline with approval gates, rollback, workspace isolation, and an immutable audit log. Shared Zod contracts across every service boundary catch integration breakage at compile time. Autonomy is easy; <em>accountable autonomy</em> is the product.</p>
       </div>
     </div>
 
@@ -613,7 +614,7 @@
           <span class="tech">NODE/EXPRESS · REACT · SUPABASE · POSTGRESQL RLS · WEBSOCKETS</span>
         </div>
         <div class="tagline">Multi-tenant observability that resolves conflicts, then lets you replay them</div>
-        <p>Detects and auto-resolves conflicts across distributed services with full incident replay. Tenant-scoped Row Level Security, JWT + API-key auth, webhooks, audit logging, usage metering, CSV/JSON export — the operational surface a real SaaS needs, not just the demo path.</p>
+        <p>Detects and auto-resolves conflicts across distributed services with full incident replay. Tenant-scoped Row Level Security, JWT + API-key auth, webhooks, audit logging, usage metering, CSV/JSON export: the operational surface a real SaaS needs, not just the demo path.</p>
       </div>
     </div>
 
@@ -625,21 +626,21 @@
           <span class="tech">PYTHON · FASTAPI · REACT · MONGODB ATLAS · SNOWFLAKE</span>
         </div>
         <div class="tagline">SOC incident triage in seconds instead of minutes</div>
-        <p>Explainable, confidence-scored triage with full audit trails. A dual-store architecture keeps heavy analytics (Snowflake) from ever contending with real-time operational reads (MongoDB) — shipped in 24 hours with a 7-test automated E2E suite.</p>
-        <span class="award"><b>🏆 MLH</b> BEST USE OF SNOWFLAKE API — HACKCONCORDIA</span>
+        <p>Explainable, confidence-scored triage with full audit trails. A dual-store architecture keeps heavy analytics (Snowflake) from ever contending with real-time operational reads (MongoDB), shipped in 24 hours with a 7-test automated E2E suite.</p>
+        <span class="award"><b>🏆 MLH</b> BEST USE OF SNOWFLAKE API · HACKCONCORDIA</span>
       </div>
     </div>
 
     <div class="more-grid reveal">
       <div class="mini"><h4><a href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p></div>
       <div class="mini"><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p></div>
-      <div class="mini"><h4>NeuroDesk</h4><p>Agentic middleware turning natural language into audited action — budgets, approval gates, full transaction log.</p></div>
+      <div class="mini"><h4>NeuroDesk</h4><p>Agentic middleware turning natural language into audited action: budgets, approval gates, full transaction log.</p></div>
       <div class="mini"><h4>Omni-Context OS</h4><p>Stateful RAG memory across Slack, email, and web. Top 9 at Backboard.io × McHacks.</p></div>
     </div>
 
     <div class="stats reveal">
       <div class="stat"><div class="num" data-count="2228">0</div><div class="lbl">COMMITS / 12 MO</div></div>
-      <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable — by design.">· CACHED</span></div></div>
+      <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
       <div class="stat"><div class="num" data-count="2">0</div><div class="lbl">HACKATHON HONOURS</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
     </div>
@@ -654,7 +655,7 @@
       <div><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p></div>
       <div><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p></div>
       <div><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p></div>
-      <div><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection — so the stack ships while the Pi is still in the mail.</p></div>
+      <div><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p></div>
     </div>
   </div>
 </section>
@@ -668,7 +669,7 @@
       <div>
         <h3>Data Processor &amp; Software Developer</h3>
         <div class="org">Canadian Musicians Cooperative</div>
-        <p>Built <strong>Cadence</strong> — a production inventory and rental system — solo, from requirements gathering with non-technical staff to deployed software: Next.js, Prisma, PostgreSQL, Stripe billing, role-based access, full English/French bilingual support. Audited and repaired data-integrity failures and automated recurring workflows.</p>
+        <p>Built <strong>Cadence</strong>, a production inventory and rental system, solo, from requirements gathering with non-technical staff to deployed software: Next.js, Prisma, PostgreSQL, Stripe billing, role-based access, full English/French bilingual support. Audited and repaired data-integrity failures and automated recurring workflows.</p>
       </div>
     </div>
     <div class="xp reveal">
@@ -676,7 +677,7 @@
       <div>
         <h3>Financial Sales Representative</h3>
         <div class="org">Kognitive Sales Solutions × Canadian Tire</div>
-        <p>Explained regulated financial products to high-volume customers under strict compliance — daily practice at making complicated things understandable to people who didn't ask for the details.</p>
+        <p>Explained regulated financial products to high-volume customers under strict compliance: daily practice at making complicated things understandable to people who didn't ask for the details.</p>
       </div>
     </div>
     <div class="xp reveal">
@@ -696,12 +697,12 @@
     <div class="sec-head reveal"><span class="sec-no">SEC. 04</span><h2>Contact</h2></div>
     <div class="contact-inner reveal">
       <h2>The uplink is live.</h2>
-      <p>Open to co-op placements and internships in systems, infrastructure, and platform engineering. If you're building something that has to survive failure, I want to hear about it. <span style="color:#6B7280">(Email works even during the outage — it's store-and-forward. That's the point.)</span></p>
+      <p>Open to co-op placements and internships in systems, infrastructure, and platform engineering. If you're building something that has to survive failure, I want to hear about it. <span style="color:#6B7280">(Email works even during the outage; it's store-and-forward. That's the point.)</span></p>
       <div class="contact-links">
         <a class="primary" href="mailto:developwith.gt@gmail.com">EMAIL ME</a>
         <a href="https://github.com/GautamTalksDev">GITHUB</a>
         <a href="https://www.linkedin.com/in/gautam-khosla/">LINKEDIN</a>
-        <a href="http://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE — GAUTAM TALKS</a>
+        <a href="http://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE · GAUTAM TALKS</a>
       </div>
     </div>
   </div>
@@ -709,7 +710,7 @@
 
 <footer>
   <div class="wrap">
-    <div class="name-plate"><div class="name-track"><div>Gautam Khosla — Gautam Talks —&nbsp;</div><div>Gautam Khosla — Gautam Talks —&nbsp;</div></div></div>
+    <div class="name-plate"><div class="name-track"><div>Gautam Khosla · Gautam Talks ·&nbsp;</div><div>Gautam Khosla · Gautam Talks ·&nbsp;</div></div></div>
     <div class="meta">
       <span>© 2026 GAUTAM KHOSLA</span>
       <button id="termBtn" title="or press the ` key">GK/CONSOLE ▸</button>
@@ -787,10 +788,10 @@
     document.body.classList.toggle('outage', on);
     kill.setAttribute('aria-checked', on);
     linkState.textContent = on ? 'LOST' : 'LIVE';
-    pulseTxt.textContent = on ? 'SAFETY LOOP · NOMINAL — OFFLINE MODE' : 'SAFETY LOOP · NOMINAL';
+    pulseTxt.textContent = on ? 'SAFETY LOOP · NOMINAL · OFFLINE MODE' : 'SAFETY LOOP · NOMINAL';
     badgeLive.textContent = on ? '● ON SITE · OFFLINE' : '● ON SITE';
-    document.title = on ? '⚠ LINK LOST — Gautam Khosla' : 'Gautam Khosla — Failure-Aware Systems Engineer';
-    logLine(on ? '<b>UPLINK LOST</b> — degrading gracefully' : '<b>UPLINK RESTORED</b> — flushing backlog');
+    document.title = on ? '⚠ LINK LOST · Gautam Khosla' : 'Gautam Khosla — Failure-Aware Systems Engineer';
+    logLine(on ? '<b>UPLINK LOST</b>: degrading gracefully' : '<b>UPLINK RESTORED</b>: flushing backlog');
   }
   kill.addEventListener('click', () => setOutage(!document.body.classList.contains('outage')));
   kill.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kill.click(); } });
@@ -808,7 +809,7 @@
     if (e.isIntersecting) logLine('<b>' + e.target.dataset.log + '</b>');
   }), { threshold:.3 });
   document.querySelectorAll('[data-log]').forEach(el => sio.observe(el));
-  logLine('<b>VISITOR DETECTED</b> — welcome');
+  logLine('<b>VISITOR DETECTED</b>: welcome');
 
   /* ---- tab-blur alarm ---- */
   let awayTitle;
@@ -830,12 +831,12 @@
   });
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
-    whoami: () => 'gautam khosla — failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
+    whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
     work: () => 'AEGIS [edge/QNX]  HyperShift [infra agents]  MetaShift [multi-tenant]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
-    contact: () => 'developwith.gt@gmail.com — store-and-forward, outage-proof by design.',
-    'sudo hire': () => '<span class="ok">permission granted.</span> drafting offer… just kidding — email developwith.gt@gmail.com',
+    contact: () => 'developwith.gt@gmail.com. store-and-forward, outage-proof by design.',
+    'sudo hire': () => '<span class="ok">permission granted.</span> drafting offer… just kidding. email developwith.gt@gmail.com',
     clear: () => { tOut.innerHTML = ''; return ''; },
     exit: () => { toggleTerm(false); return ''; }
   };
@@ -883,13 +884,13 @@
         document.querySelectorAll('.live-slot').forEach(el =>
           el.innerHTML = 'LAST PUSH · <b>' + latest.name.toUpperCase() + '</b> · <i>' + when + '</i>');
       }
-      logLine('<b>GITHUB UPLINK</b> — live data acquired');
+      logLine('<b>GITHUB UPLINK</b>: live data acquired');
     } catch (e) {
       clearTimeout(timer);
       // graceful fallback: keep baked values, be honest about it
       document.querySelectorAll('.live-slot').forEach(el =>
-        el.innerHTML = 'LAST PUSH · <i>CACHED</i> · GITHUB UNREACHABLE — SITE UNAFFECTED');
-      logLine('<b>GITHUB UPLINK</b> — unreachable, serving cached (by design)');
+        el.innerHTML = 'LAST PUSH · <i>CACHED</i> · GITHUB UNREACHABLE · SITE UNAFFECTED');
+      logLine('<b>GITHUB UPLINK</b>: unreachable, serving cached (by design)');
     }
   })();
 
@@ -960,7 +961,7 @@
       cx.strokeRect(ZONE.x, ZONE.y, ZONE.w, ZONE.h); cx.setLineDash([]);
       cx.fillStyle = 'rgba(255,65,0,.06)'; cx.fillRect(ZONE.x, ZONE.y, ZONE.w, ZONE.h);
       cx.fillStyle = 'rgba(255,65,0,.9)'; cx.font = '600 11px "IBM Plex Mono", monospace';
-      cx.fillText('HAZARD ZONE — PPE REQUIRED', ZONE.x + 10, ZONE.y + 18);
+      cx.fillText('HAZARD ZONE · PPE REQUIRED', ZONE.x + 10, ZONE.y + 18);
 
       let violation = false;
       for (const w of workers) {
@@ -1101,7 +1102,7 @@
         stamp.style.transform = 'rotate(-12deg) scale(1)';
         stamp.style.opacity = '.9';
       }));
-      logLine('<b>RE-INSPECTED</b> — still approved');
+      logLine('<b>RE-INSPECTED</b>: still approved');
     });
   }
 
@@ -1149,7 +1150,7 @@
       if (!drag) return; drag = false; dx = 0; dy = 0;
       badge.classList.remove('dragging'); badge.classList.add('snapback');
       badge.style.transform = '';
-      logLine('<b>PERSONNEL BADGE</b> — returned to holder');
+      logLine('<b>PERSONNEL BADGE</b>: returned to holder');
     }
     badge.addEventListener('pointerup', release);
     badge.addEventListener('pointercancel', release);
