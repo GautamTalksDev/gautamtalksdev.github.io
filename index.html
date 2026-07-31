@@ -2,15 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gautam Khosla · Failure-Aware Systems Engineer</title>
-<meta name="description" content="Gautam Khosla builds failure-aware systems: edge AI on QNX RTOS, autonomous infrastructure with approval gates, and multi-tenant SaaS. Computer Engineering @ uOttawa.">
-<meta property="og:title" content="Gautam Khosla · Failure-Aware Systems Engineer">
-<meta property="og:description" content="Systems that keep running when the network doesn't. Try cutting the uplink.">
-<meta property="og:type" content="website">
-
-<!-- Security. GitHub Pages cannot set HTTP headers, so these are the meta-equivalents.
-     connect-src is locked to the one API this site talks to. -->
+<!-- Security. GitHub Pages cannot send HTTP headers, so this is the meta equivalent.
+     Placed first in <head>: a meta CSP only governs markup parsed after it.
+     Known limits of meta-CSP (per OWASP / MDN): frame-ancestors and sandbox are
+     ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' 'unsafe-inline';
@@ -24,8 +19,17 @@
   form-action 'none';
   object-src 'none';
   frame-src 'none';
+  child-src 'none';
+  media-src 'none';
   upgrade-insecure-requests;">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gautam Khosla · Failure-Aware Systems Engineer</title>
+<meta name="description" content="Gautam Khosla builds failure-aware systems: edge AI on QNX RTOS, autonomous infrastructure with approval gates, and multi-tenant SaaS. Computer Engineering @ uOttawa.">
+<meta property="og:title" content="Gautam Khosla · Failure-Aware Systems Engineer">
+<meta property="og:description" content="Systems that keep running when the network doesn't. Try cutting the uplink.">
+<meta property="og:type" content="website">
+
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
