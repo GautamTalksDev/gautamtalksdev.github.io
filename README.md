@@ -2,7 +2,7 @@
 
 My personal site, built as an engineering spec sheet.
 
-**Live:** [gautamtalksdev.github.io](https://gautamtalksdev.github.io)
+**Live:** [gautamtalksdev.github.io](https://gautamkhosla.com)
 
 One HTML file, one image, one service worker. No framework, no build step, no dependencies, no npm install. It loads in under a second and there is nothing in it that can rot.
 
