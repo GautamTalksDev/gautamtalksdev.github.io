@@ -16,7 +16,7 @@
   :root {
     --paper:#FAFAF7; --ink:#14151A; --orange:#FF4100; --orange-dark:#D63600;
     --steel:#6B7280; --hairline:#DEDED7; --panel:#FFFFFF; --ok:#16A34A;
-    --photo-zoom:1.18;   /* 1 = whole photo · higher = closer crop */
+    --photo-zoom:1.06;   /* 1 = whole photo · higher = closer crop */
     --photo-focus:35%;   /* vertical focal point: lower % = higher up the frame */
   }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -121,7 +121,7 @@
   @media (max-width:840px){ .stamp{display:none;} }
 
   /* badge — draggable */
-  .badge-zone { position:relative; padding:26px 30px 30px 0; }
+  .badge-zone { position:relative; padding:26px 30px 30px 0; justify-self:center; width:100%; }
   .badge { border:2px solid var(--ink); background:var(--panel); box-shadow:8px 8px 0 var(--orange); opacity:0; transform:translateY(20px); transition:opacity .8s cubic-bezier(.16,1,.3,1) .4s, transform .8s cubic-bezier(.16,1,.3,1) .4s; cursor:grab; touch-action:none; position:relative; z-index:4; overflow:hidden; }
   body.loaded .badge { opacity:1; transform:none; }
   .badge.dragging { cursor:grabbing; transition:none !important; box-shadow:14px 18px 0 rgba(255,65,0,.5); }
@@ -130,13 +130,23 @@
   .badge-head .live { color:#4ADE80; animation:blink 2s ease-in-out infinite; }
   body.outage .badge-head .live { color:var(--orange); }
   @keyframes blink { 0%,100%{opacity:.45} 50%{opacity:1} }
-  .badge img { width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; object-position:center var(--photo-focus); display:block; filter:contrast(1.04); pointer-events:none; transform:scale(var(--photo-zoom)); transform-origin:center var(--photo-focus); }
+  .badge-photo { position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; }
+  .badge img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center var(--photo-focus); display:block; filter:contrast(1.04); pointer-events:none; transform:scale(var(--photo-zoom)); transform-origin:center var(--photo-focus); }
   .badge-foot { padding:12px 14px; border-top:2px solid var(--ink); }
   .badge-foot .nm { font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:.5px; }
   .badge-foot .rl { font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--steel); letter-spacing:1px; }
   .badge-bars { display:flex; gap:3px; margin-top:10px; height:16px; }
   .badge-bars i { background:var(--ink); width:3px; }
   .badge-bars i:nth-child(3n){width:6px;} .badge-bars i:nth-child(5n){width:2px;background:var(--orange);}
+  .quickspec { margin-top:26px; border:2px solid var(--ink); background:var(--panel); font-family:"IBM Plex Mono",monospace; }
+  .quickspec div { display:flex; justify-content:space-between; gap:12px; padding:9px 14px; border-bottom:1px solid var(--hairline); font-size:11.5px; letter-spacing:.5px; }
+  .quickspec div:last-child { border-bottom:0; }
+  .quickspec span { color:var(--steel); letter-spacing:1.5px; }
+  .quickspec b { font-weight:600; text-align:right; }
+  .quickspec b.avail { color:var(--ok); }
+  .quickspec b.avail::before { content:"● "; }
+  body.outage .quickspec b.avail { color:var(--orange); }
+
   .drag-hint { position:absolute; bottom:8px; right:34px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:1px; color:var(--steel); }
   @media (hover:none){ .drag-hint{display:none;} }
 
@@ -358,7 +368,7 @@
   @media print {
     body { background:#fff !important; background-image:none !important; font-size:11pt; }
     #boot,#chx,#chy,#coord,#log,#pulse,#term,.killswitch,.ticker,.scroll-hint,
-    #sim-sec,.stamp,.drag-hint,.dim,.ghost-no,.hazard,.name-plate,.slide-viz,
+    #sim-sec,.stamp,.drag-hint,.dim,.ghost-no,.hazard,.name-plate,.slide-viz,.quickspec,
     .cta-row,.show-nav,footer .meta button { display:none !important; }
     .topbar { position:static; background:#fff; border-bottom:3px solid #14151A; }
     .topbar a, .topbar .lbl { color:#14151A !important; }
@@ -439,7 +449,7 @@
         <div class="dim dim-r"><span>PERSONNEL REF. 01</span></div>
         <aside class="badge" id="badge">
           <div class="badge-head"><span>PERSONNEL</span><span class="live" id="badgeLive">● ON SITE</span></div>
-          <img src="profile.jpg" alt="Gautam Khosla" width="800" height="800" draggable="false">
+          <div class="badge-photo"><img src="profile.jpg" alt="Gautam Khosla" width="800" height="800" draggable="false"></div>
           <div class="badge-foot">
             <div class="nm">Gautam Khosla</div>
             <div class="rl">SYSTEMS · EDGE AI · PLATFORM</div>
@@ -447,6 +457,13 @@
           </div>
         </aside>
         <span class="drag-hint">↖ DRAG ME</span>
+        <div class="quickspec">
+          <div><span>LOCATION</span><b>Ottawa, ON · Canada</b></div>
+          <div><span>STATUS</span><b class="avail">Open to co-op</b></div>
+          <div><span>FOCUS</span><b>Edge AI · Platform · Infra</b></div>
+          <div><span>PRIMARY</span><b>C++20 · TypeScript · Python</b></div>
+          <div><span>DEPENDENCIES</span><b>0</b></div>
+        </div>
       </div>
     </div>
   </div>
