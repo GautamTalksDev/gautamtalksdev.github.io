@@ -16,13 +16,14 @@
   :root {
     --paper:#FAFAF7; --ink:#14151A; --orange:#FF4100; --orange-dark:#D63600;
     --steel:#6B7280; --hairline:#DEDED7; --panel:#FFFFFF; --ok:#16A34A;
+    --ch-sim:#FF4100; --ch-work:#1B5FD9; --ch-prin:#0F8A3D; --ch-exp:#B26A00;
     --photo-zoom:1.06;   /* 1 = whole photo · higher = closer crop */
     --photo-focus:35%;   /* vertical focal point: lower % = higher up the frame */
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body {
-    background:var(--paper); color:var(--ink);
+    background:var(--paper); color:var(--ink); transition:background-color .6s ease, color .6s ease;
     font-family:"Archivo",system-ui,sans-serif; line-height:1.6;
     -webkit-font-smoothing:antialiased; overflow-x:hidden;
     background-image:
@@ -30,6 +31,14 @@
       linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
     background-size:48px 48px; background-attachment:fixed;
   }
+  /* accent shifts smoothly as you move between sections */
+  .sec-no,.stat .num,.spec-idx,.tagline,.doc-ref b,.prin .pn,.xp .org,.award b,
+  .ticker-track span b,.slide-txt .tg,.try-me,h1 .accent,.sim-note b,.sim-bar b,
+  .topbar a:hover,#pulse .dot,.quickspec b.avail,.hazard,.badge,.stamp,
+  .contact-links button,.btn-primary,.sim-cell .v.orange {
+    transition:color .55s ease, background-color .55s ease, border-color .55s ease, box-shadow .55s ease;
+  }
+
   .mono { font-family:"IBM Plex Mono",ui-monospace,monospace; }
   ::selection { background:var(--orange); color:#fff; }
   .wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
@@ -89,6 +98,7 @@
   @media (max-width:840px){ .hero{grid-template-columns:1fr; gap:48px;} }
   .doc-ref { font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:2px; color:var(--steel); display:flex; gap:22px; flex-wrap:wrap; margin-bottom:30px; }
   .doc-ref b { color:var(--orange); font-weight:600; }
+  .edition { color:#fff !important; background:var(--orange); padding:2px 8px; letter-spacing:1.5px; }
 
   h1 { font-size:clamp(38px,6.4vw,82px); font-weight:900; font-stretch:112%; line-height:.94; letter-spacing:-2px; text-transform:uppercase; margin-bottom:30px; }
   h1 .row { display:block; overflow:hidden; }
@@ -244,7 +254,13 @@
   .ghost-no { will-change:transform; }
 
   /* ===== SECTIONS ===== */
-  section { padding:96px 0; border-bottom:2px solid var(--ink); position:relative; overflow:hidden; }
+  section { padding:96px 0; border-bottom:2px solid var(--ink); position:relative; overflow:hidden; background:var(--paper); transition:background .6s ease; }
+  /* each section is a different channel: a 6% wash of its own signal colour */
+  #sim-sec    { background:color-mix(in srgb, var(--ch-sim) 7%, var(--paper)); }
+  #work       { background:color-mix(in srgb, var(--ch-work) 6%, var(--paper)); }
+  #principles { background:color-mix(in srgb, var(--ch-prin) 6%, var(--paper)); }
+  #experience { background:color-mix(in srgb, var(--ch-exp) 6%, var(--paper)); }
+  #contact    { background:var(--paper); }
   .ghost-no { position:absolute; top:24px; right:-10px; font-size:clamp(140px,22vw,280px); font-weight:900; color:transparent; -webkit-text-stroke:1.5px var(--hairline); line-height:1; pointer-events:none; user-select:none; font-stretch:112%; }
   .sec-head { display:flex; align-items:baseline; gap:20px; margin-bottom:48px; flex-wrap:wrap; }
   .sec-no { font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600; color:#fff; background:var(--orange); padding:4px 12px; letter-spacing:1px; }
@@ -431,6 +447,8 @@
           <span>DOC <b>GK-001</b></span>
           <span>REV <b id="revDate">2026.07</b></span>
           <span>CLASS <b class="scramble-auto">FAILURE-AWARE SYSTEMS</b></span>
+          <span>UPTIME <b id="clock">00:00:00</b></span>
+          <span><b class="edition" id="edition">EDITION</b></span>
         </div>
         <h1>
           <span class="row"><span>Systems that</span></span>
@@ -823,11 +841,12 @@
     if (e.key === 'Escape') toggleTerm(false);
   });
   const CMDS = {
-    help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
+    help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
     work: () => 'AEGIS [edge/QNX]  HyperShift [infra agents]  MetaShift [multi-tenant]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
+    edition: () => 'today: <b>' + (window.__EDITION ? window.__EDITION.id : 'SAFETY') + '</b> · this site reissues itself daily from a date seed. come back tomorrow.',
     contact: () => 'developwith.gt@gmail.com. store-and-forward, outage-proof by design.',
     'sudo hire': () => '<span class="ok">permission granted.</span> drafting offer… just kidding. email developwith.gt@gmail.com',
     clear: () => { tOut.innerHTML = ''; return ''; },
@@ -1009,10 +1028,37 @@
     } else vio.observe(cv);
   })();
 
-  /* ================= DAILY SELF-EVOLUTION ================= */
+  /* ================= DAILY SELF-EVOLUTION =================
+     The site reissues itself every day from a date seed. No server, no
+     maintenance, deterministic: every visitor on the same day sees the same
+     edition, and tomorrow it is a different one. */
+  const THEMES = [
+    { id:'SAFETY',      paper:'#FAFAF7', ink:'#14151A', acc:'#FF4100', ch:['#FF4100','#1B5FD9','#0F8A3D','#B26A00'] },
+    { id:'BLUEPRINT',   paper:'#F1F5FB', ink:'#0F141C', acc:'#1B5FD9', ch:['#1B5FD9','#FF4100','#0F8A3D','#6D28D9'] },
+    { id:'OSCILLOSCOPE',paper:'#F5FAF4', ink:'#101710', acc:'#0F8A3D', ch:['#0F8A3D','#B26A00','#1B5FD9','#FF4100'] },
+    { id:'AMBER',       paper:'#FBF7EE', ink:'#1A150C', acc:'#B26A00', ch:['#B26A00','#C2410C','#0E7490','#0F8A3D'] },
+    { id:'GRAPHITE',    paper:'#F4F4F2', ink:'#111111', acc:'#D62828', ch:['#D62828','#374151','#0E7490','#B26A00'] },
+    { id:'CONTROL',     paper:'#F2FAFB', ink:'#0D1618', acc:'#0E7490', ch:['#0E7490','#FF4100','#0F8A3D','#6D28D9'] },
+    { id:'VOLT',        paper:'#F8F7FC', ink:'#14121C', acc:'#6D28D9', ch:['#6D28D9','#0E7490','#C2410C','#0F8A3D'] }
+  ];
+
   (function daily() {
     const now = new Date();
     const doy = Math.floor((now - new Date(now.getFullYear(),0,0)) / 864e5); // day of year = seed
+
+    // today's edition: palette, channel colours, masthead tag
+    const th = THEMES[doy % THEMES.length];
+    const r = document.documentElement.style;
+    r.setProperty('--paper', th.paper);
+    r.setProperty('--ink', th.ink);
+    r.setProperty('--orange', th.acc);
+    r.setProperty('--ch-sim',  th.ch[0]);
+    r.setProperty('--ch-work', th.ch[1]);
+    r.setProperty('--ch-prin', th.ch[2]);
+    r.setProperty('--ch-exp',  th.ch[3]);
+    window.__EDITION = th;
+    const ed = $('#edition');
+    if (ed) ed.textContent = 'ED. ' + String(doy).padStart(3,'0') + ' · ' + th.id;
     // REV auto-tracks today — the document is always current
     const rev = $('#revDate');
     if (rev) rev.textContent = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
@@ -1099,6 +1145,42 @@
     setOutage(false);
   });
   if (!navigator.onLine) setOutage(true);
+
+  /* ================= SECTION ACCENT CHANNELS =================
+     Industrial signal palette: every section is a different channel on the
+     same panel, not a different brand. Set ACCENTS = {} to disable. */
+  const cs = getComputedStyle(document.documentElement);
+  const chan = n => cs.getPropertyValue(n).trim() || '#FF4100';
+  const ACCENTS = {
+    'sim-sec'    : chan('--ch-sim'),
+    'work'       : chan('--ch-work'),
+    'principles' : chan('--ch-prin'),
+    'experience' : chan('--ch-exp'),
+    'contact'    : (window.__EDITION ? window.__EDITION.acc : '#FF4100')
+  };
+  const BASE = window.__EDITION ? window.__EDITION.acc : '#FF4100';
+  function setAccent(c) { document.documentElement.style.setProperty('--orange', c); }
+  if (Object.keys(ACCENTS).length) {
+    const aio = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting && ACCENTS[e.target.id]) setAccent(ACCENTS[e.target.id]);
+    }), { rootMargin: '-45% 0px -45% 0px' });
+    Object.keys(ACCENTS).forEach(id => { const el = document.getElementById(id); if (el) aio.observe(el); });
+    const hdr = $('#top');
+    if (hdr) new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) setAccent(BASE);
+    }), { rootMargin: '-40% 0px -55% 0px' }).observe(hdr);
+  }
+
+  /* ---- live session clock: the document is running, not printed ---- */
+  (function clock() {
+    const el = $('#clock'); if (!el) return;
+    const t0 = Date.now();
+    const pad = n => String(n).padStart(2, '0');
+    setInterval(() => {
+      const s = Math.floor((Date.now() - t0) / 1000);
+      el.textContent = pad(s / 3600 | 0) + ':' + pad((s / 60 | 0) % 60) + ':' + pad(s % 60);
+    }, 1000);
+  })();
 
   /* ---- copy email: no mailto, no status bar, no dead ends ---- */
   const copyBtn = $('#copyMail'), toast = $('#copyToast');
