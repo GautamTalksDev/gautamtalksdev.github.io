@@ -8,6 +8,24 @@
 <meta property="og:title" content="Gautam Khosla · Failure-Aware Systems Engineer">
 <meta property="og:description" content="Systems that keep running when the network doesn't. Try cutting the uplink.">
 <meta property="og:type" content="website">
+
+<!-- Security. GitHub Pages cannot set HTTP headers, so these are the meta-equivalents.
+     connect-src is locked to the one API this site talks to. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  img-src 'self' data:;
+  connect-src 'self' https://api.github.com;
+  worker-src 'self';
+  manifest-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none';
+  frame-src 'none';
+  upgrade-insecure-requests;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -546,7 +564,7 @@
             <h3>AEGIS <span class="net-tag edge">EDGE · SURVIVES OUTAGE</span></h3>
             <div class="tg">The safety loop never touches the network</div>
             <p>C++20 on QNX 8.0, four processes over MsgSend/MsgReceive, detection to relay entirely on-device. The dashed uplink box is the point: it's the only optional part.</p>
-            <a href="https://github.com/GautamTalksDev/AEGIS">OPEN REPO →</a>
+            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/AEGIS">OPEN REPO →</a>
           </div>
         </div>
 
@@ -572,7 +590,7 @@
             <h3>HyperShift <span class="net-tag cloud">CLOUD</span></h3>
             <div class="tg">Plain English in, infrastructure out, with a veto</div>
             <p>Five agents on a durable BullMQ pipeline, Zod contracts on every boundary, immutable audit log. The approval gate in the middle is load-bearing.</p>
-            <a href="https://github.com/GautamTalksDev/HyperShift">OPEN REPO →</a>
+            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">OPEN REPO →</a>
           </div>
         </div>
 
@@ -597,7 +615,7 @@
             <h3>MetaShift <span class="net-tag cloud">CLOUD</span></h3>
             <div class="tg">Detect, resolve, replay, across every tenant</div>
             <p>Tenant-scoped Postgres RLS, JWT + API keys, WebSocket live events, audit log, usage metering. The operational surface, not the demo path.</p>
-            <a href="https://github.com/GautamTalksDev/MetaShift">OPEN REPO →</a>
+            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">OPEN REPO →</a>
           </div>
         </div>
 
@@ -626,7 +644,7 @@
             <div class="tg">Incident triage in seconds, fully audited</div>
             <p>Confidence-scored LLM triage with a dual-store split: MongoDB for live operational reads, Snowflake for heavy analytics. 7-test E2E suite, shipped in 24h.</p>
             <span class="award" style="margin-bottom:16px"><b>🏆 MLH</b> BEST USE OF SNOWFLAKE API · HACKCONCORDIA</span>
-            <a href="https://github.com/GautamTalksDev/aeroguard-tech">OPEN REPO →</a>
+            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">OPEN REPO →</a>
           </div>
         </div>
 
@@ -643,7 +661,7 @@
 
 
     <div class="more-grid reveal">
-      <div class="mini"><h4><a href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p></div>
+      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p></div>
       <div class="mini"><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p></div>
       <div class="mini"><h4>NeuroDesk</h4><p>Agentic middleware turning natural language into audited action: budgets, approval gates, full transaction log.</p></div>
       <div class="mini"><h4>Omni-Context OS</h4><p>Stateful RAG memory across Slack, email, and web. Top 9 at Backboard.io × McHacks.</p></div>
@@ -711,9 +729,9 @@
       <p>Open to co-op placements and internships in systems, infrastructure, and platform engineering. If you're building something that has to survive failure, I want to hear about it. <span style="color:#6B7280">(Email works even during the outage; it's store-and-forward. That's the point.)</span></p>
       <div class="contact-links">
         <button id="copyMail" data-mail="developwith.gt@gmail.com" title="Copies the address. No mail client required.">COPY MY EMAIL</button>
-        <a href="https://github.com/GautamTalksDev">GITHUB</a>
-        <a href="https://www.linkedin.com/in/gautam-khosla/">LINKEDIN</a>
-        <a href="http://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE · GAUTAM TALKS</a>
+        <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev">GITHUB</a>
+        <a rel="noopener noreferrer external" href="https://www.linkedin.com/in/gautam-khosla/">LINKEDIN</a>
+        <a rel="noopener noreferrer external" href="http://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE · GAUTAM TALKS</a>
       </div>
     </div>
   </div>
@@ -745,6 +763,10 @@
 
 <script>
 (() => {
+  /* clickjacking guard: X-Frame-Options and frame-ancestors need real headers,
+     which GitHub Pages cannot send, so break out of any frame here. */
+  if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.documentElement.innerHTML = ''; } }
+
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = s => document.querySelector(s);
 
@@ -840,6 +862,10 @@
     if (e.key === '`' && document.activeElement !== tIn) { e.preventDefault(); toggleTerm(); }
     if (e.key === 'Escape') toggleTerm(false);
   });
+  /* escape anything that did not originate in this file */
+  const esc = s => String(s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
@@ -856,8 +882,8 @@
     if (e.key !== 'Enter') return;
     const cmd = tIn.value.trim().toLowerCase(); tIn.value = '';
     if (!cmd) return;
-    tOut.innerHTML += '<span style="color:#FF4100">gk@edge:~$</span> ' + cmd + '\n';
-    tOut.innerHTML += (CMDS[cmd] ? CMDS[cmd]() : 'command not found: ' + cmd + ' — try <b>help</b>') + '\n';
+    tOut.innerHTML += '<span style="color:var(--orange)">gk@edge:~$</span> ' + esc(cmd) + '\n';
+    tOut.innerHTML += (CMDS[cmd] ? CMDS[cmd]() : 'command not found: ' + esc(cmd) + ' · try <b>help</b>') + '\n';
     tOut.scrollTop = tOut.scrollHeight;
   });
 
@@ -883,9 +909,10 @@
 
       // live repo count
       const reposEl = $('#liveRepos');
-      if (user.public_repos) {
-        reposEl.dataset.count = user.public_repos;
-        if (reposEl.classList) reposEl.textContent = user.public_repos; // if counter already ran
+      const repos = Number(user.public_repos);
+      if (Number.isFinite(repos) && repos >= 0 && repos < 10000) {
+        reposEl.dataset.count = repos;
+        reposEl.textContent = repos;   // textContent, never innerHTML
       }
       if (src) { src.textContent = '· LIVE'; src.classList.add('live'); }
 
@@ -894,7 +921,7 @@
         const days = Math.max(0, Math.round((Date.now() - new Date(latest.pushed_at)) / 864e5));
         const when = days === 0 ? 'TODAY' : days === 1 ? 'YESTERDAY' : days + ' DAYS AGO';
         document.querySelectorAll('.live-slot').forEach(el =>
-          el.innerHTML = 'LAST PUSH · <b>' + latest.name.toUpperCase() + '</b> · <i>' + when + '</i>');
+          el.innerHTML = 'LAST PUSH · <b>' + esc(String(latest.name).toUpperCase()) + '</b> · <i>' + esc(when) + '</i>');
       }
       logLine('<b>GITHUB UPLINK</b>: live data acquired');
     } catch (e) {
