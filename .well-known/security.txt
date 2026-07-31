@@ -1,0 +1,8 @@
+Contact: mailto:developwith.gt@gmail.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://gautamkhosla.com/.well-known/security.txt
+
+# This is a static site: one HTML file, one image, one service worker.
+# No backend, no database, no user data collected or stored.
+# If you find something anyway, I would genuinely like to hear about it.
