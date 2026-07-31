@@ -2,8 +2,10 @@
    Network-first: always try the live network, so content is never stale.
    Cache is the fallback, so the site keeps running when the network doesn't. */
 
-const CACHE = 'gk-001-v1';
-const CORE = ['./', './index.html', './profile.jpg'];
+const CACHE = 'gk-001-v2';
+const CORE = ['./', './index.html', './profile.jpg',
+  './fonts/archivo-var.woff2', './fonts/plexmono-400.woff2',
+  './fonts/plexmono-500.woff2', './fonts/plexmono-600.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
