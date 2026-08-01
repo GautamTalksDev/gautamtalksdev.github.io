@@ -6,29 +6,24 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = s => document.querySelector(s);
 
-  /* ---- boot ---- */
+  /* ---- boot: CSS drives the sequence, JS only decides when to lift ----
+     Total ~760ms, once per session. Any click skips it immediately. */
   const boot = $('#boot');
   if (reduced || sessionStorage.getItem('booted')) {
     boot.remove(); document.body.classList.add('loaded');
   } else {
-    const lines = [
-      ['GK-001 PRE-FLIGHT',''],
-      ['> power rails','OK'],
-      ['> safety loop · on-device','OK'],
-      ['> cloud uplink','OPTIONAL'],
-      ['> rendering portfolio','OK']
-    ];
-    const pre = $('#bootText'); let i = 0;
-    (function next(){
-      if (i < lines.length) {
-        const [l,s] = lines[i++];
-        pre.innerHTML += (i===1?'<b>'+l+'</b>':l) + (s?'  <span class="ok">['+s+']</span>':'') + '\n';
-        setTimeout(next, 170);
-      } else setTimeout(() => {
-        boot.classList.add('done'); document.body.classList.add('loaded');
-        sessionStorage.setItem('booted','1'); setTimeout(() => boot.remove(), 600);
-      }, 260);
-    })();
+    let lifted = false;
+    const lift = () => {
+      if (lifted) return; lifted = true;
+      boot.classList.add('done');
+      document.body.classList.add('loaded');
+      sessionStorage.setItem('booted','1');
+      setTimeout(() => boot.remove(), 500);
+    };
+    setTimeout(lift, 760);
+    // respect impatience: any input skips straight to the site
+    ['pointerdown','keydown','wheel'].forEach(ev =>
+      addEventListener(ev, lift, { once:true, passive:true }));
   }
 
   /* ---- reveals ---- */
