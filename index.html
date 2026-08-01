@@ -119,6 +119,7 @@
     <a href="#top"><b class="acc">GK</b>/SPEC-2026</a>
     <div class="right">
       <a href="#work" class="scramble">WORK</a>
+      <a href="aegis.html" class="scramble loglink">GK-002 LOG</a>
       <a href="#principles" class="scramble">PRINCIPLES</a>
       <a href="#experience" class="scramble">EXPERIENCE</a>
       <a href="#contact" class="scramble">CONTACT</a>
@@ -203,7 +204,7 @@
         <div class="sim-cell"><div class="k">OFFLINE BUFFER</div><div class="v" id="simBuf">0</div></div>
       </div>
     </div>
-    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices. <b>And the switch is not just a toy:</b> turn your wifi off and reload this page. It still loads, and the switch flips itself.</p>
+    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices. Full design decisions in <a href="aegis.html">the engineering log</a>. <b>And the switch is not just a toy:</b> turn your wifi off and reload this page. It still loads, and the switch flips itself.</p>
   </div>
 </section>
 
@@ -355,10 +356,10 @@
   <div class="wrap">
     <div class="sec-head reveal"><span class="sec-no">SEC. 02</span><h2>Operating principles</h2></div>
     <div class="prin reveal">
-      <div><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p></div>
-      <div><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p></div>
-      <div><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p></div>
-      <div><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p></div>
+      <div><span class="pgh" aria-hidden="true">01</span><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05 — the chaos harness that caught the lossy flush</a></div>
+      <div><span class="pgh" aria-hidden="true">02</span><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §02 — the voice baked in at build time</a></div>
+      <div><span class="pgh" aria-hidden="true">03</span><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p><a class="pref" rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">PROVEN · HyperShift — nothing deploys past the approval gate</a></div>
+      <div><span class="pgh" aria-hidden="true">04</span><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05 — the upper stack shipped before the Pi arrived</a></div>
     </div>
   </div>
 </section>
