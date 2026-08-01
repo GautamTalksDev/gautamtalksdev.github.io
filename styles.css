@@ -88,7 +88,7 @@
   @media (max-width:640px){ #pulse{font-size:10px;padding:7px 10px;} }
 
   /* ===== HERO ===== */
-  header { border-bottom:2px solid var(--ink); position:relative; overflow:hidden; }
+  header { border-bottom:1px solid var(--hairline); position:relative; overflow:hidden; }
   .hero { display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:48px; padding:76px 0 64px; align-items:start; position:relative; }
   @media (max-width:1100px){ .hero{grid-template-columns:minmax(0,1fr) 330px; gap:34px;} }
   @media (max-width:840px){ .hero{grid-template-columns:1fr; gap:48px;} }
@@ -167,7 +167,7 @@
   .dim-t span { position:absolute; top:-18px; left:50%; transform:translateX(-50%); white-space:nowrap; }
   @media (max-width:840px){ .badge-zone{max-width:400px;padding-right:26px;} }
 
-  .ticker { border-top:2px solid var(--ink); background:var(--panel); overflow:hidden; }
+  .ticker { border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline); background:var(--panel); overflow:hidden; }
   .ticker-track { display:flex; width:max-content; animation:tick 32s linear infinite; }
   .ticker:hover .ticker-track { animation-play-state:paused; }
   .ticker-track span { font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:1.5px; padding:13px 28px; border-right:1px solid var(--hairline); white-space:nowrap; }
@@ -251,7 +251,7 @@
   .ghost-no { will-change:transform; }
 
   /* ===== SECTIONS ===== */
-  section { padding:96px 0; border-bottom:2px solid var(--ink); position:relative; overflow:hidden; background:var(--paper); transition:background .6s ease; }
+  section { padding:110px 0; border-bottom:1px solid var(--hairline); position:relative; overflow:hidden; background:var(--paper); transition:background .6s ease; }
   /* each section is a different channel: a 6% wash of its own signal colour */
   #sim-sec    { background:color-mix(in srgb, var(--ch-sim) 7%, var(--paper)); }
   #work       { background:color-mix(in srgb, var(--ch-work) 6%, var(--paper)); }
@@ -463,3 +463,32 @@
   .fcard:hover .fstamp, .fcard.in:active .fstamp { transform:rotate(-8deg) scale(1); opacity:.9; }
   @media (max-width:640px){ .fstamp{ position:static; display:inline-block; margin:14px 22px 18px;
     transform:rotate(-4deg) scale(1); opacity:.85; } }
+
+  /* ===== SPINE: the page is one circuit, not five posters ===== */
+  #spine { position:fixed; left:26px; top:0; bottom:0; width:2px; z-index:6; pointer-events:none;
+    background:repeating-linear-gradient(180deg, color-mix(in srgb, var(--ink) 22%, transparent) 0 6px, transparent 6px 12px); }
+  #spineDot { position:fixed; left:20px; top:0; width:14px; height:14px; z-index:7; pointer-events:none;
+    background:var(--orange); transform:rotate(45deg); transition:background .55s ease;
+    box-shadow:0 0 0 4px color-mix(in srgb, var(--orange) 20%, transparent); }
+  #spineTag { position:fixed; left:44px; z-index:7; pointer-events:none; font-family:"IBM Plex Mono",monospace;
+    font-size:9.5px; font-weight:600; letter-spacing:2px; color:var(--orange); transition:color .55s ease;
+    writing-mode:vertical-rl; transform:translateY(-50%); }
+  @media (max-width:1240px){ #spine,#spineDot,#spineTag{ display:none; } }
+
+  /* ===== LATEST FROM THE LAB: auto-synced, zero maintenance ===== */
+  .lab { margin-top:44px; border:2px solid var(--ink); background:var(--panel); }
+  .lab-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:10px 18px; border-bottom:2px solid var(--ink); font-family:"IBM Plex Mono",monospace;
+    font-size:11px; letter-spacing:2px; color:var(--steel); }
+  .lab-head b { color:var(--orange); font-weight:600; }
+  .lab-head .sync { font-size:10px; }
+  .lab-grid { display:grid; grid-template-columns:repeat(3,1fr); }
+  @media (max-width:760px){ .lab-grid{ grid-template-columns:1fr; } }
+  .lab-grid a { display:block; padding:16px 18px; border-right:1px solid var(--hairline); text-decoration:none; transition:background .15s; }
+  .lab-grid a:last-child { border-right:0; }
+  @media (max-width:760px){ .lab-grid a{ border-right:0; border-bottom:1px solid var(--hairline); } }
+  .lab-grid a:hover { background:color-mix(in srgb, var(--orange) 7%, var(--panel)); }
+  .lab-grid h4 { font-size:14.5px; font-weight:900; text-transform:uppercase; color:var(--ink); }
+  .lab-grid p { font-size:12.5px; color:var(--steel); margin-top:3px; }
+  .lab-grid .lmeta { font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:1px; color:var(--orange); margin-top:8px; font-weight:600; }
+  .lab.hidden { display:none; }
