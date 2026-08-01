@@ -41,7 +41,18 @@
     document.title = on ? '⚠ LINK LOST · Gautam Khosla' : 'Gautam Khosla — Failure-Aware Systems Engineer';
     logLine(on ? '<b>UPLINK LOST</b>: degrading gracefully' : '<b>UPLINK RESTORED</b>: flushing backlog');
   }
-  kill.addEventListener('click', () => setOutage(!document.body.classList.contains('outage')));
+  let actx = null;
+  function clack() {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      const t = actx.currentTime;
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'square'; o.frequency.setValueAtTime(2200, t); o.frequency.exponentialRampToValueAtTime(180, t + .04);
+      g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.0001, t + .07);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + .08);
+    } catch (e) {}
+  }
+  kill.addEventListener('click', () => { clack(); setOutage(!document.body.classList.contains('outage')); });
   kill.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); kill.click(); } });
 
   /* ---- inspection log ---- */
@@ -307,16 +318,17 @@
     const doy = Math.floor((now - new Date(now.getFullYear(),0,0)) / 864e5); // day of year = seed
 
     // today's edition: palette, channel colours, masthead tag
+    window.__applyTheme = th => {
+      const r = document.documentElement.style;
+      r.setProperty('--paper', th.paper); r.setProperty('--ink', th.ink); r.setProperty('--orange', th.acc);
+      r.setProperty('--ch-sim', th.ch[0]); r.setProperty('--ch-work', th.ch[1]);
+      r.setProperty('--ch-prin', th.ch[2]); r.setProperty('--ch-exp', th.ch[3]);
+      window.__EDITION = th;
+      const ed = $('#edition');
+      if (ed) ed.textContent = ed.textContent.replace(/·.*$/, '· ' + th.id);
+    };
     const th = THEMES[doy % THEMES.length];
-    const r = document.documentElement.style;
-    r.setProperty('--paper', th.paper);
-    r.setProperty('--ink', th.ink);
-    r.setProperty('--orange', th.acc);
-    r.setProperty('--ch-sim',  th.ch[0]);
-    r.setProperty('--ch-work', th.ch[1]);
-    r.setProperty('--ch-prin', th.ch[2]);
-    r.setProperty('--ch-exp',  th.ch[3]);
-    window.__EDITION = th;
+    window.__applyTheme(th);
     const ed = $('#edition');
     if (ed) ed.textContent = 'ED. ' + String(doy).padStart(3,'0') + ' · ' + th.id;
     // REV auto-tracks today — the document is always current
@@ -509,6 +521,62 @@
       logLine('<b>RE-INSPECTED</b>: still approved');
     });
   }
+
+  /* ================= COMMAND PALETTE (Ctrl+K) ================= */
+  (function palette() {
+    const pal = $('#pal'), inp = $('#palInput'), list = $('#palList');
+    if (!pal) return;
+    const CMDS = [
+      ['Run the live AEGIS simulation', 'GO', () => location.hash = '#sim-sec'],
+      ['Cut the uplink (simulate outage)', 'TOGGLE', () => kill.click()],
+      ['Read the AEGIS engineering log', 'GK-002', () => location.href = 'aegis.html'],
+      ['View selected work', 'GO', () => location.hash = '#work'],
+      ['Operating principles', 'GO', () => location.hash = '#principles'],
+      ['Field record', 'GO', () => location.hash = '#experience'],
+      ['Contact', 'GO', () => location.hash = '#contact'],
+      ['Download resume (PDF)', 'FILE', () => location.href = 'resume.pdf'],
+      ['Print this page as a resume', 'CTRL+P', () => print()],
+      ['Copy my email address', 'CLIP', () => { const b = $('#copyMail'); if (b) b.click(); }],
+      ['Open the console', '`', () => toggleTerm(true)],
+      ['Preview tomorrow\u2019s edition', 'THEME', () => {
+        const i = THEMES.indexOf(window.__EDITION);
+        window.__applyTheme(THEMES[(i + 1) % THEMES.length]);
+        logLine('<b>EDITION PREVIEW</b> \u00b7 ' + window.__EDITION.id);
+        return true; }],
+      ['GitHub \u2192 GautamTalksDev', 'LINK', () => open('https://github.com/GautamTalksDev', '_blank', 'noopener')],
+      ['LinkedIn', 'LINK', () => open('https://www.linkedin.com/in/gautam-khosla/', '_blank', 'noopener')]
+    ];
+    let items = [], sel = 0;
+    function render(q) {
+      const ql = (q || '').toLowerCase();
+      items = CMDS.filter(c => c[0].toLowerCase().includes(ql));
+      sel = 0;
+      list.innerHTML = items.map((c, i) =>
+        '<button data-i="' + i + '"' + (i === 0 ? ' class="on"' : '') + '><span>' + esc(c[0]) + '</span><span class="k">' + esc(c[1]) + '</span></button>'
+      ).join('') || '<button disabled><span>No matches</span></button>';
+    }
+    function openPal() { pal.classList.add('open'); inp.value = ''; render(''); inp.focus(); }
+    function closePal() { pal.classList.remove('open'); }
+    function run(i) {
+      const c = items[i]; if (!c) return;
+      const keep = c[2]();
+      if (keep !== true) closePal(); else render(inp.value);
+    }
+    addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); pal.classList.contains('open') ? closePal() : openPal(); }
+      if (!pal.classList.contains('open')) return;
+      if (e.key === 'Escape') closePal();
+      if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, items.length - 1); }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); sel = Math.max(sel - 1, 0); }
+      if (e.key === 'Enter')     { e.preventDefault(); run(sel); return; }
+      [...list.children].forEach((b, i) => b.classList.toggle('on', i === sel));
+    });
+    inp.addEventListener('input', () => render(inp.value));
+    list.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) run(+b.dataset.i); });
+    pal.addEventListener('click', e => { if (e.target === pal) closePal(); });
+    const hint = $('#palHint'); if (hint) hint.addEventListener('click', openPal);
+    logLine('<b>PALETTE ARMED</b> \u00b7 CTRL+K');
+  })();
 
   if (reduced) return;
 
