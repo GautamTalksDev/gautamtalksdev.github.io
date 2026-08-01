@@ -115,12 +115,30 @@
     try {
       const [uRes, rRes] = await Promise.all([
         fetch('https://api.github.com/users/GautamTalksDev', { signal: ctl.signal }),
-        fetch('https://api.github.com/users/GautamTalksDev/repos?sort=pushed&per_page=1', { signal: ctl.signal })
+        fetch('https://api.github.com/users/GautamTalksDev/repos?sort=pushed&per_page=6', { signal: ctl.signal })
       ]);
       clearTimeout(timer);
       if (!uRes.ok || !rRes.ok) throw new Error('rate-limited or unreachable');
       const user = await uRes.json();
-      const [latest] = await rRes.json();
+      const repoList = await rRes.json();
+      const [latest] = repoList;
+
+      // LATEST FROM THE LAB: auto-synced strip, curated showcase stays curated
+      const strip = $('#labStrip'), lab = $('#lab');
+      if (strip && Array.isArray(repoList)) {
+        const picks = repoList.filter(r => r && !r.fork).slice(0, 3);
+        if (picks.length) {
+          strip.innerHTML = picks.map(r => {
+            const days = Math.max(0, Math.round((Date.now() - new Date(r.pushed_at)) / 864e5));
+            const when = days === 0 ? 'PUSHED TODAY' : days === 1 ? 'PUSHED YESTERDAY' : 'PUSHED ' + days + 'D AGO';
+            return '<a rel="noopener noreferrer external" href="' + esc(r.html_url) + '">'
+              + '<h4>' + esc(r.name) + '</h4>'
+              + '<p>' + esc(r.description || 'No description yet.') + '</p>'
+              + '<div class="lmeta">' + esc((r.language || 'MIXED').toUpperCase()) + ' · ' + when + '</div></a>';
+          }).join('');
+          lab.classList.remove('hidden');
+        }
+      }
 
       // live repo count
       const reposEl = $('#liveRepos');
@@ -350,6 +368,30 @@
     // daily seed picks the opening slide — the site literally leads with a different project each day
     const doy = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 864e5);
     go(doy % N);
+  })();
+
+  /* ================= SPINE: the packet travelling the page ================= */
+  (function spine() {
+    const dot = $('#spineDot'), tag = $('#spineTag');
+    if (!dot || reduced) return;
+    const names = [['sim-sec','SIMULATION'],['work','WORK'],['principles','PRINCIPLES'],['experience','FIELD RECORD'],['contact','CONTACT']];
+    let ticking = false;
+    function place() {
+      const doc = document.documentElement;
+      const p = doc.scrollTop / (doc.scrollHeight - doc.clientHeight || 1);
+      const y = 60 + p * (innerHeight - 120);
+      dot.style.top = y + 'px';
+      tag.style.top = y + 'px';
+      let cur = 'HERO';
+      for (const [id, nm] of names) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < innerHeight * .5) cur = nm;
+      }
+      tag.textContent = cur;
+      ticking = false;
+    }
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(place); } }, { passive:true });
+    place();
   })();
 
   /* ================= PARALLAX GHOST NUMERALS ================= */
