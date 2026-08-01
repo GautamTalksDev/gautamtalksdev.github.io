@@ -168,23 +168,6 @@
           el.innerHTML = 'LAST PUSH · <b>' + esc(String(latest.name).toUpperCase()) + '</b> · <i>' + esc(when) + '</i>');
       }
       logLine('<b>GITHUB UPLINK</b>: live data acquired');
-
-      // SIGNAL LOG: guestbook via GitHub Issues. Community with zero backend.
-      try {
-        const gRes = await fetch('https://api.github.com/repos/GautamTalksDev/gautamtalksdev.github.io/issues?labels=guestbook&state=open&per_page=8', { signal: ctl.signal });
-        if (gRes.ok) {
-          const sigs = await gRes.json();
-          const wall = $('#siglogList'), box = $('#siglog');
-          if (wall && Array.isArray(sigs)) {
-            wall.innerHTML = sigs.length
-              ? sigs.map(s => '<a rel="noopener noreferrer external" href="' + esc(s.html_url) + '">'
-                  + '<span class="who">@' + esc(s.user && s.user.login || 'anon') + '</span>'
-                  + '<span class="msg">' + esc(s.title) + '</span></a>').join('')
-              : '<div class="siglog-empty">NO SIGNALS YET. BE THE FIRST ON RECORD.</div>';
-            box.classList.remove('hidden');
-          }
-        }
-      } catch (e) {}
     } catch (e) {
       clearTimeout(timer);
       // graceful fallback: keep baked values, be honest about it
