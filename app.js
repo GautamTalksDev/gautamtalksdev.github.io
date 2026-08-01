@@ -6,36 +6,9 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = s => document.querySelector(s);
 
-  /* ---- boot: a POST sequence. ~1.5s, once per session, skippable on any input.
-     The uplink line fails and recovers on purpose: the thesis, before the site loads. ---- */
-  const boot = $('#boot');
-  if (reduced || sessionStorage.getItem('booted')) {
-    boot.remove(); document.body.classList.add('loaded');
-  } else {
-    const pct = $('#bootPct'), up = $('#bootUplink');
-    // uplink recovers at 1.10s
-    const recT = setTimeout(() => up && up.classList.add('rec'), 1100);
-    // percentage tracks the rail, stalling where the rail stalls
-    const t0 = performance.now();
-    let raf = requestAnimationFrame(function tick(t){
-      const p = Math.min((t - t0) / 1350, 1);
-      const eased = p < .40 ? p * 1.15 : p < .52 ? .46 : .46 + (p - .52) * 1.125;
-      if (pct) pct.textContent = Math.round(Math.min(eased, 1) * 100) + '%';
-      if (p < 1) raf = requestAnimationFrame(tick);
-    });
-    let lifted = false;
-    const lift = () => {
-      if (lifted) return; lifted = true;
-      clearTimeout(recT); cancelAnimationFrame(raf);
-      boot.classList.add('done');
-      document.body.classList.add('loaded');
-      sessionStorage.setItem('booted','1');
-      setTimeout(() => boot.remove(), 620);
-    };
-    setTimeout(lift, 1500);
-    ['pointerdown','keydown','wheel'].forEach(ev =>
-      addEventListener(ev, lift, { once:true, passive:true }));
-  }
+  /* The site loads instantly. No splash, no gate, no manufactured delay.
+     Speed is the point: this is what zero dependencies buys you. */
+  document.body.classList.add('loaded');
 
   /* ---- reveals ---- */
   const io = new IntersectionObserver(es => es.forEach(e => {
