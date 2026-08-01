@@ -1,0 +1,33 @@
+/* GK-002 engineering log */
+.logpage .topbar .right a { color:#fff; text-decoration:none; font-size:12px; letter-spacing:1.5px; }
+.logpage .topbar .right a:hover { color:var(--orange); }
+
+.log { max-width:760px; padding-top:64px; padding-bottom:80px; }
+.log-head h1 { font-size:clamp(32px,5.5vw,54px); font-weight:900; text-transform:uppercase; letter-spacing:-1.5px; line-height:1.02; margin:18px 0 20px; }
+.log-standfirst { font-size:17px; color:#3c3f47; }
+.log-standfirst a { color:var(--orange); font-weight:600; }
+
+.log section { margin-top:52px; }
+.log h2 { font-size:21px; font-weight:900; text-transform:uppercase; letter-spacing:-.3px; margin-bottom:14px; display:flex; align-items:baseline; gap:14px; }
+.log h2 .ln { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600; color:#fff; background:var(--orange); padding:2px 9px; letter-spacing:1px; }
+.log p { color:#3c3f47; font-size:15.5px; margin-bottom:12px; max-width:70ch; }
+.log strong { color:var(--ink); }
+.log code { font-family:"IBM Plex Mono",monospace; font-size:.88em; background:color-mix(in srgb, var(--ink) 7%, var(--paper)); padding:1px 6px; border:1px solid var(--hairline); }
+.log a { color:var(--orange); font-weight:600; text-decoration:none; border-bottom:1.5px solid color-mix(in srgb, var(--orange) 40%, transparent); }
+.log a:hover { border-bottom-color:var(--orange); }
+
+.log blockquote { border-left:4px solid var(--orange); background:var(--panel); border:2px solid var(--ink); border-left-width:6px; border-left-color:var(--orange);
+  padding:18px 22px; margin:18px 0; font-size:19px; font-weight:700; color:var(--ink); font-style:italic; max-width:60ch; }
+
+.log-foot { border-top:2px solid var(--ink); padding-top:28px; }
+.log-cta { display:flex; gap:14px; flex-wrap:wrap; margin-top:18px; }
+.log-cta a { font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:600; letter-spacing:1px;
+  border:2px solid var(--ink); padding:11px 20px; color:var(--ink); text-decoration:none; transition:all .18s; }
+.log-cta a:first-child { background:var(--orange); border-color:var(--orange); color:#fff; box-shadow:4px 4px 0 var(--ink); }
+.log-cta a:first-child:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
+.log-cta a:last-child:hover { background:var(--ink); color:#fff; }
+
+@media print {
+  .logpage .topbar, .logpage .hazard { display:none; }
+  .log h2 .ln { color:#14151A; background:#fff; border:1.5px solid #14151A; }
+}
