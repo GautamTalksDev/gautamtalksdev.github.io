@@ -31,3 +31,21 @@
   .logpage .topbar, .logpage .hazard { display:none; }
   .log h2 .ln { color:#14151A; background:#fff; border:1.5px solid #14151A; }
 }
+
+/* figures: each section gets its schematic */
+.lfig { margin:6px 0 18px; border:2px solid var(--ink); background:#0E0F13; padding:14px 12px 8px; }
+.lfig svg { width:100%; max-width:460px; display:block; }
+.lfig .ft { font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:2px; fill:#6B7280; }
+.lfig .fs, .lfig .fs text, .lfig g.fs text { font-family:"IBM Plex Mono",monospace; font-size:11px; fill:#D7DBE4; }
+.lfig .fflow { animation:lflow 1.1s linear infinite; }
+@keyframes lflow { to { stroke-dashoffset:-10; } }
+.lfig .fblip { animation:lblip 2.2s steps(1) infinite; }
+@keyframes lblip { 0%,55%,100%{fill:#2A2C33} 60%,80%{fill:var(--orange)} }
+.lfig .fbar { transform-origin:left center; animation:lbar 2.6s cubic-bezier(.2,.8,.2,1) infinite; }
+.lfig .fbar.f2 { animation-delay:.35s; }
+@keyframes lbar { 0%{transform:scaleX(0)} 35%,80%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
+.lfig .fchunk { opacity:0; animation:lchunk 2.4s ease infinite; }
+.lfig .fchunk.c2 { animation-delay:.3s; } .lfig .fchunk.c3 { animation-delay:.6s; }
+@keyframes lchunk { 0%{opacity:0; transform:translateX(-12px)} 25%,85%{opacity:1; transform:none} 100%{opacity:1} }
+@media (prefers-reduced-motion:reduce){ .lfig .fflow,.lfig .fblip,.lfig .fbar,.lfig .fchunk { animation:none; opacity:1; transform:none; } }
+@media print { .lfig { background:#fff; } .lfig .fs,.lfig .fs text{ fill:#14151A; } .lfig .ft{ fill:#5B6270; } }
