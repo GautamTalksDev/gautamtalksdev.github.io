@@ -114,10 +114,6 @@
 
 <div class="hazard"></div>
 
-<div id="spine" aria-hidden="true"></div>
-<div id="spineDot" aria-hidden="true"></div>
-<div id="spineTag" aria-hidden="true">HERO</div>
-
 <div class="topbar">
   <div class="wrap">
     <a href="#top"><b class="acc">GK</b>/SPEC-2026</a>
@@ -365,10 +361,10 @@
   <div class="wrap">
     <div class="sec-head reveal"><span class="sec-no">SEC. 02</span><h2>Operating principles</h2></div>
     <div class="prin reveal">
-      <div><span class="pgh" aria-hidden="true">01</span><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05 — the chaos harness that caught the lossy flush</a></div>
-      <div><span class="pgh" aria-hidden="true">02</span><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §02 — the voice baked in at build time</a></div>
-      <div><span class="pgh" aria-hidden="true">03</span><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p><a class="pref" rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">PROVEN · HyperShift — nothing deploys past the approval gate</a></div>
-      <div><span class="pgh" aria-hidden="true">04</span><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05 — the upper stack shipped before the Pi arrived</a></div>
+      <div><span class="pgh" aria-hidden="true">01</span><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05: the chaos harness that caught the lossy flush</a></div>
+      <div><span class="pgh" aria-hidden="true">02</span><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §02: the voice baked in at build time</a></div>
+      <div><span class="pgh" aria-hidden="true">03</span><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p><a class="pref" rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">PROVEN · HyperShift: nothing deploys past the approval gate</a></div>
+      <div><span class="pgh" aria-hidden="true">04</span><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05: the upper stack shipped before the Pi arrived</a></div>
     </div>
   </div>
 </section>
@@ -436,6 +432,11 @@
     <div class="contact-inner reveal">
       <h2>The uplink is live.</h2>
       <p>Open to co-op placements and internships in systems, infrastructure, and platform engineering. If you're building something that has to survive failure, I want to hear about it. <span class="muted-note">(Email works even during the outage; it's store-and-forward. That's the point.)</span></p>
+      <div class="siglog hidden" id="siglog">
+        <div class="siglog-head"><span><b>SIGNAL LOG</b> · VISITORS ON RECORD</span><a class="pref" rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/gautamtalksdev.github.io/issues/new?labels=guestbook&title=Signal+from+...&body=Say+hi,+leave+a+note,+or+tell+me+what+broke.+Your+GitHub+handle+becomes+your+signature.">SIGN THE LOG</a></div>
+        <div class="siglog-list" id="siglogList"></div>
+      </div>
+
       <div class="contact-links">
         <button id="copyMail" data-mail="developwith.gt@gmail.com" title="Copies the address. No mail client required.">COPY MY EMAIL</button>
         <a href="resume.pdf" download>RESUME (PDF)</a>
