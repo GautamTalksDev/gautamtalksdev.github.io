@@ -2,7 +2,7 @@
    Network-first: always try the live network, so content is never stale.
    Cache is the fallback, so the site keeps running when the network doesn't. */
 
-const CACHE = 'gk-001-v8';
+const CACHE = 'gk-001-v6';
 const CORE = ['./', './index.html', './styles.css', './app.js', './profile.jpg',
   './fonts/archivo-var.woff2', './fonts/plexmono-400.woff2',
   './fonts/plexmono-500.woff2', './fonts/plexmono-600.woff2'];
