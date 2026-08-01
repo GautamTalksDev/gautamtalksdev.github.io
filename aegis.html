@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  font-src 'self';
+  img-src 'self' data:;
+  connect-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none';
+  frame-src 'none';
+  upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS Engineering Log · Gautam Khosla</title>
+<meta name="description" content="Engineering log for AEGIS: an edge-AI worksite safety system on QNX 8.0 RTOS where the safety loop never touches the network. Design decisions, trade-offs, and what broke.">
+<link rel="canonical" href="https://gautamkhosla.com/aegis.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AEGIS Engineering Log — the safety loop never touches the network">
+<meta property="og:description" content="Design decisions and trade-offs from building a real-time safety system on QNX: SCHED_FIFO ordering, baked-in voice, zero-loss offline flush.">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="log.css">
+</head>
+<body class="loaded logpage">
+
+<div class="hazard"></div>
+<div class="topbar">
+  <div class="wrap">
+    <a href="index.html"><b class="acc">GK</b>/SPEC-2026</a>
+    <div class="right"><a href="index.html">← BACK TO SPEC</a></div>
+  </div>
+</div>
+
+<main class="wrap log">
+
+  <header class="log-head">
+    <div class="doc-ref">
+      <span>DOC <b>GK-002</b></span>
+      <span>TYPE <b>ENGINEERING LOG</b></span>
+      <span>SUBJECT <b>AEGIS</b></span>
+    </div>
+    <h1>The safety loop never touches the network.</h1>
+    <p class="log-standfirst">AEGIS is an edge-AI worksite safety system: real-time person and PPE detection on a Raspberry Pi 5 running QNX 8.0 RTOS, in C++20, driving a physical relay. This is the log of the decisions that mattered, the trade-offs behind them, and what broke. Built at cuHacking 7, 2026. <a href="https://github.com/GautamTalksDev/AEGIS">Source on GitHub</a>.</p>
+  </header>
+
+  <section>
+    <h2><span class="ln">01</span>The constraint that designed the system</h2>
+    <p>A worksite safety device has one non-negotiable property: when someone walks into a hazard zone without a hard hat, the alarm fires. Not usually. Not when the wifi is good. Always.</p>
+    <p>That single requirement decided the architecture before any code existed. Every component was sorted into two buckets: things the safety decision depends on, and things it must never depend on. The camera, the vision model, the state machine, the relay: bucket one, all on-device. The cloud gateway, the dashboard, event history, notifications: bucket two, all optional. The rule we wrote down and kept returning to: <strong>the cloud makes the device smarter, never dependent.</strong></p>
+    <p>Most of the interesting decisions below are just this rule applied to a specific component.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">02</span>Why the emergency voice is baked into the firmware</h2>
+    <p>We wanted a spoken evacuation alert, and ElevenLabs produces a far better voice than any on-device TTS. The obvious design is to call the API when an alarm fires. We rejected it in one sentence that became the project's motto:</p>
+    <blockquote>A safety alarm that needs an API call to speak is not a safety alarm.</blockquote>
+    <p>Instead, the voice line is generated once by ElevenLabs at build time and compiled into the device as a static asset. The network gets us the studio-quality voice; the runtime never knows the network exists. Same quality, zero runtime dependency. This is the pattern I now reach for by default: <strong>use the cloud at build time, not in the loop.</strong></p>
+  </section>
+
+  <section>
+    <h2><span class="ln">03</span>The relay fires before the voice speaks</h2>
+    <p>Within the device there is a second, subtler ordering problem. An alarm has multiple outputs: the GPIO relay (which can cut power to a machine, flash a beacon) and the audio playback. They are not equally important, and on a real-time OS you get to say so explicitly.</p>
+    <p>Under QNX's <code>SCHED_FIFO</code> policy, the relay and GPIO path runs at <strong>priority 30</strong>; audio playback runs at <strong>priority 8</strong>. If the system is ever under load, the physical interlock wins and the voice waits. The alarm never waits for its own announcement. The ordering guarantee was verified through structured latency measurement rather than assumed.</p>
+    <p>The general lesson: when outputs have different consequences, encode that in the scheduler, not in comments.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">04</span>Four processes, dumb messages</h2>
+    <p>The pipeline runs as four separate QNX processes — capture, vision, safety logic, uplink — communicating over native <code>MsgSend</code>/<code>MsgReceive</code>. The message types are deliberately boring: trivially copyable POD structs, no serialization framework, no dynamic allocation in the message path.</p>
+    <p>Boring was the point. Process isolation means a fault in the uplink cannot take down the safety logic; POD messages mean IPC cost is predictable and a message can never fail to parse. On a safety path, every clever abstraction you don't use is a failure mode you don't have.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">05</span>Shipping the top of the stack before the hardware existed</h2>
+    <p>The Pi and relay hardware weren't available on day one, and a hackathon doesn't wait. So the cloud gateway and dashboard were built against <strong>mock event generators</strong> that emit the same POD-shaped events the device would, plus a <strong>load tester</strong> and a <strong>chaos harness</strong> that injects malformed events, delays, and disconnects.</p>
+    <p>By the time real hardware produced its first event, the entire upper stack had already survived worse. The chaos harness also forced the uplink design honest: when the network drops, events buffer on-device and flush in <strong>zero-loss chunks</strong> when the link returns — a behaviour that exists because the harness kept breaking the naive version.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">06</span>What broke, and what I'd change</h2>
+    <p><strong>What broke:</strong> the first offline flush implementation lost events at the boundary between buffered and live traffic under reconnect churn — the chaos harness caught it, and the fix was chunked flushing with explicit acknowledgement. Cross-compiling C++20 for QNX via CMake also consumed far more of the first day than planned; toolchain work is never free.</p>
+    <p><strong>What I'd change:</strong> the latency measurement should have been built on day one rather than added to verify the scheduler design after the fact — you want the instrument before the claim. And the vision model deserves a proper quantization pass; the current TFLite deployment prioritizes shipping over frame rate.</p>
+  </section>
+
+  <section class="log-foot">
+    <p>The live simulation of this pipeline — detection, zone rules, state machine, relay-before-voice ordering, and the offline buffer — runs in your browser on the <a href="index.html#sim-sec">main page</a>. Flip the UPLINK switch while it runs.</p>
+    <div class="log-cta">
+      <a href="https://github.com/GautamTalksDev/AEGIS">SOURCE ON GITHUB</a>
+      <a href="index.html">BACK TO SPEC</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="hazard"></div>
+</body>
+</html>
