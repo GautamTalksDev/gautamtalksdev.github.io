@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
 
+# AI crawlers welcome: this site is a public professional profile
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+
 Sitemap: https://gautamkhosla.com/sitemap.xml
