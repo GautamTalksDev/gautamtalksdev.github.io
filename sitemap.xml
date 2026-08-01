@@ -3,12 +3,18 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://gautamkhosla.com/</loc>
-    <lastmod>2026-08-01</lastmod>
+    <lastmod>2026-07-31</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://gautamkhosla.com/og-image.png</image:loc>
       <image:title>Gautam Khosla, failure-aware systems engineer</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://gautamkhosla.com/aegis.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>
