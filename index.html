@@ -465,6 +465,15 @@
 <div id="pulse"><span class="dot"></span><span id="pulseTxt">SAFETY LOOP · NOMINAL</span></div>
 <div id="log" aria-hidden="true"></div>
 
+<div id="pal" role="dialog" aria-label="Command palette">
+  <div class="pal-box">
+    <div class="pal-in"><span class="ps">⌘</span><input id="palInput" placeholder="Type a command or search…" autocomplete="off" spellcheck="false"></div>
+    <div id="palList"></div>
+    <div class="pal-foot"><span>↑↓ NAVIGATE</span><span>↵ RUN</span><span>ESC CLOSE</span></div>
+  </div>
+</div>
+<button class="pal-hint" id="palHint"><b>CTRL K</b> · COMMAND</button>
+
 <div id="term">
   <div class="inner">
     <div id="termOut"><b>GK-001 console.</b> Type <b>help</b>.
