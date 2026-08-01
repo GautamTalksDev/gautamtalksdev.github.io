@@ -492,3 +492,34 @@
   .lab-grid p { font-size:12.5px; color:var(--steel); margin-top:3px; }
   .lab-grid .lmeta { font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:1px; color:var(--orange); margin-top:8px; font-weight:600; }
   .lab.hidden { display:none; }
+
+  /* ===== COMMAND PALETTE ===== */
+  #pal { position:fixed; inset:0; z-index:220; display:none; align-items:flex-start; justify-content:center;
+    padding:12vh 20px 0; background:color-mix(in srgb, var(--ink) 55%, transparent); backdrop-filter:blur(3px); }
+  #pal.open { display:flex; }
+  .pal-box { width:min(560px,100%); border:2px solid var(--ink); background:var(--panel);
+    box-shadow:10px 10px 0 var(--orange); animation:palIn .16s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes palIn { from{ transform:translateY(-10px) scale(.98); opacity:0; } }
+  .pal-in { display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:2px solid var(--ink); }
+  .pal-in .ps { font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600; color:var(--orange); }
+  #palInput { flex:1; border:0; outline:0; background:none; font-family:"IBM Plex Mono",monospace;
+    font-size:15px; color:var(--ink); }
+  #palList { max-height:min(46vh,420px); overflow-y:auto; }
+  #palList button { display:flex; justify-content:space-between; align-items:center; gap:14px; width:100%;
+    text-align:left; padding:12px 18px; border:0; border-bottom:1px solid var(--hairline); background:none;
+    font-family:"Archivo",sans-serif; font-size:14.5px; font-weight:600; color:var(--ink); cursor:pointer; }
+  #palList button .k { font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:1.5px; color:var(--steel); font-weight:600; }
+  #palList button.on, #palList button:hover { background:var(--orange); color:#fff; }
+  #palList button.on .k, #palList button:hover .k { color:#fff; }
+  .pal-foot { padding:8px 18px; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:1.5px; color:var(--steel);
+    display:flex; gap:18px; }
+  .pal-hint { position:fixed; right:18px; bottom:18px; z-index:80; font-family:"IBM Plex Mono",monospace;
+    font-size:10.5px; letter-spacing:1.5px; color:var(--steel); background:var(--panel); border:1.5px solid var(--hairline);
+    padding:6px 11px; cursor:pointer; transition:all .15s; }
+  .pal-hint:hover { border-color:var(--orange); color:var(--orange); }
+  .pal-hint b { color:var(--orange); font-weight:600; }
+  @media (max-width:1200px){ .pal-hint{ display:none; } }
+  @media (hover:none){ .pal-hint{ display:none; } }
+
+  /* hero: the sign flickers when touched */
+  h1 .accent:hover { animation:faulty 1.2s steps(1) infinite; cursor:default; }
