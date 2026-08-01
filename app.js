@@ -168,6 +168,23 @@
           el.innerHTML = 'LAST PUSH · <b>' + esc(String(latest.name).toUpperCase()) + '</b> · <i>' + esc(when) + '</i>');
       }
       logLine('<b>GITHUB UPLINK</b>: live data acquired');
+
+      // SIGNAL LOG: guestbook via GitHub Issues. Community with zero backend.
+      try {
+        const gRes = await fetch('https://api.github.com/repos/GautamTalksDev/gautamtalksdev.github.io/issues?labels=guestbook&state=open&per_page=8', { signal: ctl.signal });
+        if (gRes.ok) {
+          const sigs = await gRes.json();
+          const wall = $('#siglogList'), box = $('#siglog');
+          if (wall && Array.isArray(sigs)) {
+            wall.innerHTML = sigs.length
+              ? sigs.map(s => '<a rel="noopener noreferrer external" href="' + esc(s.html_url) + '">'
+                  + '<span class="who">@' + esc(s.user && s.user.login || 'anon') + '</span>'
+                  + '<span class="msg">' + esc(s.title) + '</span></a>').join('')
+              : '<div class="siglog-empty">NO SIGNALS YET. BE THE FIRST ON RECORD.</div>';
+            box.classList.remove('hidden');
+          }
+        }
+      } catch (e) {}
     } catch (e) {
       clearTimeout(timer);
       // graceful fallback: keep baked values, be honest about it
@@ -380,30 +397,6 @@
     // daily seed picks the opening slide — the site literally leads with a different project each day
     const doy = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 864e5);
     go(doy % N);
-  })();
-
-  /* ================= SPINE: the packet travelling the page ================= */
-  (function spine() {
-    const dot = $('#spineDot'), tag = $('#spineTag');
-    if (!dot || reduced) return;
-    const names = [['sim-sec','SIMULATION'],['work','WORK'],['principles','PRINCIPLES'],['experience','FIELD RECORD'],['contact','CONTACT']];
-    let ticking = false;
-    function place() {
-      const doc = document.documentElement;
-      const p = doc.scrollTop / (doc.scrollHeight - doc.clientHeight || 1);
-      const y = 60 + p * (innerHeight - 120);
-      dot.style.top = y + 'px';
-      tag.style.top = y + 'px';
-      let cur = 'HERO';
-      for (const [id, nm] of names) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top < innerHeight * .5) cur = nm;
-      }
-      tag.textContent = cur;
-      ticking = false;
-    }
-    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(place); } }, { passive:true });
-    place();
   })();
 
   /* ================= PARALLAX GHOST NUMERALS ================= */
