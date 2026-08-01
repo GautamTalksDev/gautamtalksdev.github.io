@@ -262,20 +262,7 @@
     max-width:820px; text-transform:uppercase; }
   .pub-sub { font-family:"IBM Plex Mono",monospace; font-size:14px; color:var(--steel);
     margin-top:18px; max-width:640px; }
-  .pub-stats { display:grid; grid-template-columns:repeat(3,1fr); border:2px solid var(--ink);
-    background:var(--panel); margin-top:40px; }
-  .pub-stat { padding:26px 16px; text-align:center; border-right:2px solid var(--ink); }
-  .pub-stat:last-child { border-right:0; }
-  .pub-stat .num { font-size:clamp(30px,4.6vw,46px); font-weight:900; color:var(--orange);
-    font-variant-numeric:tabular-nums; letter-spacing:-1px; }
-  .pub-stat .lbl { font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:1.5px;
-    color:var(--steel); margin-top:4px; }
-  .pub-dim { display:block; font-size:9px; letter-spacing:2px; color:var(--orange);
-    margin-top:4px; }
-  @media (max-width:640px){ .pub-stats{grid-template-columns:1fr;}
-    .pub-stat{border-right:0; border-bottom:2px solid var(--ink);}
-    .pub-stat:last-child{border-bottom:0;} }
-  .pub-cta { display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; }
+  .pub-cta { display:flex; gap:14px; flex-wrap:wrap; margin-top:36px; }
   .pub-cta a { font-family:"IBM Plex Mono",monospace; font-size:13.5px; font-weight:600;
     letter-spacing:1px; color:var(--ink); text-decoration:none; border:2px solid var(--ink);
     padding:11px 20px; transition:all .18s; background:transparent; }
@@ -433,4 +420,13 @@
     .reveal { opacity:1 !important; transform:none !important; }
     a { text-decoration:none; color:#14151A; }
     .spec h3 a::after { content:" · " attr(href); font-size:8pt; color:#6B7280; font-weight:400; text-transform:none; }
+  }
+
+  /* ---- reduced motion: the site degrades gracefully for the visitor too ---- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+    html { scroll-behavior:auto; }
+    .reveal { opacity:1 !important; transform:none !important; }
+    .name-track { animation:none !important; }
+    #chx, #chy, #coord { display:none !important; }
   }
