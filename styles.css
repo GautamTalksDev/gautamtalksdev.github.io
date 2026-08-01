@@ -56,6 +56,8 @@
   .topbar .wrap { display:flex; justify-content:space-between; align-items:center; height:50px; font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:1.5px; gap:16px; }
   .topbar a { color:#fff; text-decoration:none; transition:color .15s; }
   .topbar a:hover { color:var(--orange); }
+  .topbar .loglink { color:var(--orange); }
+  .topbar .loglink:hover { color:#fff; }
   .topbar .right { display:flex; gap:22px; align-items:center; }
   @media (max-width:760px){ .topbar .right a { display:none; } }
 
@@ -197,6 +199,7 @@
   @keyframes alarmb { 50% { box-shadow:0 0 0 5px var(--orange); } }
   .sim-note { font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--steel); margin-top:16px; letter-spacing:.3px; }
   .sim-note b { color:var(--orange); font-weight:600; }
+  .sim-note a { color:var(--orange); font-weight:600; text-decoration:none; border-bottom:1.5px solid var(--orange); }
 
   /* ===== SHOWCASE CAROUSEL ===== */
   .showcase { border:2px solid var(--ink); background:var(--panel); margin-bottom:40px; overflow:hidden; position:relative; }
@@ -296,8 +299,22 @@
 
   .prin { display:grid; grid-template-columns:1fr 1fr; border:2px solid var(--ink); background:var(--panel); }
   @media (max-width:640px){ .prin{grid-template-columns:1fr;} }
-  .prin>div { padding:30px; border-right:2px solid var(--ink); border-bottom:2px solid var(--ink); transition:background .2s; }
-  .prin>div:hover { background:#FFF4EF; }
+  .prin>div { position:relative; overflow:hidden; padding:30px 30px 26px; border-right:2px solid var(--ink); border-bottom:2px solid var(--ink); transition:background .2s; }
+  .prin>div:hover { background:color-mix(in srgb, var(--orange) 7%, var(--panel)); }
+
+  /* giant ghost numeral behind each principle */
+  .pgh { position:absolute; top:-18px; right:-6px; font-size:110px; font-weight:900; font-stretch:112%;
+    color:transparent; -webkit-text-stroke:1.5px var(--hairline); line-height:1; pointer-events:none; user-select:none;
+    transition:-webkit-text-stroke-color .25s, transform .25s; }
+  .prin>div:hover .pgh { -webkit-text-stroke-color:color-mix(in srgb, var(--orange) 45%, transparent); transform:translateY(-4px); }
+
+  /* the receipt: every principle points at its proof */
+  .pref { display:inline-block; margin-top:14px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:1px; color:var(--ink); text-decoration:none; border:1.5px solid var(--ink); padding:5px 10px;
+    position:relative; transition:all .18s; max-width:100%; }
+  .pref::before { content:"✓ "; color:var(--orange); }
+  .pref:hover { background:var(--orange); border-color:var(--orange); color:#fff; transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--ink); }
+  .pref:hover::before { color:#fff; }
   .prin>div:nth-child(2n){border-right:0;} .prin>div:nth-child(n+3){border-bottom:0;}
   @media (max-width:640px){ .prin>div{border-right:0!important;border-bottom:2px solid var(--ink)!important;} .prin>div:last-child{border-bottom:0!important;} }
   .prin .pn { font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--orange); letter-spacing:2px; margin-bottom:8px; }
