@@ -398,7 +398,6 @@
     'work'       : chan('--ch-work'),
     'principles' : chan('--ch-prin'),
     'experience' : chan('--ch-exp'),
-    'inpublic'   : chan('--ch-pub'),
     'contact'    : (window.__EDITION ? window.__EDITION.acc : '#FF4100')
   };
   const BASE = window.__EDITION ? window.__EDITION.acc : '#FF4100';
