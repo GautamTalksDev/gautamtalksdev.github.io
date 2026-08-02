@@ -520,7 +520,8 @@
         logLine('<b>EDITION PREVIEW</b> \u00b7 ' + window.__EDITION.id);
         return true; }],
       ['GitHub \u2192 GautamTalksDev', 'LINK', () => open('https://github.com/GautamTalksDev', '_blank', 'noopener')],
-      ['LinkedIn', 'LINK', () => open('https://www.linkedin.com/in/gautam-khosla/', '_blank', 'noopener')]
+      ['LinkedIn', 'LINK', () => open('https://www.linkedin.com/in/gautam-khosla/', '_blank', 'noopener')],
+      ['Switch to Band B \u00b7 Gautam Talks', 'GT-001', () => open('https://gautamtalks.com', '_blank', 'noopener')]
     ];
     let items = [], sel = 0;
     function render(q) {
