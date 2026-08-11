@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  font-src 'self';
+  img-src 'self' data:;
+  connect-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none';
+  frame-src 'none';
+  upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mayfly Guest Engineering Log · Gautam Khosla</title>
+<meta name="description" content="Engineering log for Mayfly Guest: a snapshot-optimised Linux guest for Firecracker microVMs. Restore-to-usable measurement across File, UFFD 4K, and 2M hugepages, and why the fault count is the real number.">
+<link rel="canonical" href="https://gautamkhosla.com/mayfly.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mayfly Guest Log: the fault count is the thesis, not the milliseconds">
+<meta property="og:description" content="Measuring microVM restore honestly: 1563 faults at 4K, 25 at 2M, and a caveat that outranks every number in the table.">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="log.css">
+</head>
+<body class="loaded logpage">
+
+<div class="hazard"></div>
+<div class="topbar">
+  <div class="wrap">
+    <a href="index.html"><b class="acc">GK</b>/SPEC-2026</a>
+    <div class="right"><a href="index.html">← BACK TO SPEC</a></div>
+  </div>
+</div>
+
+<main class="wrap log">
+
+  <header class="log-head">
+    <div class="doc-ref">
+      <span>DOC <b>GK-003</b></span>
+      <span>TYPE <b>ENGINEERING LOG</b></span>
+      <span>SUBJECT <b>MAYFLY GUEST</b></span>
+    </div>
+    <h1>The fault count is the thesis. The milliseconds are not.</h1>
+    <p class="log-standfirst">Mayfly Guest is a snapshot-optimised Linux guest image and host tooling for ephemeral agent sandboxes on Firecracker. A trimmed conventional guest: kernel config, static PID 1, small rootfs, and open restore-to-usable harnesses. Not a from-scratch kernel, not a unikernel. Apache 2.0. <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/mayfly-guest">Source on GitHub</a>.</p>
+  </header>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">THE CAVEAT SITS ABOVE THE TABLE, NOT BELOW IT</text>
+      <rect x="10" y="30" width="400" height="34" fill="none" stroke="#C4453A" stroke-width="2"/>
+      <text x="22" y="51" class="fs" fill="#C4453A">MEASURED UNDER WSL2 NESTED VIRTUALISATION</text>
+      <text x="22" y="86" class="fs">trust: ratios · fault counts · bytes copied</text>
+      <text x="22" y="104" class="fs" fill="#6B7280">do not trust: absolute wall-clock milliseconds</text>
+      <rect class="fblip" x="330" y="74" width="80" height="34" fill="#2A2C33"/>
+      <text x="342" y="96" class="fs" fill="#fff">STAGE 6</text>
+    </svg></figure>
+    <h2><span class="ln">01</span>The number I refused to claim</h2>
+    <p>Every timing in this project was measured on WSL2, under nested virtualisation. That inflates absolute latency on exactly the path being measured. I could have published the numbers anyway; microVM restore figures are the kind of thing people quote without checking the conditions.</p>
+    <p>Instead the caveat is the first thing in the README, above the results table, in capitals. <strong>Trust the ratios, the fault counts, and the bytes copied. Treat wall-clock milliseconds as ordering hints on this host only.</strong> Revalidation off WSL2 is a named, outstanding stage, not a footnote I hope nobody reads.</p>
+    <p>This costs me the headline. A number like "30 ms restore" travels; "ratios only, pending revalidation" does not. But a benchmark whose conditions are buried is not a measurement, it is marketing, and the second someone runs it on real hardware the gap becomes my credibility problem.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">RESTORE-TO-USABLE · VSOCK ECHO AFTER LOAD</text>
+      <g class="fs">
+        <text x="10" y="44">File</text>
+        <rect x="62" y="33" width="250" height="14" fill="none" stroke="#2A2C33"/>
+        <rect class="fbar f1" x="62" y="33" width="200" height="14" fill="#6B7280"/>
+        <text x="322" y="44" fill="#6B7280">38 ms</text>
+        <text x="10" y="76">4K</text>
+        <rect x="62" y="65" width="250" height="14" fill="none" stroke="#2A2C33"/>
+        <rect class="fbar f2" x="62" y="65" width="250" height="14" fill="#6B7280"/>
+        <text x="322" y="76" fill="#6B7280">67 ms · 1563 faults</text>
+        <text x="10" y="108">2M</text>
+        <rect x="62" y="97" width="250" height="14" fill="none" stroke="#2A2C33"/>
+        <rect class="fbar f3" x="62" y="97" width="130" height="14" fill="#FF4100"/>
+        <text x="322" y="108" fill="#FF4100">30 ms · 25 faults</text>
+      </g>
+    </svg></figure>
+    <h2><span class="ln">02</span>Three backends, and why 2M wins twice</h2>
+    <p>The harness measures restore-to-usable: not "the API returned" but "the guest answered a vsock echo". That distinction matters, because a VM that has resumed but cannot yet do work is not restored in any sense a caller cares about.</p>
+    <p>File restore is the simple path. UFFD at 4K faults pages in on demand and pays for it: <strong>1563 faults</strong> and 6.1 MiB copied before the guest is usable. UFFD with 2M hugepages collapses that to <strong>25 faults</strong>, at the cost of copying 50 MiB, because each fault drags a far larger page.</p>
+    <p>So 2M is not simply faster; it trades bytes for fault count. On this host it wins both, but the reason to prefer it is the fault count, which is a property of the design rather than of my laptop. That is the number I would still stand behind on different hardware.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">COLD-BOOT WORKING SET · WHERE THE 33 MB ACTUALLY LIVES</text>
+      <rect x="10" y="34" width="300" height="30" fill="none" stroke="#FF4100" stroke-width="2"/>
+      <rect class="fchunk c1" x="12" y="36" width="230" height="26" fill="#FF4100" opacity="0.85"/>
+      <text x="24" y="55" class="fs" fill="#fff">KERNEL</text>
+      <text x="252" y="55" class="fs">rootfs</text>
+      <text x="10" y="88" class="fs" fill="#6B7280">shrinking the rootfs does not move this number</text>
+      <text x="10" y="106" class="fs" fill="#6B7280">measured across all rootfs sizes, including the initramfs floor</text>
+    </svg></figure>
+    <h2><span class="ln">03</span>The optimisation that would not have worked</h2>
+    <p>The intuitive way to make a guest snapshot smaller is to make the rootfs smaller. I measured before assuming, across every rootfs size down to an initramfs floor, and the cold Full-snapshot non-zero working set stayed at roughly <strong>33 MB, kernel-dominated</strong>.</p>
+    <p>That single measurement redirected the whole project. Effort spent shaving the userspace image would have produced almost nothing; the kernel config is where the working set is decided. Stage 3 went into kernel configuration experiments instead, and honestly recorded that several of them produced no net gain either. ACPI, for instance, turned out to be required and could not be removed.</p>
+    <p>Recording the experiments that failed is the point of a lab notebook. Anyone repeating this now knows which two doors are already closed.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">THE RULER CHECK: PROVE THE INSTRUMENT CAN FAIL</text>
+      <rect x="10" y="34" width="120" height="32" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="22" y="55" class="fs">corrupt memory</text>
+      <path class="fflow" d="M130 50 H186" stroke="#FF4100" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <rect x="186" y="34" width="110" height="32" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="198" y="55" class="fs">run the probe</text>
+      <path class="fflow" d="M296 50 H340" stroke="#C4453A" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <rect x="340" y="34" width="70" height="32" fill="none" stroke="#C4453A" stroke-width="2"/>
+      <text x="352" y="55" class="fs" fill="#C4453A">MUST FAIL</text>
+      <text x="10" y="96" class="fs" fill="#6B7280">a probe that cannot fail is not measuring anything</text>
+    </svg></figure>
+    <h2><span class="ln">04</span>A benchmark that cannot fail is not a benchmark</h2>
+    <p>The harness has a mode that deliberately corrupts guest memory at the load address before restoring. The probe is then <em>required</em> to fail. If it passes, the ruler is not touching the thing it claims to measure, and every number it has produced is worthless.</p>
+    <p>Every measurement harness needs this check and most do not have one. It is very easy to write a probe that reports success because it is quietly testing the host, the cache, or nothing at all. Proving your instrument can detect a broken system is what earns the right to believe it when it reports a working one.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">05</span>What broke, and what I would change</h2>
+    <p><strong>What broke:</strong> on WSL hosts Firecracker could not open <code>/dev/userfaultfd</code> even after the sysctl and ACL work, so I built a privileged Docker fallback to get UFFD running at all. Those timings are not host-fair, and rather than quietly folding them into the table I marked them retracted in the results doc and use them for fault counts only.</p>
+    <p><strong>What I would change:</strong> the honest answer is that the whole measurement environment is wrong for the claims people will want to make, and I knew that from the first run. Stage 6 revalidation on bare metal should have been scoped at the start rather than deferred, because the deferral means the headline table can only ever support relative statements.</p>
+    <p><strong>What it does not do:</strong> Firecracker snapshots remain a developer preview, and restored clones share machine IDs, UUIDs, entropy pools, and anything else present at pause time. That is fine for restore benchmarks and unsafe for multi-tenant production without a dedicated reseal story. This is a research artifact and the README says so in those words.</p>
+  </section>
+
+  <section class="log-foot">
+    <p>Harnesses, kernel configs, and the raw stage findings are all in the repository. The write-up the results come from is <code>docs/findings-post.md</code>.</p>
+    <div class="log-cta">
+      <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/mayfly-guest">SOURCE ON GITHUB</a>
+      <a href="index.html">BACK TO SPEC</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="hazard"></div>
+</body>
+</html>
