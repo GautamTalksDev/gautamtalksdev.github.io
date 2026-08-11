@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  font-src 'self';
+  img-src 'self' data:;
+  connect-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none';
+  frame-src 'none';
+  upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>label-to-lab Engineering Log · Gautam Khosla</title>
+<meta name="description" content="Engineering log for label-to-lab: a pre-registered test of whether ingredient lists predict measured acrylamide. It failed its own threshold at 9.8% against a required 20%, and is published in full.">
+<link rel="canonical" href="https://gautamkhosla.com/labtolab.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="label-to-lab Log: a study that failed, published in full">
+<meta property="og:description" content="Pre-registered threshold 20%. Achieved 9.8%. Here is the number, the noise floor that explains it, and the bug that nearly hid it.">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="log.css">
+</head>
+<body class="loaded logpage">
+
+<div class="hazard"></div>
+<div class="topbar">
+  <div class="wrap">
+    <a href="index.html"><b class="acc">GK</b>/SPEC-2026</a>
+    <div class="right"><a href="index.html">← BACK TO SPEC</a></div>
+  </div>
+</div>
+
+<main class="wrap log">
+
+  <header class="log-head">
+    <div class="doc-ref">
+      <span>DOC <b>GK-005</b></span>
+      <span>TYPE <b>ENGINEERING LOG</b></span>
+      <span>SUBJECT <b>LABEL-TO-LAB</b></span>
+    </div>
+    <h1>I pre-registered the threshold, then missed it. Here is the number anyway.</h1>
+    <p class="log-standfirst">Can a packaged food's ingredient list predict its measured acrylamide? I committed the threshold, the metrics, and the failure rule before any modelling, hashed the test wave before seeing it, and then failed: 9.8% RMSE reduction against a required 20%. MIT licensed, fully reproducible. <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/label-to-lab">Source on GitHub</a>.</p>
+  </header>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">PRE-REGISTERED BAR VS ACHIEVED</text>
+      <line x1="330" y1="30" x2="330" y2="86" stroke="#C4453A" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="286" y="26" class="fs" fill="#C4453A">20% REQUIRED</text>
+      <rect x="30" y="42" width="300" height="28" fill="none" stroke="#2A2C33"/>
+      <rect class="fbar f1" x="30" y="42" width="147" height="28" fill="#FF4100"/>
+      <text x="188" y="61" class="fs" fill="#FF4100">9.8%</text>
+      <text x="30" y="102" class="fs" fill="#6B7280">CI [5%, 14%] · excludes zero, and excludes the bar</text>
+    </svg></figure>
+    <h2><span class="ln">01</span>The result, stated plainly</h2>
+    <p>The model beat a category-median baseline by <strong>9.8%</strong> RMSE. The pre-registered bar was 20%. The RMSE ratio was 0.902 with a 95% confidence interval of [0.861, 0.949].</p>
+    <p>That interval matters twice. It excludes 1.0, so ingredient labels genuinely do carry information about acrylamide. It also excludes 0.80, so that information is decisively less than what I committed in advance to calling useful. <strong>This is not an underpowered result. It is a clear negative one</strong>, and those are different things that get conflated constantly.</p>
+    <p>The thresholds, metrics, and failure rule were committed before any modelling. The test wave was hashed before it was seen. No model was refit after the test was unsealed. Every one of those constraints exists to stop me from doing what everyone does when a result disappoints: quietly moving the bar.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">SAME PRODUCT, TWO SAMPLES</text>
+      <rect x="30" y="36" width="70" height="34" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="42" y="58" class="fs">bag A</text>
+      <rect x="130" y="36" width="70" height="34" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="142" y="58" class="fs">bag B</text>
+      <path class="fflow" d="M100 53 H130" stroke="#FF4100" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <text x="224" y="48" class="fs" fill="#FF4100">differ by ~1.7x</text>
+      <text x="224" y="66" class="fs" fill="#6B7280">identical label. identical everything.</text>
+      <text x="30" y="102" class="fs" fill="#6B7280">noise floor 0.223 log10 · caps any label model near 50%</text>
+    </svg></figure>
+    <h2><span class="ln">02</span>Why it could never have worked well</h2>
+    <p>FDA measured many products more than once. The pooled within-product standard deviation across those replicates is <strong>0.223 in log10 ppb</strong>, roughly a factor of 1.7 between two samples of the same product off the same shelf.</p>
+    <p>No model built from labels can predict that, because the label is identical across replicates. Against a category-median residual SD of 0.474, this caps the maximum achievable RMSE reduction at roughly 50% for <em>any</em> label-based approach, mine or anyone else's.</p>
+    <p>Measuring the noise floor before interpreting the result changed what the failure means. Without it, 9.8% reads as a weak model. With it, 9.8% reads as most of what a label can possibly tell you, which is a statement about labels rather than about my regression.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">"INFANT FOODS" · SAME LABEL, DIFFERENT FOODS</text>
+      <rect x="10" y="34" width="180" height="56" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="22" y="54" class="fs" fill="#6B7280">2011</text>
+      <text x="22" y="72" class="fs">biscuits, grahams, puffs</text>
+      <text x="150" y="72" class="fs" fill="#FF4100">128</text>
+      <rect class="fblip" x="230" y="34" width="180" height="56" fill="#2A2C33" stroke="#FF4100" stroke-width="2"/>
+      <text x="242" y="54" class="fs" fill="#6B7280">2015</text>
+      <text x="242" y="72" class="fs" fill="#fff">jarred purees</text>
+      <text x="370" y="72" class="fs" fill="#FF4100">10</text>
+      <text x="10" y="112" class="fs" fill="#6B7280">nothing reformulated. the category was resampled.</text>
+    </svg></figure>
+    <h2><span class="ln">03</span>The finding I was not looking for</h2>
+    <p>A baseline fitted on the 2011 wave scored much worse on 2015 than a 2015 oracle did. My first reading was reformulation drift: products changing over four years. That reading was wrong, and it was wrong in a useful way.</p>
+    <p>Of products appearing in both waves with uncensored measurements, the mean within-product shift is +0.023 log10 with a spread of 0.233, which is indistinguishable from zero and identical to pure replicate noise. <strong>No product detectably changed.</strong> What changed was which foods FDA put under each category name. In Infant Foods the median fell by 1.56 log10 because the sampled items moved from teething biscuits and baked grahams to jarred fruit and vegetable purees.</p>
+    <p>The generalisable claim is bigger than acrylamide: <strong>food category labels bundle heterogeneous processes.</strong> A statistic computed over one sample of a category transfers poorly to another sample of the same category, with no underlying change in any product. That limits category-based inference regardless of what model you fit on top of it.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">A 97.4% MATCH RATE THAT SHOULD NOT HAVE BEEN BELIEVED</text>
+      <text x="10" y="42" class="fs">Ore Ida Waffle Fries</text>
+      <path class="fflow" d="M180 38 H236" stroke="#C4453A" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <text x="244" y="42" class="fs" fill="#C4453A">"Waffle"  100.0</text>
+      <text x="10" y="66" class="fs">Burger King French Fries</text>
+      <path class="fflow" d="M180 62 H236" stroke="#C4453A" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <text x="244" y="66" class="fs" fill="#C4453A">"Burger"  100.0</text>
+      <text x="10" y="102" class="fs" fill="#6B7280">991 products collapsed onto 436 codes. 2.27x. the tell was the perfect score.</text>
+    </svg></figure>
+    <h2><span class="ln">04</span>The bug that would have invented a result</h2>
+    <p>The first record-linkage implementation used <code>token_set_ratio</code> and returned a <strong>97.4% match rate</strong>, which should have been implausible on its face. It was. That scorer returns 100 whenever one token set is a subset of the other, so every product matched its own brand page: "Ore Ida Waffle Fries" scored a perfect 100 against "Waffle".</p>
+    <p>The diagnostic that catches it is counting distinct matched identifiers rather than trusting the score. 991 products had collapsed onto 436 codes, a 2.27x pile-up, crowding onto tokens like "Chips" and "Great Value". A second tell: 97.1% of matches had a gap of exactly zero between the best and second-best candidate.</p>
+    <p>After fixing it, the honest join rate against Open Food Facts is roughly 35 to 45%. I report that as a finding rather than a footnote: <strong>the two largest public datasets in this domain do not reliably join</strong>, which constrains anyone attempting product-level contaminant research at scale.</p>
+    <p>I also checked whether the matching filter had quietly selected for predictability, because that would have softened my own threshold. Matched and unmatched products differ in level and category mix, but their within-category residual SD is identical (0.474 versus 0.473). The bar was not made easier.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">05</span>Why publish a failure at all</h2>
+    <p>Because the alternative is the thing that makes most published results untrustworthy. If I only ship studies that clear their own bar, my repository stops being evidence and becomes a highlight reel, and nobody can tell which of my successes survived a fair test.</p>
+    <p>There is also a concrete consumer of this result. Food-scanning apps assign a product a score from a barcode, a label, or a photograph. This study measures how much of a process contaminant such inputs can recover: about a tenth of the variation, against a floor set by variation the label cannot see at all. Two bags of the same chips differ by roughly 1.7x, so any interface showing one number per SKU is presenting sampling noise as a property of the product. And a photograph contains no molecular information, so it recovers the label at best, which makes 10% an upper bound on that approach rather than a target for it.</p>
+    <p><strong>What I would change:</strong> the fried-versus-baked contrast, the only genuine process variable in the data, exists in 28 test rows and zero training rows. I should have checked the design matrix for that before committing the feature set, because a variable that cannot appear in training cannot support inference no matter how mechanistically obvious it is.</p>
+  </section>
+
+  <section class="log-foot">
+    <p>Pre-registration, test-set hash, feature dictionary, and every analysis script are in the repository. The reproduction path runs end to end from raw FDA data.</p>
+    <div class="log-cta">
+      <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/label-to-lab">SOURCE ON GITHUB</a>
+      <a href="index.html">BACK TO SPEC</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="hazard"></div>
+</body>
+</html>
