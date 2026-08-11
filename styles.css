@@ -315,7 +315,7 @@
   .pref::before { content:"✓ "; color:var(--orange); }
   .pref:hover { background:var(--orange); border-color:var(--orange); color:#fff; transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--ink); }
   .pref:hover::before { color:#fff; }
-  .prin>div:nth-child(2n){border-right:0;} .prin>div:nth-child(n+3){border-bottom:0;}
+  .prin>div:nth-child(2n){border-right:0;} .prin>div:nth-last-child(-n+2){border-bottom:0;}
   @media (max-width:640px){ .prin>div{border-right:0!important;border-bottom:2px solid var(--ink)!important;} .prin>div:last-child{border-bottom:0!important;} }
   .prin .pn { font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--orange); letter-spacing:2px; margin-bottom:8px; }
   .prin h3 { font-size:18px; font-weight:900; text-transform:uppercase; margin-bottom:6px; }
@@ -545,3 +545,40 @@
     .chnote { position:static; opacity:1; color:var(--steel); padding:0 0 10px; }
   }
   @media print { .chsel { display:none; } }
+
+  /* ===== SHOWCASE SCHEMATICS: new project animations ===== */
+
+  /* Mayfly: bars settle, page faults stream in */
+  .slide.active .mbar { transform-origin:left center; animation:mgrow 3.2s cubic-bezier(.2,.9,.2,1) infinite; }
+  .slide.active .mbar.m2 { animation-delay:.18s; }
+  .slide.active .mbar.m3 { animation-delay:.36s; }
+  @keyframes mgrow { 0%{transform:scaleX(0)} 30%,88%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
+  .slide.active .mfault rect { animation:mfaultin 1.6s steps(1) infinite; }
+  .slide.active .mfault rect:nth-child(2){ animation-delay:.12s; }
+  .slide.active .mfault rect:nth-child(3){ animation-delay:.24s; }
+  .slide.active .mfault rect:nth-child(4){ animation-delay:.36s; }
+  @keyframes mfaultin { 0%,45%{opacity:1} 50%,100%{opacity:.15} }
+
+  /* Plumbline: leaves hash upward, one diff flags capability-relevant */
+  .slide.active .pleaf { animation:pleafin 3.6s steps(1) infinite; }
+  .slide.active .pleaf.p2 { animation-delay:.5s; }
+  .slide.active .pleaf.p3 { animation:pflag 3.6s steps(1) 1s infinite; }
+  .slide.active .pleaf.p4 { animation-delay:1.5s; }
+  @keyframes pleafin { 0%,20%{fill:#2A2C33} 25%,45%{fill:#6B7280} 50%,100%{fill:#2A2C33} }
+  @keyframes pflag  { 0%,20%{fill:#2A2C33} 25%,60%{fill:#FF4100} 65%,100%{fill:#2A2C33} }
+  .slide.active .proot { animation:prootpulse 3.6s ease-in-out infinite; }
+  @keyframes prootpulse { 0%,55%,100%{fill:#2A2C33} 70%{fill:#3A1E12} }
+
+  /* label-to-lab: the bar grows and stops short of the pre-registered line */
+  .slide.active .lbar { transform-origin:left center; animation:lgrow 4s cubic-bezier(.2,.9,.2,1) infinite; }
+  @keyframes lgrow { 0%{transform:scaleX(0)} 35%,90%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
+  .slide.active .lstamp { opacity:0; animation:lstampin 4s steps(1) infinite; }
+  @keyframes lstampin { 0%,45%{opacity:0} 50%,92%{opacity:1} 100%{opacity:0} }
+
+  /* Ephemera: the reconciler advances exactly one step per tick */
+  .slide.active .estep { animation:estepin 4.4s steps(1) infinite; }
+  .slide.active .estep.s2 { animation-delay:.7s; }
+  .slide.active .estep.s3 { animation-delay:1.4s; }
+  .slide.active .estep.s4 { animation-delay:2.1s; }
+  .slide.active .estep.s5 { animation-delay:2.8s; }
+  @keyframes estepin { 0%,12%{fill:#2A2C33} 16%,30%{fill:#FF4100} 34%,100%{fill:#2A2C33} }
