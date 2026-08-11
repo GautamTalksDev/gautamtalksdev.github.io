@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self';
+  font-src 'self';
+  img-src 'self' data:;
+  connect-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none';
+  frame-src 'none';
+  upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plumbline Engineering Log · Gautam Khosla</title>
+<meta name="description" content="Engineering log for Plumbline: an append-only transparency log for MCP tool metadata. Kill tests, merkle hashing, deterministic diff classification, and a crawl policy written before the crawler.">
+<link rel="canonical" href="https://gautamkhosla.com/plumbline.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Plumbline Log: writing the kill test before the code">
+<meta property="og:description" content="A transparency log for what agent tools claim they can do, with two pre-committed conditions under which the project stops.">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FF4100'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='30' font-weight='700' fill='white' text-anchor='middle'%3EGK%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="log.css">
+</head>
+<body class="loaded logpage">
+
+<div class="hazard"></div>
+<div class="topbar">
+  <div class="wrap">
+    <a href="index.html"><b class="acc">GK</b>/SPEC-2026</a>
+    <div class="right"><a href="index.html">← BACK TO SPEC</a></div>
+  </div>
+</div>
+
+<main class="wrap log">
+
+  <header class="log-head">
+    <div class="doc-ref">
+      <span>DOC <b>GK-004</b></span>
+      <span>TYPE <b>ENGINEERING LOG</b></span>
+      <span>SUBJECT <b>PLUMBLINE</b></span>
+    </div>
+    <h1>I wrote the conditions for abandoning it before I wrote the code.</h1>
+    <p class="log-standfirst">Plumbline observes post-publication changes in MCP server tool metadata. It canonicalizes tool descriptions, hashes them into an append-only merkle log, and classifies each diff as cosmetic or capability-relevant. Go, Apache 2.0, currently in its evidence phase. <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Plumbline">Source on GitHub</a>.</p>
+  </header>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">THE PROBLEM: A TOOL CAN REWRITE ITSELF AFTER YOU TRUST IT</text>
+      <rect x="10" y="34" width="150" height="34" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="22" y="56" class="fs">"reads a file"</text>
+      <path class="fflow" d="M160 51 H244" stroke="#FF4100" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <text x="176" y="42" class="fs" fill="#6B7280">later</text>
+      <rect class="fblip" x="244" y="34" width="166" height="34" fill="#2A2C33" stroke="#C4453A" stroke-width="2"/>
+      <text x="256" y="56" class="fs" fill="#fff">"reads a file, sends it"</text>
+      <text x="10" y="98" class="fs" fill="#6B7280">the agent re-reads the description every session. you do not.</text>
+    </svg></figure>
+    <h2><span class="ln">01</span>What this is actually watching</h2>
+    <p>An agent decides what a tool can do by reading that tool's description. A human approves a server once, early, after reading the same thing. Only one of those two parties re-reads it every session.</p>
+    <p>Nothing prevents a server from editing that description afterwards. A change from "reads a file" to "reads a file and posts it upstream" is a capability change, delivered without a version bump, a release note, or any signal to the person who approved it. Plumbline exists to make that change visible and provable after the fact.</p>
+    <p>The design constraint follows immediately: the record has to be verifiable by someone who does not trust me. Otherwise I am asking people to swap a server they cannot audit for a log they cannot audit.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">TWO PRE-COMMITTED WAYS TO BE WRONG</text>
+      <rect x="10" y="32" width="196" height="58" fill="none" stroke="#C4453A" stroke-width="2"/>
+      <text x="22" y="52" class="fs" fill="#C4453A">KT-1</text>
+      <text x="22" y="70" class="fs">&lt; 1% of servers ever change</text>
+      <text x="22" y="85" class="fs" fill="#6B7280">then the premise is false. stop.</text>
+      <rect x="214" y="32" width="196" height="58" fill="none" stroke="#C4453A" stroke-width="2"/>
+      <text x="226" y="52" class="fs" fill="#C4453A">KT-2</text>
+      <text x="226" y="70" class="fs">classifier &lt; 80% correct</text>
+      <text x="226" y="85" class="fs" fill="#6B7280">then sha256sum is enough. stop.</text>
+    </svg></figure>
+    <h2><span class="ln">02</span>Kill tests, written first</h2>
+    <p>Before any crawler existed I wrote down two conditions under which the project is wrong and stops. <strong>KT-1:</strong> if fewer than 1% of crawled servers show any post-publication change over six weeks, the premise is false. <strong>KT-2:</strong> if the classifier cannot label at least 80% of observed changes correctly as cosmetic while catching at least one capability-relevant change, it adds nothing over <code>sha256sum</code> and is not worth existing.</p>
+    <p>Writing these first is a defence against myself. Once you have built a crawler, a merkle log, and a classifier, you become extremely creative about why the disappointing result is actually interesting. A threshold set before the data arrives cannot be renegotiated after it.</p>
+    <p>The repository status says <em>Phase E, evidence. Do not launch. Do not post.</em> Kill-test evaluation waits on six consecutive weekly crawls with signed checkpoints and a hand-labelled set. It is not finished, and it does not claim to be.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">CANONICALIZE → HASH → APPEND → CLASSIFY</text>
+      <g class="fs">
+        <rect x="10" y="34" width="88" height="30" fill="none" stroke="#6B7280" stroke-width="1.5"/><text x="18" y="54">canonical</text>
+        <rect x="112" y="34" width="70" height="30" fill="none" stroke="#6B7280" stroke-width="1.5"/><text x="128" y="54">hash</text>
+        <rect x="196" y="34" width="96" height="30" fill="none" stroke="#FF4100" stroke-width="2"/><text x="206" y="54">merkle log</text>
+        <rect x="306" y="34" width="104" height="30" fill="none" stroke="#6B7280" stroke-width="1.5"/><text x="316" y="54">classifier</text>
+      </g>
+      <path class="fflow" d="M98 49 H112 M182 49 H196 M292 49 H306" stroke="#FF4100" stroke-width="2" fill="none" stroke-dasharray="5 5"/>
+      <rect x="196" y="82" width="214" height="30" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="5 4"/>
+      <text x="206" y="102" class="fs" fill="#6B7280">anyone verifies with the public key</text>
+      <path d="M244 64 V82" stroke="#6B7280" stroke-width="1.5"/>
+    </svg></figure>
+    <h2><span class="ln">03</span>Deterministic, or it is an opinion</h2>
+    <p>Two decisions carry the credibility of the whole thing. First, canonicalization: whitespace, ordering, and encoding differences must not register as changes, or the log fills with noise and nobody reads it. Second, the classifier is <strong>deterministic</strong>, not a model. The same diff must always produce the same label, because a probabilistic verdict on "did this tool quietly gain a capability" is not evidence anyone can act on.</p>
+    <p>The log is append-only and merkle-hashed, and the verifier ships as a command anyone can run against any endpoint with the published public key. I am not asking to be trusted; I am publishing something checkable. If my server started lying, the log would fail its own verification and the tooling to prove it is in the same repository.</p>
+  </section>
+
+  <section>
+    <figure class="lfig" aria-hidden="true"><svg viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="16" class="ft">CRAWLING SOMEONE ELSE'S INFRASTRUCTURE</text>
+      <rect x="10" y="32" width="128" height="56" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="22" y="52" class="fs">ETHICS.md</text>
+      <text x="22" y="70" class="fs" fill="#6B7280">Menlo Report</text>
+      <rect x="148" y="32" width="128" height="56" fill="none" stroke="#6B7280" stroke-width="2"/>
+      <text x="160" y="52" class="fs">CRAWLING.md</text>
+      <text x="160" y="70" class="fs" fill="#6B7280">rate + scope policy</text>
+      <rect class="fblip" x="286" y="32" width="124" height="56" fill="#2A2C33" stroke="#FF4100" stroke-width="2"/>
+      <text x="298" y="52" class="fs" fill="#fff">DISCLOSURE.md</text>
+      <text x="298" y="70" class="fs" fill="#6B7280">findings about others</text>
+    </svg></figure>
+    <h2><span class="ln">04</span>The part most crawlers skip</h2>
+    <p>This project observes infrastructure other people run, and it will eventually produce findings about specific servers. So the repository carries a crawl policy, an ethics statement aligned to the Menlo Report, and a disclosure document covering both directions: how I report something I find about someone else, and how someone reports a vulnerability in me.</p>
+    <p>The crawler itself runs sandboxed, with a <code>pivot_root</code> helper for the unshare sandbox, because pulling untrusted metadata from arbitrary registries into your own process is exactly how you become the story instead of writing it.</p>
+    <p>These documents are cheap to write and nearly always skipped. Publishing "here is when we would name a server, and here is how we would tell them first" before collecting a single data point is the difference between research and surveillance.</p>
+  </section>
+
+  <section>
+    <h2><span class="ln">05</span>What I would change</h2>
+    <p>The evidence phase is slow by construction: six consecutive weekly crawls before any kill test can be evaluated, and the repository has an <code>IDEAS.md</code> full of features explicitly marked <em>do not build during Phase E</em>. That file exists because the temptation to build features instead of waiting for data is enormous, and building them would let me avoid ever running the test that could end the project.</p>
+    <p>If I were starting again I would have built the hand-labelling instrument for KT-2 at the same time as the crawler. Labelling is the bottleneck on the classifier claim, and it is the piece that cannot be parallelised or automated away without invalidating the thing it is measuring.</p>
+  </section>
+
+  <section class="log-foot">
+    <p>The public log, verification instructions, and the log public key are all in the repository. Any endpoint can be checked independently with <code>plumb verify-log</code>.</p>
+    <div class="log-cta">
+      <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Plumbline">SOURCE ON GITHUB</a>
+      <a href="index.html">BACK TO SPEC</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="hazard"></div>
+</body>
+</html>
