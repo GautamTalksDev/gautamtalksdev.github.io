@@ -167,6 +167,30 @@
         document.querySelectorAll('.live-slot').forEach(el =>
           el.innerHTML = 'LAST PUSH · <b>' + esc(String(latest.name).toUpperCase()) + '</b> · <i>' + esc(when) + '</i>');
       }
+      // Commits: counted from the public events feed. The window is derived
+      // from the data itself rather than asserted, so the label cannot go stale.
+      try {
+        const eRes = await fetch('https://api.github.com/users/GautamTalksDev/events/public?per_page=100', { signal: ctl.signal });
+        if (eRes.ok) {
+          const evs = await eRes.json();
+          if (Array.isArray(evs) && evs.length) {
+            let commits = 0, oldest = Date.now();
+            for (const ev of evs) {
+              const t = new Date(ev.created_at).getTime();
+              if (t < oldest) oldest = t;
+              if (ev.type === 'PushEvent' && ev.payload) {
+                const n = Number(ev.payload.distinct_size ?? ev.payload.size ?? 0);
+                if (Number.isFinite(n) && n > 0) commits += n;
+              }
+            }
+            const days = Math.max(1, Math.round((Date.now() - oldest) / 864e5));
+            const cEl = $('#liveCommits'), cSrc = $('#commitSrc');
+            if (cEl && commits > 0) { cEl.dataset.count = commits; cEl.textContent = commits.toLocaleString(); }
+            if (cSrc) { cSrc.textContent = '· LAST ' + days + ' DAYS'; cSrc.classList.add('live'); }
+          }
+        }
+      } catch (e) {}
+
       logLine('<b>GITHUB UPLINK</b>: live data acquired');
     } catch (e) {
       clearTimeout(timer);
@@ -307,8 +331,7 @@
     { id:'SAFETY',      paper:'#FAFAF7', ink:'#14151A', acc:'#FF4100', ch:['#FF4100','#1B5FD9','#0F8A3D','#B26A00'] },
     { id:'BLUEPRINT',   paper:'#F1F5FB', ink:'#0F141C', acc:'#1B5FD9', ch:['#1B5FD9','#FF4100','#0F8A3D','#6D28D9'] },
     { id:'OSCILLOSCOPE',paper:'#F5FAF4', ink:'#101710', acc:'#0F8A3D', ch:['#0F8A3D','#B26A00','#1B5FD9','#FF4100'] },
-    { id:'AMBER',       paper:'#FBF7EE', ink:'#1A150C', acc:'#B26A00', ch:['#B26A00','#C2410C','#0E7490','#0F8A3D'] },
-    { id:'GRAPHITE',    paper:'#F4F4F2', ink:'#111111', acc:'#D62828', ch:['#D62828','#374151','#0E7490','#B26A00'] },
+    { id:'GRAPHITE',    paper:'#F5F5F3', ink:'#101012', acc:'#C81E1E', ch:['#C81E1E','#334155','#0E7490','#B26A00'] },
     { id:'CONTROL',     paper:'#F2FAFB', ink:'#0D1618', acc:'#0E7490', ch:['#0E7490','#FF4100','#0F8A3D','#6D28D9'] },
     { id:'VOLT',        paper:'#F8F7FC', ink:'#14121C', acc:'#6D28D9', ch:['#6D28D9','#0E7490','#C2410C','#0F8A3D'] }
   ];
@@ -506,6 +529,9 @@
       ['Run the live AEGIS simulation', 'GO', () => location.hash = '#sim-sec'],
       ['Cut the uplink (simulate outage)', 'TOGGLE', () => kill.click()],
       ['Read the AEGIS engineering log', 'GK-002', () => location.href = 'aegis.html'],
+      ['Read the Mayfly Guest log (microVM restore)', 'GK-003', () => location.href = 'mayfly.html'],
+      ['Read the Plumbline log (transparency log)', 'GK-004', () => location.href = 'plumbline.html'],
+      ['Read the label-to-lab log (a study that failed)', 'GK-005', () => location.href = 'labtolab.html'],
       ['View selected work', 'GO', () => location.hash = '#work'],
       ['Operating principles', 'GO', () => location.hash = '#principles'],
       ['Field record', 'GO', () => location.hash = '#experience'],
