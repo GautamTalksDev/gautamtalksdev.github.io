@@ -582,3 +582,15 @@
   .slide.active .estep.s4 { animation-delay:2.1s; }
   .slide.active .estep.s5 { animation-delay:2.8s; }
   @keyframes estepin { 0%,12%{fill:#2A2C33} 16%,30%{fill:#FF4100} 34%,100%{fill:#2A2C33} }
+
+  /* Vernier: the rare path lights up, then the trajectory forks */
+  .slide.active .vsq { animation:vsqin 4.6s steps(1) infinite; }
+  @keyframes vsqin { 0%,30%{fill:#2A2C33} 34%,88%{fill:#6B7280} 92%,100%{fill:#2A2C33} }
+  .slide.active .vrare { animation:vrarein 4.6s steps(1) infinite; }
+  @keyframes vrarein { 0%,44%{fill:#2A2C33} 48%,88%{fill:#FF4100} 92%,100%{fill:#2A2C33} }
+  .slide .vfk { stroke-dasharray:260; stroke-dashoffset:260; }
+  .slide.active .vfk { animation:vdraw 4.6s ease-in-out infinite; }
+  .slide.active .vfk.vfk2 { animation-delay:.5s; }
+  @keyframes vdraw { 0%,20%{stroke-dashoffset:260} 70%,90%{stroke-dashoffset:0} 100%{stroke-dashoffset:0} }
+  .slide.active .vpip { animation:vpip 4.6s ease-in-out infinite; }
+  @keyframes vpip { 0%,40%{opacity:.25} 50%,90%{opacity:1} 100%{opacity:.25} }
