@@ -1,12 +1,10 @@
 /* GK-001 service worker.
    Network-first: always try the live network, so content is never stale.
    Cache is the fallback, so the site keeps running when the network doesn't. */
-
-const CACHE = 'gk-001-v16';
-const CORE = ['./', './index.html', './styles.css', './app.js', './log.css', './aegis.html', './mayfly.html', './plumbline.html', './labtolab.html', './profile.jpg',
+const CACHE = 'gk-001-v17';
+const CORE = ['./', './index.html', './styles.css', './app.js', './log.css', './aegis.html', './mayfly.html', './plumbline.html', './labtolab.html', './vernier.html', './vernier.css', './profile.jpg',
   './fonts/archivo-var.woff2', './fonts/plexmono-400.woff2',
   './fonts/plexmono-500.woff2', './fonts/plexmono-600.woff2'];
-
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
@@ -15,7 +13,6 @@ self.addEventListener('install', e => {
       .catch(() => self.skipWaiting())
   );
 });
-
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
@@ -23,18 +20,15 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
-
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-
   const url = new URL(req.url);
   // Only ever cache this site's own assets over http(s).
   // Never touch cross-origin responses: they are opaque, unverifiable,
   // and caching them would let a third party persist content under our origin.
   if (url.origin !== self.location.origin) return;
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return;
-
   e.respondWith(
     fetch(req)
       .then(res => {
