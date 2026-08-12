@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-dy6M6ajglu3aHQOEqtxmP1z2eh0cymO+1FoTM9YOge4='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-006 · Temperature 0 is not deterministic · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-006. Same model, same prompt, seed pinned, temperature 0, local CPU at batch size 1. Six point seven percent of agent runs still diverged. How I measured it, why my first version of the study was wrong, and what I retracted.">
+<link rel="canonical" href="https://gautamkhosla.com/vernier.html">
+<link rel="stylesheet" href="vernier.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Temperature 0 is not deterministic">
+<meta property="og:description" content="I pinned every knob I could find and 6.7% of agent runs still came out different. The control experiment was the result.">
+<meta property="og:url" content="https://gautamkhosla.com/vernier.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"Temperature 0 is not deterministic","alternativeHeadline":"GK-006: measuring the noise floor under AI agents","description":"A control experiment on agent determinism. Same model, same prompt, seed pinned, temperature 0, local CPU at batch size 1. 6.7% of runs diverged. Includes a full retraction of the first version of the study.","url":"https://gautamkhosla.com/vernier.html","datePublished":"2026-08-12","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","sameAs":["https://github.com/GautamTalksDev","https://www.linkedin.com/in/gautam-khosla/"]},"about":{"@type":"SoftwareSourceCode","name":"Vernier","codeRepository":"https://github.com/GautamTalksDev/Vernier","programmingLanguage":"Python","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-006 · Vernier</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    DOC <b>GK-006</b> · REV <b>2026.08.12</b> · CLASS <b>FAILURE-AWARE SYSTEMS</b><br>
+    SUBJECT <b>VERNIER v0.1.0</b> · LICENCE <b>APACHE-2.0</b> · KT-1 <span class="v-flag">UNEVALUATED</span> · KT-2 <span class="v-flag">UNEVALUATED</span>
+  </div>
+
+  <h1 class="v-h1">
+    Temperature&nbsp;0<br>
+    <span class="v-out">is not</span><br>
+    <span class="v-acc">deterministic.</span>
+  </h1>
+
+  <p class="v-stand">
+    I set out to measure whether upgrading a model changes what an agent does. Before I could
+    measure that, I needed a control: how much do two runs differ when I change nothing at all?
+    I pinned every knob I could find. 6.7% of runs still came out different. The tool is called
+    <a href="https://github.com/GautamTalksDev/Vernier" rel="noopener noreferrer external">Vernier</a>,
+    and this is the log of the boring experiment that turned out to be the interesting one.
+  </p>
+
+  <ul class="v-meta">
+    <li class="v-hot">Result: 6.7% divergence at zero delta</li>
+    <li>Python · Apache-2.0</li>
+    <li>Retraction included</li>
+    <li>Read: 9 min</li>
+  </ul>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Unit tests all pass while the agent's actual tool sequence loses a step">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT CI CHECKED</text>
+        <g>
+          <rect x="0" y="26" width="118" height="30" fill="#2A2C33"/>
+          <rect x="130" y="26" width="118" height="30" fill="#2A2C33"/>
+          <rect x="260" y="26" width="118" height="30" fill="#2A2C33"/>
+          <text x="59" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">unit</text>
+          <text x="189" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">mocks</text>
+          <text x="319" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">lint</text>
+          <text x="400" y="46" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#16A34A">ALL GREEN · exit 0</text>
+        </g>
+
+        <line x1="0" y1="76" x2="640" y2="76" stroke="#2A2C33" stroke-width="1"/>
+
+        <text x="0" y="98" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT THE AGENT ACTUALLY DID</text>
+
+        <g>
+          <text x="0" y="126" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">BEFORE</text>
+          <rect x="58" y="114" width="104" height="20" fill="#2A2C33"/>
+          <text x="110" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">lookup_order</text>
+          <line class="v-flow" x1="164" y1="124" x2="196" y2="124" stroke="#6B7280" stroke-width="2"/>
+          <rect x="198" y="114" width="76" height="20" fill="#2A2C33"/>
+          <text x="236" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">refund</text>
+        </g>
+
+        <g>
+          <text x="0" y="160" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">AFTER</text>
+          <rect x="58" y="148" width="104" height="20" fill="none" stroke="#C4453A" stroke-width="1.4" stroke-dasharray="4 4"/>
+          <text x="110" y="162" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C4453A">skipped</text>
+          <line x1="164" y1="158" x2="196" y2="158" stroke="#2A2C33" stroke-width="2"/>
+          <rect x="198" y="148" width="76" height="20" fill="#FF4100"/>
+          <text x="236" y="162" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#14151A">refund</text>
+          <text x="292" y="162" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">money moves with no lookup</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 06.1 · <b>The gap nothing was watching.</b> Every test that mocks the tools passes. The behaviour is the thing that changed.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">The ship gate that isn't</h2>
+
+    <p>You bump a model id in CI. Tests still pass. Customers still hit a new failure mode.</p>
+
+    <p>Here is the concrete case I kept coming back to. A support agent used to call
+    <code>lookup_order</code> and then <code>refund</code>. After a quiet model change it skips the
+    lookup and refunds from memory. Every unit test mocks the tools, so none of them notice. An
+    LLM-as-judge score might still read "fine". The behaviour changed and you shipped it.</p>
+
+    <p>The obvious move is to write a tool that diffs agent behaviour before and after a change.
+    That is what I built. But a diff is only meaningful against a floor. If two identical runs
+    already differ, a tool that reports "these two runs differ" is telling you nothing you can
+    act on.</p>
+
+    <p class="v-pull">So the first experiment was not the interesting one. It was the control.
+    And the control turned out to be the finding.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vernier pipeline: record, re-drive, align, classify, with the model going live and tools replayed from the record">
+        <g>
+          <rect x="0" y="46" width="104" height="40" fill="#2A2C33"/>
+          <text x="52" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#D7DBE4">RECORD</text>
+          <text x="52" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#6B7280">append-only</text>
+        </g>
+        <line class="v-flow" x1="106" y1="66" x2="156" y2="66" stroke="#FF4100" stroke-width="2"/>
+
+        <g>
+          <rect x="158" y="46" width="112" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="1.4"/>
+          <text x="214" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#FF4100">RE-DRIVE</text>
+          <text x="214" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#6B7280">shim</text>
+        </g>
+
+        <path class="v-flow" d="M214 44 L214 22 L400 22" fill="none" stroke="#FF4100" stroke-width="2"/>
+        <circle class="v-blip" cx="410" cy="22" r="5" fill="#FF4100"/>
+        <text x="424" y="26" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">MODEL · LIVE TO PROVIDER</text>
+
+        <path d="M100 88 L100 118 L204 118 L204 90" fill="none" stroke="#6B7280" stroke-width="1.6" stroke-dasharray="4 4"/>
+        <text x="216" y="122" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">TOOLS · STUBBED FROM THE RECORD</text>
+
+        <line class="v-flow" x1="272" y1="66" x2="322" y2="66" stroke="#6B7280" stroke-width="2"/>
+        <g>
+          <rect x="324" y="46" width="96" height="40" fill="#2A2C33"/>
+          <text x="372" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#D7DBE4">ALIGN</text>
+          <text x="372" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#6B7280">edit script</text>
+        </g>
+        <line class="v-flow" x1="422" y1="66" x2="472" y2="66" stroke="#6B7280" stroke-width="2"/>
+        <g>
+          <rect x="474" y="46" width="112" height="40" fill="#2A2C33"/>
+          <text x="530" y="62" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#D7DBE4">CLASSIFY</text>
+          <text x="530" y="76" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#6B7280">D01 to D12</text>
+        </g>
+
+        <text x="0" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">SEVERITY</text>
+        <rect x="64" y="146" width="66" height="14" fill="#2A2C33"/><text x="97" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#D7DBE4">NONE</text>
+        <rect x="134" y="146" width="66" height="14" fill="#2A2C33"/><text x="167" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#D7DBE4">LOW</text>
+        <rect x="204" y="146" width="66" height="14" fill="#2A2C33"/><text x="237" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#D7DBE4">MEDIUM</text>
+        <rect x="274" y="146" width="66" height="14" fill="#C4453A"/><text x="307" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#14151A">HIGH</text>
+        <rect x="344" y="146" width="76" height="14" fill="#FF4100"/><text x="382" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600" fill="#14151A">CRITICAL</text>
+        <text x="432" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">run = max of fired rules</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.2 · <b>The split is the whole design.</b> The model goes live to the provider. The tools come back from the recording. That isolates one variable and only one.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">The instrument</h2>
+
+    <p>Vernier wraps the command you already run. It does not ask you to edit your agent.</p>
+
+    <div class="v-pre">$ uv run vern record <b>--</b> python examples/verify_fixture_agent.py <i>--scenario 01_tools_basic</i>
+$ uv run vern diff &lt;run_id&gt; <i>--model gpt-4o-mini</i>
+$ uv run vern gate <i>--corpus testdata/verify --max-severity HIGH</i>
+
+<i>vern gate: worst=NONE threshold=HIGH n=10</i>
+<b>exit=0</b></div>
+
+    <p>Recording writes an append-only run: event lines plus content addressed blobs. That record
+    is the evidence. Re-driving replays it under a shim, and the shim is where the one interesting
+    decision lives. In <code>vern verify</code> everything is stubbed, model included, which proves
+    the substrate can reproduce a run at all. In <code>vern diff</code> and <code>vern gate</code>
+    the model goes live and only the tools come from the record.</p>
+
+    <p>Alignment turns two trajectories into one edit script of matches, inserts, deletes and
+    substitutions. Costs come from a versioned table, not an embedding, so the same inputs produce
+    the same alignment bytes on Linux, macOS and Windows. Then twelve fixed rules read the aligned
+    pair and emit a severity.</p>
+
+    <p>There is no model anywhere on that path, and that is the point. A judge that can change its
+    mind tomorrow can give you a signal, but it cannot be your gate. If classification ever needs a
+    coin flip or a network call, Vernier is broken.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 178" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Every experimental knob pinned, and 6.7 percent of runs still diverge">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">KNOBS HELD STILL</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">
+          <rect x="0" y="28" width="120" height="22" fill="#2A2C33"/><text x="10" y="43">model · same</text>
+          <rect x="130" y="28" width="120" height="22" fill="#2A2C33"/><text x="140" y="43">prompt · byte-eq</text>
+          <rect x="260" y="28" width="120" height="22" fill="#2A2C33"/><text x="270" y="43">temperature · 0</text>
+          <rect x="390" y="28" width="120" height="22" fill="#2A2C33"/><text x="400" y="43">seed · pinned</text>
+          <rect x="0" y="56" width="120" height="22" fill="#2A2C33"/><text x="10" y="71">batch size · 1</text>
+          <rect x="130" y="56" width="120" height="22" fill="#2A2C33"/><text x="140" y="71">local CPU</text>
+          <rect x="260" y="56" width="120" height="22" fill="#2A2C33"/><text x="270" y="71">no contention</text>
+          <rect x="390" y="56" width="120" height="22" fill="#2A2C33"/><text x="400" y="71">delta · zero</text>
+        </g>
+
+        <line x1="0" y1="96" x2="640" y2="96" stroke="#2A2C33" stroke-width="1"/>
+
+        <text x="0" y="122" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">RUNS THAT DIVERGED ANYWAY</text>
+        <rect x="0" y="132" width="440" height="24" fill="#2A2C33"/>
+        <rect class="v-creep" x="0" y="132" width="118" height="24" fill="#FF4100"/>
+        <text x="456" y="151" font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600" fill="#FF4100">6.7%</text>
+        <text x="524" y="151" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">expected: 0%</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.3 · <b>The control.</b> Nothing changed between the two runs. The bar should have been empty.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">The most boring experiment I could design</h2>
+
+    <p>Same model. Same prompt, byte for byte. Temperature 0. Seed pinned. Running locally, on a
+    CPU, one request at a time, with nothing else competing for the machine. Every knob held still.</p>
+
+    <p>6.7% of runs still came out different.</p>
+
+    <p>That number needs its caveat stated before anything else, not buried at the bottom. This is
+    a 4B quantised model on CPU at batch size 1. That is a far more favourable setting than hosted
+    inference under real load, where batching, kernel selection and routing all move underneath
+    you. So treat 6.7% as a floor, not an estimate. Whatever you are actually running is at least
+    this noisy.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fifty replays of an identical request: forty-nine identical answers and one different">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">SAME REQUEST BODY, REPLAYED 50 TIMES</text>
+        <g>
+          <rect x="0" y="28" width="20" height="20" fill="#2A2C33"/><rect x="26" y="28" width="20" height="20" fill="#2A2C33"/><rect x="52" y="28" width="20" height="20" fill="#2A2C33"/><rect x="78" y="28" width="20" height="20" fill="#2A2C33"/><rect x="104" y="28" width="20" height="20" fill="#2A2C33"/><rect x="130" y="28" width="20" height="20" fill="#2A2C33"/><rect x="156" y="28" width="20" height="20" fill="#2A2C33"/><rect x="182" y="28" width="20" height="20" fill="#2A2C33"/><rect x="208" y="28" width="20" height="20" fill="#2A2C33"/><rect x="234" y="28" width="20" height="20" fill="#2A2C33"/>
+          <rect x="0" y="54" width="20" height="20" fill="#2A2C33"/><rect x="26" y="54" width="20" height="20" fill="#2A2C33"/><rect x="52" y="54" width="20" height="20" fill="#2A2C33"/><rect x="78" y="54" width="20" height="20" fill="#2A2C33"/><rect x="104" y="54" width="20" height="20" fill="#2A2C33"/><rect x="130" y="54" width="20" height="20" fill="#2A2C33"/><rect x="156" y="54" width="20" height="20" fill="#2A2C33"/><rect x="182" y="54" width="20" height="20" fill="#2A2C33"/><rect x="208" y="54" width="20" height="20" fill="#2A2C33"/><rect x="234" y="54" width="20" height="20" fill="#2A2C33"/>
+          <rect x="0" y="80" width="20" height="20" fill="#2A2C33"/><rect x="26" y="80" width="20" height="20" fill="#2A2C33"/><rect x="52" y="80" width="20" height="20" fill="#2A2C33"/><rect class="v-rare" x="78" y="80" width="20" height="20" fill="#2A2C33"/><rect x="104" y="80" width="20" height="20" fill="#2A2C33"/><rect x="130" y="80" width="20" height="20" fill="#2A2C33"/><rect x="156" y="80" width="20" height="20" fill="#2A2C33"/><rect x="182" y="80" width="20" height="20" fill="#2A2C33"/><rect x="208" y="80" width="20" height="20" fill="#2A2C33"/><rect x="234" y="80" width="20" height="20" fill="#2A2C33"/>
+          <rect x="0" y="106" width="20" height="20" fill="#2A2C33"/><rect x="26" y="106" width="20" height="20" fill="#2A2C33"/><rect x="52" y="106" width="20" height="20" fill="#2A2C33"/><rect x="78" y="106" width="20" height="20" fill="#2A2C33"/><rect x="104" y="106" width="20" height="20" fill="#2A2C33"/><rect x="130" y="106" width="20" height="20" fill="#2A2C33"/><rect x="156" y="106" width="20" height="20" fill="#2A2C33"/><rect x="182" y="106" width="20" height="20" fill="#2A2C33"/><rect x="208" y="106" width="20" height="20" fill="#2A2C33"/><rect x="234" y="106" width="20" height="20" fill="#2A2C33"/>
+          <rect x="0" y="132" width="20" height="20" fill="#2A2C33"/><rect x="26" y="132" width="20" height="20" fill="#2A2C33"/><rect x="52" y="132" width="20" height="20" fill="#2A2C33"/><rect x="78" y="132" width="20" height="20" fill="#2A2C33"/><rect x="104" y="132" width="20" height="20" fill="#2A2C33"/><rect x="130" y="132" width="20" height="20" fill="#2A2C33"/><rect x="156" y="132" width="20" height="20" fill="#2A2C33"/><rect x="182" y="132" width="20" height="20" fill="#2A2C33"/><rect x="208" y="132" width="20" height="20" fill="#2A2C33"/><rect x="234" y="132" width="20" height="20" fill="#2A2C33"/>
+        </g>
+        <text x="286" y="52" font-family="IBM Plex Mono, monospace" font-size="13" fill="#D7DBE4">49 identical</text>
+        <text x="286" y="76" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="#FF4100">1 different</text>
+        <line x1="286" y1="92" x2="420" y2="92" stroke="#2A2C33" stroke-width="1"/>
+        <text x="286" y="114" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">a ~2% rare path,</text>
+        <text x="286" y="130" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">on almost every prompt</text>
+        <text x="286" y="146" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">I checked</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.4 · <b>Not a coin flip.</b> One dominant answer and one quiet alternative sitting behind it.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">I went looking for my own bug</h2>
+
+    <p>A number like 6.7% at zero delta usually means you broke something. So I assumed I had, and
+    went hunting. I took every point where two runs diverged, pulled the exact request body, and
+    replayed it 50 times.</p>
+
+    <p>The model gave the same answer 49 times and something different once. Roughly a 2% rare
+    path, and it showed up on almost every prompt I looked at.</p>
+
+    <p>That shape matters more than the percentage. This is not a model wobbling randomly across a
+    spread of answers. It is one dominant answer with one quiet alternative sitting behind it,
+    waiting. Which means you can run your evaluation suite twenty times, see it pass twenty times,
+    and still be one sample away from the other arm.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 178" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two percent divergence at step one widens across eight steps into a completely different trajectory">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">STEP</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">
+          <text x="46" y="14">1</text><text x="116" y="14">2</text><text x="186" y="14">3</text><text x="256" y="14">4</text><text x="326" y="14">5</text><text x="396" y="14">6</text><text x="466" y="14">7</text><text x="536" y="14">8</text>
+        </g>
+
+        <path class="v-fork" d="M20 82 L48 82 L118 74 L188 66 L258 58 L328 52 L398 48 L468 44 L556 40" fill="none" stroke="#6B7280" stroke-width="2.2" stroke-linecap="round"/>
+        <path class="v-fork v-fork-b" d="M20 82 L48 82 L118 96 L188 110 L258 122 L328 132 L398 140 L468 146 L556 152" fill="none" stroke="#FF4100" stroke-width="2.2" stroke-linecap="round"/>
+        <circle class="v-pulse" cx="48" cy="82" r="5" fill="#FF4100"/>
+
+        <text x="566" y="44" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">49 / 50</text>
+        <text x="566" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">1 / 50</text>
+
+        <line x1="0" y1="170" x2="640" y2="170" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="118" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">one</text>
+        <text x="0" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">token</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.5 · <b>Divergence compounds.</b> A 2% event at step one is not a 2% event by step eight, because step two is already reading a different world.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">A fork, not a rephrasing</h2>
+
+    <p>If the rare arm were a reworded sentence, none of this would matter much. It is not.</p>
+
+    <div class="v-pre"><i>query, 49 runs:</i>  urban-heat research sources
+<b>query,  1 run :</b>  urban-heat definition and causes</div>
+
+    <p>Different search. Different documents. A different context window for every step that
+    follows. The agent is not saying the same thing differently, it is deciding something
+    different and then acting on it.</p>
+
+    <p class="v-pull">A 2% event at step one is not a 2% event by step eight. Step two is already
+    reading a different world.</p>
+
+    <p>That is the arithmetic that turns a rare token into 6.7% of whole trajectories. It is also
+    why measuring divergence at the token level tells you almost nothing useful. You have to
+    measure the trajectory.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Divergence by agent shape: five agents with fixed option tool arguments stayed flat, the one with free text arguments produced all of it">
+        <line x1="0" y1="140" x2="640" y2="140" stroke="#6B7280" stroke-width="1"/>
+        <g>
+          <rect x="24" y="138" width="52" height="2" fill="#2A2C33"/>
+          <rect x="112" y="138" width="52" height="2" fill="#2A2C33"/>
+          <rect x="200" y="138" width="52" height="2" fill="#2A2C33"/>
+          <rect x="288" y="138" width="52" height="2" fill="#2A2C33"/>
+          <rect x="376" y="138" width="52" height="2" fill="#2A2C33"/>
+          <rect class="v-bar" x="464" y="34" width="52" height="106" fill="#FF4100"/>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280" text-anchor="middle">
+          <text x="50" y="156">A-01</text><text x="138" y="156">A-02</text><text x="226" y="156">A-03</text><text x="314" y="156">A-04</text><text x="402" y="156">A-05</text>
+          <text x="490" y="156" fill="#FF4100" font-weight="600">A-06</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280" text-anchor="middle">
+          <text x="214" y="174">tool args chosen from a fixed set</text>
+          <text x="490" y="174" fill="#FF4100">free text</text>
+        </g>
+        <text x="0" y="24" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">DIVERGENCE BY AGENT SHAPE</text>
+        <text x="530" y="86" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">100% of it,</text>
+        <text x="530" y="100" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">from one shape</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.6 · <b>The actionable part.</b> Six agents. The five that pick from fixed options never moved.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">Where the variance actually lives</h2>
+
+    <p>Here is the part I did not expect, and the part I think is worth more than the headline
+    number.</p>
+
+    <p>The divergence was not spread evenly across the six agents in the corpus. All of it came
+    from one: the agent where the model writes free text into tool arguments. The agents that pick
+    from a fixed set of options were completely stable across every run.</p>
+
+    <p>So this is not "models are random". It is much more specific than that, and much more
+    actionable. Give the model a blank field and you have variance. Give it an enum and you have
+    a decision you can test. If you are designing an agent you intend to gate in CI, that is a
+    schema choice you can make on day one, for free, before you have any of this tooling.</p>
+
+    <p>I would not have found that by measuring one agent harder. I found it by measuring six
+    shapes and noticing that five of them sat still.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The first version of the study reported 100 percent divergence against a 20 percent pre-registered bar, and was retracted">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">V0 RESULT vs PRE-REGISTERED BAR</text>
+        <rect x="0" y="40" width="540" height="30" fill="#2A2C33"/>
+        <rect x="0" y="40" width="540" height="30" fill="#C4453A"/>
+        <line x1="108" y1="30" x2="108" y2="82" stroke="#D7DBE4" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="114" y="28" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">bar: 20%</text>
+        <text x="552" y="60" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="#C4453A">100%</text>
+
+        <g class="v-stamp">
+          <rect x="196" y="92" width="212" height="42" fill="none" stroke="#C4453A" stroke-width="3"/>
+          <text x="302" y="120" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="600" letter-spacing="2" fill="#C4453A">RETRACTED</text>
+        </g>
+
+        <text x="0" y="160" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">cause: dead hostname · candidate agent died before calling any tool · classifier correctly said an empty run differs from a real one</text>
+      </svg>
+      <figcaption class="v-cap">FIG 06.7 · <b>A perfect score against your own bar should scare you.</b> The write-up is still in the repo, marked do-not-cite.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">The version I got wrong</h2>
+
+    <p>My first version of this study reported 100% divergence against a threshold I had
+    pre-registered at 20%. For about an hour that felt like a discovery.</p>
+
+    <p>It was a broken test harness pointing at a dead hostname. The candidate agent died before
+    it called a single tool. The classifier then did exactly its job and reported that an empty
+    run differs from a real one, on every single fixture, with total confidence.</p>
+
+    <p class="v-pull">Every part of the system worked correctly. The result was still garbage.
+    That is the failure mode worth being afraid of, because nothing errors.</p>
+
+    <p>The lesson I actually took from it is smaller and more useful than "test your harness". It
+    is this: a result that clears your pre-registered bar by five times is not a triumph, it is an
+    alarm. I had written the 20% threshold down in advance precisely so I would have something
+    honest to be measured against, and then I nearly let a 100% flatter me past it.</p>
+
+    <p><code>RESULTS-v0-RETRACTED.md</code> is still in the repository, at the top level, marked
+    do-not-cite. It stays there. Deleting it would make the repo look better and the record worse.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 178" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kill test board: KT-3 and KT-3b pass, KT-1 and KT-2 unevaluated, KT-4 not due">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">STOP CONDITIONS, WRITTEN BEFORE THE CODE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="45" fill="#D7DBE4">KT-1  model-version change moves behaviour in &lt;20% of runs</text>
+          <circle class="v-blip" cx="556" cy="41" r="5" fill="#FF4100"/>
+          <text x="570" y="45" fill="#FF4100" font-weight="600">UNEVAL</text>
+
+          <rect x="0" y="58" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="75" fill="#D7DBE4">KT-2  classifier below 85% against hand labels</text>
+          <circle class="v-blip" cx="556" cy="71" r="5" fill="#FF4100"/>
+          <text x="570" y="75" fill="#FF4100" font-weight="600">UNEVAL</text>
+
+          <rect x="0" y="88" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="105" fill="#D7DBE4">KT-3  full-stub re-drive must match 100% of actions</text>
+          <text x="570" y="105" fill="#16A34A" font-weight="600">PASS</text>
+
+          <rect x="0" y="118" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="135" fill="#D7DBE4">KT-3b live-diff with no override must return NONE</text>
+          <text x="570" y="135" fill="#16A34A" font-weight="600">PASS</text>
+
+          <rect x="0" y="148" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="165" fill="#D7DBE4">KT-4  nobody puts vern gate in CI unprompted</text>
+          <text x="570" y="165" fill="#6B7280">NOT DUE</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 06.8 · <b>Two of these are still open.</b> The board is public and it is not softened.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>The harness was wrong before the result was right.</b> Covered above. Cost me a
+    write-up and a retraction, and it is the single most useful thing in the repository now.</p>
+
+    <p><b>One run replayed 50 out of 50 identical and still diverged in the experiment.</b> This
+    is my favourite detail in the whole study. The recording itself had captured the rare arm. My
+    baseline was the 1-in-50. Which means a recorded run is a sample, not the truth, and every
+    tool in this space inherits that problem, mine included. If I rebuilt the study I would record
+    each baseline three times and keep the modal trajectory rather than the first one.</p>
+
+    <p><b>I have not answered the original question.</b> KT-1 and KT-2 both read UNEVALUATED and
+    that is not modesty, it is the actual state. Testing whether a real model upgrade changes
+    agent behaviour needs paid API access I have not spent yet. The harness is built, the corpus
+    exists, the runner is written. It is roughly twenty dollars of tokens and a free afternoon.
+    Until it runs, the headline claim of the tool is unproven and I would rather say so than let
+    a good control experiment stand in for it.</p>
+
+    <p><b>Tools are stubbed on re-drive, so this does not test your tools.</b> Live-diff asks the
+    new model what to do and feeds it recorded tool results. That isolates the model variable
+    cleanly, and it means Vernier is silent on whether your live integrations still work. Two
+    different jobs. I would rather do one of them honestly.</p>
+
+    <p><b>Providers are nondeterministic and I cannot fix that from here.</b> Treat live-diff as
+    evidence, not as a mathematical identity proof. When you need a hard reproduce check, use
+    <code>vern verify</code> with everything stubbed.</p>
+
+    <table class="v-table">
+      <thead><tr><th>Claim</th><th>Status</th><th>Evidence</th></tr></thead>
+      <tbody>
+        <tr><td>The substrate can reproduce a recorded run exactly</td><td class="v-pass">PASS</td><td>KT-3, 10 runs, 8+ steps</td></tr>
+        <tr><td>Live-diff with no change returns NONE</td><td class="v-pass">PASS</td><td>KT-3b</td></tr>
+        <tr><td>Zero-delta noise floor is 6.7% of runs</td><td class="v-pass">MEASURED</td><td>4B quantised, CPU, batch 1</td></tr>
+        <tr><td>A model upgrade changes agent behaviour</td><td class="v-unev">UNEVALUATED</td><td>needs paid API access</td></tr>
+        <tr><td>The classifier agrees with hand labels</td><td class="v-unev">UNEVALUATED</td><td>ground truth not yet labelled</td></tr>
+      </tbody>
+    </table>
+
+    <p>Everything is public, including the raw replay data and the retraction, so you can check
+    my arithmetic instead of trusting it. If the twenty dollars is pocket change to you, the repo
+    has everything you need to run KT-1 yourself. I would rather the number existed than that I
+    made it up.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://github.com/GautamTalksDev/Vernier" rel="noopener noreferrer external">Read the code &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="/#work">Back to the spec sheet</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-006 · Vernier · Rev 2026.08.12</span>
+    <span><a href="/labtolab.html">Previous log: GK-005 · label-to-lab &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
