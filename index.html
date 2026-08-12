@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-sHfvGMhcCEyyC8pkGvXLCI+NJzV02jRlrYQ0p5rbASE=';
+  script-src 'self' 'sha256-azCNOibsr5JhmGrxMKzXTlWNFFD/TPgOH82td22DYyU=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-07-31",
+  "dateModified": "2026-08-12",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -88,7 +88,8 @@
       "Multi-tenant SaaS architecture",
       "Distributed systems observability",
       "Pre-registered statistical analysis",
-      "Computer vision"
+      "Computer vision",
+      "AI agent evaluation and determinism"
     ],
     "sameAs": [
       "https://github.com/GautamTalksDev",
@@ -119,6 +120,11 @@
         "@type": "Article",
         "name": "label-to-lab Engineering Log",
         "url": "https://gautamkhosla.com/labtolab.html"
+      },
+      {
+        "@type": "Article",
+        "name": "Vernier Engineering Log",
+        "url": "https://gautamkhosla.com/vernier.html"
       }
     ]
   }
@@ -356,27 +362,30 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">RECONCILER · ONE STEP PER TICK · IDEMPOTENT</text>
-              <g font-family="monospace" font-size="9" fill="#D7DBE4">
-                <rect class="estep s1" x="10"  y="60" width="72" height="30" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/><text x="24" y="79">pending</text>
-                <rect class="estep s2" x="96"  y="60" width="80" height="30" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/><text x="106" y="79">provisioning</text>
-                <rect class="estep s3" x="190" y="60" width="72" height="30" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/><text x="202" y="79">deploying</text>
-                <rect class="estep s4" x="276" y="60" width="62" height="30" fill="#2A2C33" stroke="#FF4100" stroke-width="2"/><text x="296" y="79">ready</text>
-                <rect class="estep s5" x="352" y="60" width="58" height="30" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/><text x="358" y="79">destroyed</text>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">ZERO DELTA · SAME MODEL · SAME PROMPT · TEMP 0</text>
+              <g>
+                <rect class="vsq" x="10"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="26"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="42"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="58"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="74"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="90"  y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="106" y="40" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="122" y="40" width="11" height="11" fill="#2A2C33"/>
+                <rect class="vsq" x="10"  y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="26"  y="56" width="11" height="11" fill="#2A2C33"/><rect class="vrare" x="42" y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="58"  y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="74"  y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="90"  y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="106" y="56" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="122" y="56" width="11" height="11" fill="#2A2C33"/>
+                <rect class="vsq" x="10"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="26"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="42"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="58"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="74"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="90"  y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="106" y="72" width="11" height="11" fill="#2A2C33"/><rect class="vsq" x="122" y="72" width="11" height="11" fill="#2A2C33"/>
               </g>
-              <path class="flow" d="M82 75 H96 M176 75 H190 M262 75 H276 M338 75 H352" stroke="#FF4100" stroke-width="2" fill="none"/>
-              <rect x="96" y="120" width="180" height="30" fill="#0E0F13" stroke="#6B7280" stroke-width="1.5"/>
-              <text x="106" y="139" fill="#D7DBE4" font-family="monospace" font-size="9.5">webhook writes DESIRED state only</text>
-              <text x="10" y="180" fill="#6B7280" font-family="monospace" font-size="9.5">THE WORKER IS THE ONLY PATH TO REAL INFRASTRUCTURE</text>
-              <text x="10" y="198" fill="#6B7280" font-family="monospace" font-size="9">retries are safe because every provider call is idempotent</text>
+              <text x="10" y="102" fill="#6B7280" font-family="monospace" font-size="9.5">49 IDENTICAL · 1 DIFFERENT</text>
+              <circle class="vpip" cx="152" cy="60" r="4" fill="#FF4100"/>
+              <path class="vfk" d="M158 60 L230 60 L300 46 L400 34" fill="none" stroke="#6B7280" stroke-width="2"/>
+              <path class="vfk vfk2" d="M158 60 L230 60 L300 84 L400 112" fill="none" stroke="#FF4100" stroke-width="2"/>
+              <text x="330" y="26" fill="#6B7280" font-family="monospace" font-size="9">49 / 50</text>
+              <text x="330" y="128" fill="#FF4100" font-family="monospace" font-size="9">1 / 50</text>
+              <text x="10" y="160" fill="#FF4100" font-family="monospace" font-size="15">6.7%</text>
+              <text x="62" y="160" fill="#6B7280" font-family="monospace" font-size="9.5">OF RUNS DIVERGED WITH NOTHING CHANGED</text>
+              <text x="10" y="186" fill="#6B7280" font-family="monospace" font-size="9">A 2% FORK AT STEP ONE IS NOT A 2% FORK BY STEP EIGHT.</text>
+              <text x="10" y="204" fill="#6B7280" font-family="monospace" font-size="9">4B QUANTISED · CPU · BATCH 1. TREAT AS A FLOOR, NOT AN ESTIMATE.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE E/F · PLATFORM / DEVEX</div>
-            <h3>Ephemera <span class="net-tag cloud">CLOUD</span></h3>
-            <div class="tg">Open a PR, get a full stack. Close it, it's gone.</div>
-            <p>Ephemeral preview environments on Zerops. The webhook never touches infrastructure; it writes desired state, and a crash-safe reconciler advances one step per tick against idempotent providers. TypeScript, Hono, BullMQ, Postgres.</p>
-            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">OPEN REPO →</a>
+            <div class="sk">SHOWCASE E/F · AGENT EVALUATION</div>
+            <h3>Vernier <span class="net-tag edge">CONTROL FIRST</span></h3>
+            <div class="tg">Temperature 0 is not deterministic</div>
+            <p>A deterministic diff for agent behaviour: record a run, re-drive it after a change, get a rule-based verdict with no LLM judge in the path. Before measuring anything I ran the control, and 6.7% of runs diverged with every knob pinned. My first version of the study was wrong; the retraction is still in the repo.</p>
+            <a href="vernier.html">READ THE ENGINEERING LOG →</a>
           </div>
         </div>
 
@@ -422,6 +431,7 @@
 
 
     <div class="more-grid reveal">
+      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p></div>
@@ -438,7 +448,7 @@
     <div class="stats reveal">
       <div class="stat"><div class="num" data-count="0" id="liveCommits">0</div><div class="lbl">COMMITS <span id="commitSrc" title="Counted live from the public GitHub events feed.">· LAST 90 DAYS</span></div></div>
       <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
-      <div class="stat"><div class="num" data-count="4">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
+      <div class="stat"><div class="num" data-count="5">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
     </div>
   </div>
