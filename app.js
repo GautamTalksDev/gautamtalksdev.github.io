@@ -174,19 +174,36 @@
         if (eRes.ok) {
           const evs = await eRes.json();
           if (Array.isArray(evs) && evs.length) {
-            let commits = 0, oldest = Date.now();
+            let commits = 0, evCount = 0, oldest = Date.now();
             for (const ev of evs) {
               const t = new Date(ev.created_at).getTime();
               if (t < oldest) oldest = t;
+              evCount++;
               if (ev.type === 'PushEvent' && ev.payload) {
-                const n = Number(ev.payload.distinct_size ?? ev.payload.size ?? 0);
-                if (Number.isFinite(n) && n > 0) commits += n;
+                // distinct_size is 0 when a push carries commits GitHub has
+                // already seen, which is every pull-request merge. `??` does
+                // not fall through on 0, so the size fallback must be explicit.
+                const d = Number(ev.payload.distinct_size);
+                const s = Number(ev.payload.size);
+                const n = (Number.isFinite(d) && d > 0) ? d : (Number.isFinite(s) && s > 0 ? s : 0);
+                if (n > 0) commits += n;
               }
             }
             const days = Math.max(1, Math.round((Date.now() - oldest) / 864e5));
             const cEl = $('#liveCommits'), cSrc = $('#commitSrc');
-            if (cEl && commits > 0) { cEl.dataset.count = commits; cEl.textContent = commits.toLocaleString(); }
-            if (cSrc) { cSrc.textContent = '· LAST ' + days + ' DAYS'; cSrc.classList.add('live'); }
+            // Never render a zero here. A true zero is still a false impression,
+            // so the cell keeps its baked value unless the feed beats it.
+            if (cEl && cSrc && commits > 0) {
+              cEl.dataset.count = commits;
+              cEl.textContent = commits.toLocaleString();
+              cSrc.textContent = 'COMMITS · LAST ' + days + ' DAYS';
+              cSrc.classList.add('live');
+            } else if (cEl && cSrc && evCount > 0) {
+              cEl.dataset.count = evCount;
+              cEl.textContent = evCount.toLocaleString();
+              cSrc.textContent = 'PUBLIC EVENTS · LAST ' + days + ' DAYS';
+              cSrc.classList.add('live');
+            }
           }
         }
       } catch (e) {}
