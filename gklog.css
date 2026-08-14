@@ -92,25 +92,11 @@ a{color:inherit}
 .v-top-id{color:var(--steel)}
 .v-top-id b{color:var(--orange); font-weight:600}
 
-/* ---------- layout -------------------------------------------------------
-   The article is a white sheet resting on the drafting grid. Body copy never
-   sits directly on the grid, because 48px hairlines running behind 1.62 line
-   height is a readability problem on anything longer than a card. */
+/* ---------- layout ------------------------------------------------------- */
 .v-wrap{
-  max-width:820px;
-  margin:0 auto 64px;
-  padding:4px 44px 56px;
-  background:#FFFFFF;
-  border-left:1px solid var(--hairline);
-  border-right:1px solid var(--hairline);
-  border-bottom:1px solid var(--hairline);
-  box-shadow:0 1px 0 rgba(20,21,26,.04), 0 18px 44px -30px rgba(20,21,26,.30);
-}
-@media (max-width:900px){
-  .v-wrap{ padding:4px 26px 44px; margin-bottom:40px; border-left:0; border-right:0; }
-}
-@media (max-width:520px){
-  .v-wrap{ padding:4px 18px 36px; }
+  max-width:780px;
+  margin:0 auto;
+  padding:0 22px;
 }
 
 /* ---------- document reference block ------------------------------------ */
@@ -118,7 +104,7 @@ a{color:inherit}
   margin:44px 0 30px;
   padding:11px 14px;
   border:1px solid var(--ink);
-  background:var(--paper);
+  background:var(--panel);
   font-family:"IBM Plex Mono", ui-monospace, monospace;
   font-size:10.5px; font-weight:500;
   letter-spacing:.09em; text-transform:uppercase;
@@ -194,7 +180,7 @@ a{color:inherit}
   margin:26px 0;
   padding:16px 20px;
   border-left:4px solid var(--orange);
-  background:var(--paper);
+  background:var(--panel);
   font-size:19px;
   line-height:1.5;
   font-weight:500;
@@ -206,7 +192,7 @@ code, .v-mono{
   font-size:.88em;
 }
 code{
-  background:var(--paper);
+  background:var(--panel);
   border:1px solid var(--hairline);
   padding:1px 5px;
 }
@@ -232,7 +218,7 @@ code{
   margin:24px 0;
   font-family:"IBM Plex Mono", ui-monospace, monospace;
   font-size:12.5px;
-  background:#FFFFFF;
+  background:var(--panel);
 }
 .v-table th, .v-table td{
   border:1px solid var(--hairline);
@@ -361,7 +347,6 @@ code{
 /* ---------- print -------------------------------------------------------- */
 @media print{
   body{background:#fff}
-  .v-wrap{ box-shadow:none; border:0; padding:0; margin:0; max-width:none; }
   .v-hazard, .v-top, .v-cta{display:none}
   .v-fig{background:#fff; border:1px solid #999}
   .v-fig svg{fill:#333}
