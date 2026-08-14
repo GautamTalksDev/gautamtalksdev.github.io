@@ -1,0 +1,363 @@
+/* ==========================================================================
+   vernier.css  ·  GK-006 engineering log
+   Self-contained. Every structural class is v- prefixed so nothing in this
+   file can collide with log.css or styles.css. This page loads ONLY this
+   stylesheet.
+   ========================================================================== */
+
+/* ---------- fonts (self-hosted, same files as the rest of the site) ------- */
+@font-face{
+  font-family:Archivo;
+  src:url("/fonts/archivo-var.woff2") format("woff2-variations");
+  font-weight:400 900; font-stretch:62% 125%; font-display:swap;
+}
+@font-face{
+  font-family:"IBM Plex Mono";
+  src:url("/fonts/plexmono-400.woff2") format("woff2");
+  font-weight:400; font-display:swap;
+}
+@font-face{
+  font-family:"IBM Plex Mono";
+  src:url("/fonts/plexmono-500.woff2") format("woff2");
+  font-weight:500; font-display:swap;
+}
+@font-face{
+  font-family:"IBM Plex Mono";
+  src:url("/fonts/plexmono-600.woff2") format("woff2");
+  font-weight:600; font-display:swap;
+}
+
+/* ---------- tokens ------------------------------------------------------- */
+:root{
+  --paper:#FAFAF7;
+  --ink:#14151A;
+  --orange:#FF4100;
+  --steel:#6B7280;
+  --hairline:#DEDED7;
+  --panel:#FFFFFF;
+  --ok:#16A34A;
+  --instrument:#16181E;
+}
+
+/* ---------- base --------------------------------------------------------- */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
+  background-size:48px 48px;
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:Archivo, system-ui, sans-serif;
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%}
+a{color:inherit}
+::selection{background:var(--orange); color:#fff}
+:focus-visible{outline:3px solid var(--orange); outline-offset:3px}
+
+/* ---------- hazard stripes ---------------------------------------------- */
+.v-hazard{
+  height:12px;
+  background:repeating-linear-gradient(45deg,
+    var(--orange) 0 14px, var(--ink) 14px 28px);
+}
+.v-hazard-bottom{margin-top:64px}
+
+/* ---------- topbar ------------------------------------------------------- */
+.v-top{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  padding:11px 22px;
+  background:rgba(250,250,247,.93);
+  backdrop-filter:blur(7px);
+  border-bottom:1px solid var(--hairline);
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:11.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.v-back{
+  text-decoration:none;
+  border:1px solid var(--ink);
+  padding:5px 11px;
+  transition:background .16s ease, color .16s ease;
+}
+.v-back:hover{background:var(--ink); color:var(--paper)}
+.v-top-id{color:var(--steel)}
+.v-top-id b{color:var(--orange); font-weight:600}
+
+/* ---------- layout ------------------------------------------------------- */
+.v-wrap{
+  max-width:780px;
+  margin:0 auto;
+  padding:0 22px;
+}
+
+/* ---------- document reference block ------------------------------------ */
+.v-doc{
+  margin:44px 0 30px;
+  padding:11px 14px;
+  border:1px solid var(--ink);
+  background:var(--panel);
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:10.5px; font-weight:500;
+  letter-spacing:.09em; text-transform:uppercase;
+  color:var(--steel);
+  line-height:1.9;
+}
+.v-doc b{color:var(--ink); font-weight:600}
+.v-doc .v-flag{color:var(--orange); font-weight:600}
+
+/* ---------- headline ----------------------------------------------------- */
+.v-h1{
+  font-size:clamp(38px, 8.4vw, 76px);
+  line-height:.94;
+  font-weight:900;
+  font-stretch:112%;
+  letter-spacing:-.018em;
+  text-transform:uppercase;
+  margin:0 0 22px;
+}
+.v-h1 .v-out{
+  color:transparent;
+  -webkit-text-stroke:2px var(--ink);
+}
+.v-h1 .v-acc{color:var(--orange)}
+
+.v-stand{
+  font-size:20.5px;
+  line-height:1.56;
+  margin:0 0 20px;
+  max-width:62ch;
+}
+.v-stand a{color:var(--orange); text-underline-offset:3px}
+
+.v-meta{
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin:0 0 8px;
+  padding:0; list-style:none;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:10.5px; font-weight:500;
+  letter-spacing:.08em; text-transform:uppercase;
+}
+.v-meta li{
+  border:1px solid var(--ink);
+  padding:4px 9px;
+  background:var(--panel);
+}
+.v-meta li.v-hot{background:var(--orange); color:#fff; border-color:var(--orange)}
+
+/* ---------- section ------------------------------------------------------ */
+.v-sec{margin:0; padding:56px 0 0}
+.v-sec + .v-sec{border-top:1px solid var(--hairline); margin-top:56px}
+
+.v-num{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:11px; font-weight:600;
+  letter-spacing:.14em;
+  color:var(--orange);
+  margin:0 0 6px;
+}
+.v-h2{
+  font-size:clamp(25px, 4.6vw, 36px);
+  line-height:1.04;
+  font-weight:900;
+  font-stretch:108%;
+  letter-spacing:-.01em;
+  text-transform:uppercase;
+  margin:0 0 18px;
+}
+.v-sec p{margin:0 0 17px; max-width:64ch}
+
+/* ---------- pull quote / thesis line ------------------------------------- */
+.v-pull{
+  margin:26px 0;
+  padding:16px 20px;
+  border-left:4px solid var(--orange);
+  background:var(--panel);
+  font-size:19px;
+  line-height:1.5;
+  font-weight:500;
+}
+
+/* ---------- inline code and mono ---------------------------------------- */
+code, .v-mono{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.88em;
+}
+code{
+  background:var(--panel);
+  border:1px solid var(--hairline);
+  padding:1px 5px;
+}
+.v-pre{
+  margin:22px 0;
+  padding:14px 16px;
+  background:var(--instrument);
+  color:#D7DBE4;
+  border:1px solid var(--ink);
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12.5px;
+  line-height:1.75;
+  overflow-x:auto;
+  white-space:pre;
+}
+.v-pre b{color:#FF4100; font-weight:500}
+.v-pre i{color:#6B7280; font-style:normal}
+
+/* ---------- tables ------------------------------------------------------- */
+.v-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:24px 0;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12.5px;
+  background:var(--panel);
+}
+.v-table th, .v-table td{
+  border:1px solid var(--hairline);
+  padding:9px 11px;
+  text-align:left;
+  vertical-align:top;
+}
+.v-table th{
+  background:var(--ink); color:var(--paper);
+  font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  font-size:10.5px;
+}
+.v-pass{color:var(--ok); font-weight:600}
+.v-unev{color:var(--orange); font-weight:600}
+
+/* ---------- figures: dark instrument panel ------------------------------ */
+.v-fig{
+  margin:0 0 26px;
+  background:var(--instrument);
+  border:1px solid var(--ink);
+  padding:16px 16px 12px;
+}
+.v-fig svg{display:block; width:100%; height:auto; fill:#D7DBE4}
+.v-cap{
+  margin:11px 0 0;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:10.5px;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:#6B7280;
+  max-width:none;
+}
+.v-cap b{color:#D7DBE4; font-weight:500}
+
+/* ---------- figure animations ------------------------------------------- */
+@keyframes v-flow{ to{ stroke-dashoffset:-64 } }
+.v-flow{
+  stroke-dasharray:7 6;
+  animation:v-flow 1.5s linear infinite;
+}
+
+@keyframes v-blip{ 0%,44%{opacity:.22} 50%,94%{opacity:1} 100%{opacity:.22} }
+.v-blip{ animation:v-blip 2.1s ease-in-out infinite }
+
+@keyframes v-rare{
+  0%,72%{ fill:#2A2C33 }
+  78%,92%{ fill:#FF4100 }
+  100%{ fill:#2A2C33 }
+}
+.v-rare{ animation:v-rare 4.2s ease-in-out infinite }
+
+@keyframes v-grow{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+.v-bar{ transform-origin:center bottom; animation:v-grow 1.5s cubic-bezier(.2,.8,.3,1) infinite alternate }
+.v-b1{ animation-duration:1.9s }
+.v-b2{ animation-duration:2.3s }
+.v-b3{ animation-duration:1.6s }
+
+@keyframes v-draw{ from{ stroke-dashoffset:340 } to{ stroke-dashoffset:0 } }
+.v-fork{
+  stroke-dasharray:340;
+  animation:v-draw 3.4s ease-in-out infinite;
+}
+.v-fork-b{ animation-delay:.45s }
+
+@keyframes v-slam{
+  0%,58%{ opacity:0; transform:scale(2.1) rotate(-14deg) }
+  66%,94%{ opacity:1; transform:scale(1) rotate(-9deg) }
+  100%{ opacity:0; transform:scale(1) rotate(-9deg) }
+}
+.v-stamp{
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:v-slam 4.6s ease-out infinite;
+}
+
+@keyframes v-creep{ from{ width:0 } to{ width:118px } }
+.v-creep{ animation:v-creep 2.8s ease-out infinite alternate }
+
+@keyframes v-pulse{ 0%,100%{ r:5 } 50%{ r:8 } }
+.v-pulse{ animation:v-pulse 2s ease-in-out infinite }
+
+/* ---------- CTA pair ----------------------------------------------------- */
+.v-cta{
+  display:flex; flex-wrap:wrap; gap:12px;
+  margin:44px 0 0;
+}
+.v-btn{
+  display:inline-block;
+  text-decoration:none;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12px; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:13px 20px;
+  border:2px solid var(--ink);
+  background:var(--orange);
+  color:#fff;
+  box-shadow:5px 5px 0 var(--ink);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.v-btn:hover{transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ink)}
+.v-btn:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink)}
+.v-btn-ghost{background:transparent; color:var(--ink)}
+
+/* ---------- footer ------------------------------------------------------- */
+.v-foot{
+  margin-top:52px;
+  padding-top:20px;
+  border-top:1px solid var(--hairline);
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:10.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--steel);
+  display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
+}
+.v-foot a{color:var(--steel)}
+
+/* ---------- reduced motion ---------------------------------------------- */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .v-fig *{animation:none !important}
+  .v-stamp{opacity:1}
+  .v-creep{width:118px}
+}
+
+/* ---------- print -------------------------------------------------------- */
+@media print{
+  body{background:#fff}
+  .v-hazard, .v-top, .v-cta{display:none}
+  .v-fig{background:#fff; border:1px solid #999}
+  .v-fig svg{fill:#333}
+  .v-cap{color:#555}
+  .v-stand a::after, .v-sec a[href^="http"]::after{content:" · " attr(href); font-size:10px; color:#666}
+}
+
+/* ---------- narrow ------------------------------------------------------- */
+@media (max-width:520px){
+  body{font-size:16px}
+  .v-h1 .v-out{-webkit-text-stroke-width:1.5px}
+  .v-stand{font-size:18px}
+  .v-top{font-size:10px; padding:9px 14px}
+}
