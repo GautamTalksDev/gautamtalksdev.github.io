@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-azCNOibsr5JhmGrxMKzXTlWNFFD/TPgOH82td22DYyU=';
+  script-src 'self' 'sha256-3j6/dHiuglrNm7tP/4tFf4W/tI3yJFKUMZjwlM8S2hI=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-08-12",
+  "dateModified": "2026-08-14",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -89,7 +89,9 @@
       "Distributed systems observability",
       "Pre-registered statistical analysis",
       "Computer vision",
-      "AI agent evaluation and determinism"
+      "AI agent evaluation and determinism",
+      "Integrity monitoring and GPS-denied positioning",
+      "SLAM and state estimation"
     ],
     "sameAs": [
       "https://github.com/GautamTalksDev",
@@ -125,6 +127,11 @@
         "@type": "Article",
         "name": "Vernier Engineering Log",
         "url": "https://gautamkhosla.com/vernier.html"
+      },
+      {
+        "@type": "Article",
+        "name": "Cairn Engineering Log",
+        "url": "https://gautamkhosla.com/cairn.html"
       }
     ]
   }
@@ -392,29 +399,25 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">DUAL-STORE TRIAGE · NO CONTENTION</text>
-              <g>
-                <rect class="drop" x="60"  y="40" width="34" height="16" fill="#EF4444"/>
-                <rect class="drop" x="120" y="40" width="34" height="16" fill="#FBBF24"/>
-                <rect class="drop" x="180" y="40" width="34" height="16" fill="#4ADE80"/>
-              </g>
-              <path d="M40 110 L235 110 L200 150 L75 150 Z" fill="none" stroke="#FF4100" stroke-width="2"/>
-              <text x="95" y="136" fill="#FF4100" font-family="monospace" font-size="10">TRIAGE</text>
-              <rect x="280" y="70"  width="120" height="34" fill="none" stroke="#6B7280" stroke-width="1.5"/>
-              <text x="292" y="91" fill="#D7DBE4" font-family="monospace" font-size="10">MONGO · LIVE</text>
-              <rect x="280" y="130" width="120" height="34" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
-              <text x="288" y="151" fill="#D7DBE4" font-family="monospace" font-size="10">SNOWFLAKE · ANALYTICS</text>
-              <path class="flow" d="M235 118 H280 M235 142 H280" stroke="#FF4100" stroke-width="2" fill="none"/>
-              <text x="10" y="205" fill="#6B7280" font-family="monospace" font-size="9.5">ANALYTICS NEVER BLOCKS REAL-TIME READS · MLH AWARD</text>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">TRUE ERROR vs CLAIMED PROTECTION LEVEL</text>
+              <line x1="10" y1="150" x2="410" y2="150" stroke="#2A2C33" stroke-width="1"/>
+              <line x1="10" y1="112" x2="300" y2="112" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5"/>
+              <text x="306" y="116" fill="#6B7280" font-family="monospace" font-size="9">CLAIMED PL</text>
+              <path class="cerr" d="M10 148 L70 144 L130 134 L190 116 L250 88 L310 56 L400 36" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+              <text x="300" y="30" fill="#FF4100" font-family="monospace" font-size="9.5">TRUE ERROR</text>
+              <circle class="cpip" cx="196" cy="113" r="4.5" fill="#C4453A"/>
+              <text x="120" y="176" fill="#C4453A" font-family="monospace" font-size="9">error escapes the bound here</text>
+              <rect x="10" y="186" width="400" height="18" fill="#2A2C33"/>
+              <text x="20" y="199" fill="#16A34A" font-family="monospace" font-size="9.5">STATE: NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL</text>
+              <text x="10" y="216" fill="#6B7280" font-family="monospace" font-size="8.5">FAULTS INJECTED SYNTHETICALLY. NOT FIELD-OBSERVED MINE DRIFT.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE F/F · SECURITY OPS</div>
-            <h3>AeroGuard <span class="net-tag edge">DUAL-STORE</span></h3>
-            <div class="tg">Incident triage in seconds, fully audited</div>
-            <p>Confidence-scored LLM triage with a dual-store split: MongoDB for live operational reads, Snowflake for heavy analytics. 7-test E2E suite, shipped in 24h.</p>
-            <span class="award award-gap"><b>🏆 MLH</b> BEST USE OF SNOWFLAKE API · HACKCONCORDIA</span>
-            <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">OPEN REPO →</a>
+            <div class="sk">SHOWCASE F/F &#183; ROBOTICS / SAFETY</div>
+            <h3>Cairn <span class="net-tag edge">EDGE &#183; UNDER 1 ms</span></h3>
+            <div class="tg">Catching a robot that is confidently lost</div>
+            <p>GPS dies underground and SLAM fails silently: the pose drifts while the covariance stays tight. Cairn is the error bar, not the dot. On injected drift a naive monitor never alarmed and error hit 20.5 m; cross-source consistency flagged it in 12 s at 0.54 m. Its own worst case, common-mode faults at 73% missed detection, is published in the README.</p>
+            <a href="cairn.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
 
@@ -431,6 +434,7 @@
 
 
     <div class="more-grid reveal">
+      <div class="mini commend"><span class="cstamp" aria-hidden="true">&#127942; MLH AWARD</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><span class="cwin">BEST USE OF SNOWFLAKE API &#183; HACKCONCORDIA</span></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p></div>
       <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p></div>
@@ -446,9 +450,9 @@
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><div class="num" data-count="5" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
+      <div class="stat"><div class="num" data-count="6" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
       <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
-      <div class="stat"><div class="num" data-count="5">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
+      <div class="stat"><div class="num" data-count="6">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
     </div>
   </div>
