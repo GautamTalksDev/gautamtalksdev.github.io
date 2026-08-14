@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jvOM8wTeWKimyrfQVQNtUhaXWSqjuD4lQ31/vNOI5ng='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-007 · I tried to prove SLAM was lying, and it called my bluff · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-007. Cairn is an integrity monitor for GPS-denied positioning. I measured a 15% missed-detection rate underground, then discovered the number came from my own assumption. What replaced it was better, and then I broke that too.">
+<link rel="canonical" href="https://gautamkhosla.com/cairn.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="I tried to prove SLAM was lying. It called my bluff.">
+<meta property="og:description" content="An integrity monitor for robots underground, and what happened when I tested my own idea properly.">
+<meta property="og:url" content="https://gautamkhosla.com/cairn.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"I tried to prove SLAM was lying. It called my bluff.","alternativeHeadline":"GK-007: integrity monitoring for GPS-denied positioning","description":"Building Cairn, an integrity monitor for underground robots. A 15% missed-detection headline turned out to be an artifact of an assumed covariance. The replacement thesis held up better, and its own worst failure mode is measured and published.","url":"https://gautamkhosla.com/cairn.html","datePublished":"2026-08-14","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","sameAs":["https://github.com/GautamTalksDev","https://www.linkedin.com/in/gautam-khosla/"]},"about":{"@type":"SoftwareSourceCode","name":"Cairn","codeRepository":"https://github.com/GautamTalksDev/Cairn","programmingLanguage":"Python","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-007 · Cairn</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    DOC <b>GK-007</b> · REV <b>2026.08.14</b> · CLASS <b>FAILURE-AWARE SYSTEMS</b><br>
+    SUBJECT <b>CAIRN v0.1.0</b> · LICENCE <b>APACHE-2.0</b> · FIELD EVIDENCE <span class="v-flag">NONE YET</span>
+  </div>
+
+  <h1 class="v-h1">
+    I tried to prove<br>
+    <span class="v-out">SLAM was lying.</span><br>
+    It called <span class="v-acc">my bluff.</span>
+  </h1>
+
+  <p class="v-stand">
+    GPS does not work underground, so robots and rescue teams use dead reckoning and LiDAR SLAM
+    instead. Those fail, which is fine, everything fails. The problem is that they fail
+    <em>quietly</em>. I built
+    <a href="https://github.com/GautamTalksDev/Cairn" rel="noopener noreferrer external">Cairn</a>
+    to catch that, measured a number that made the whole case, and then found out I had invented
+    the number myself.
+  </p>
+
+  <ul class="v-meta">
+    <li class="v-hot">Headline retracted, replacement measured</li>
+    <li>Python · Apache-2.0</li>
+    <li>Worst case published: 73%</li>
+    <li>Read: 11 min</li>
+  </ul>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="True position error climbs steadily while the reported protection level stays flat and the state stays nominal">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">TIME &#8594;</text>
+
+        <line x1="0" y1="120" x2="640" y2="120" stroke="#2A2C33" stroke-width="1"/>
+        <line x1="0" y1="86" x2="470" y2="86" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5"/>
+        <text x="478" y="90" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">CLAIMED PROTECTION LEVEL</text>
+
+        <path class="v-fork" d="M0 118 L90 114 L180 106 L270 92 L360 70 L450 44 L540 26 L620 20" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+        <text x="0" y="36" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">TRUE ERROR</text>
+
+        <circle class="v-pulse" cx="286" cy="88" r="5" fill="#C4453A"/>
+        <text x="298" y="112" font-family="IBM Plex Mono, monospace" font-size="9" fill="#C4453A">error escapes the bound here</text>
+
+        <rect x="0" y="140" width="640" height="24" fill="#2A2C33"/>
+        <text x="12" y="156" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#16A34A">REPORTED STATE</text>
+        <text x="140" y="156" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#16A34A">NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL</text>
+        <text x="0" y="180" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">NO EXCEPTION. NO RED LIGHT. NO DROP IN OUTPUT RATE. THE DOT KEEPS MOVING.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.1 · <b>The failure mode is silence.</b> A downstream planner cannot distinguish this from a healthy run.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">Underground, the dot lies confidently</h2>
+
+    <p>GPS does not work underground. Not "works badly", not "reduced accuracy". The signal arrives
+    weaker than the noise floor after fifty metres of rock, and no amount of software conjures
+    information out of a signal that never arrived.</p>
+
+    <p>So you use inertial sensors, LiDAR SLAM, ultra-wideband beacons, wheel odometry. All fine.
+    All of them fail. The problem is <em>how</em>.</p>
+
+    <p>A SLAM system in a long featureless tunnel does not throw an exception. It does not turn red.
+    It keeps producing a position, at the same rate, with the same confident little covariance
+    attached, while the robot drifts away from where the map thinks it is.</p>
+
+    <p>The DARPA Subterranean Challenge teams documented this in the driest possible language:
+    visual-inertial SLAM would lose tracking and enter unrecoverable states. Read that twice. The
+    system did not know it was lost. A separate study by NextNav and Arlington County found that
+    accurate floor-level data paired with inaccurate horizontal coordinates could place a responder
+    half a mile from where they actually were.</p>
+
+    <p class="v-pull">Half a mile. Underground. While a rescue team drives toward a dot on a screen.
+    That is not a user experience problem.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 178" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aviation RAIM computes a protection level and alarms when it can no longer guarantee the position is inside it">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT AVIATION SHIPPED IN THE 1990s</text>
+
+        <circle cx="150" cy="86" r="54" fill="none" stroke="#6B7280" stroke-width="1.8" stroke-dasharray="5 5"/>
+        <circle cx="150" cy="86" r="5" fill="#FF4100"/>
+        <text x="150" y="70" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">PROTECTION LEVEL</text>
+        <text x="150" y="112" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#D7DBE4">position is in here</text>
+        <text x="150" y="160" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#16A34A">or the instrument says so</text>
+
+        <line x1="240" y1="30" x2="240" y2="150" stroke="#2A2C33" stroke-width="1"/>
+
+        <text x="270" y="52" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">RAIM does NOT make the position better.</text>
+        <text x="270" y="76" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">It computes a bound, and alarms the</text>
+        <text x="270" y="96" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">moment it can no longer promise you</text>
+        <text x="270" y="116" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">are inside it.</text>
+        <text x="270" y="148" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">UNDERGROUND HAS NO EQUIVALENT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.2 · <b>Every vendor ships a dot.</b> Nobody ships an honest error bar.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">The problem was solved thirty years ago, elsewhere</h2>
+
+    <p>Aircraft GNSS receivers run RAIM: Receiver Autonomous Integrity Monitoring. A very serious
+    name for a very sensible idea. It does not improve accuracy. It computes a
+    <b>protection level</b>, a bound on your error, and it raises an alarm the moment it can no
+    longer promise you are inside that bound.</p>
+
+    <p>Aviation decided, correctly, that a pilot needs to know when the instrument has stopped
+    being trustworthy more urgently than they need the instrument to be slightly better.</p>
+
+    <p>So: build the error bar. I called it Cairn, after the stacks of stones people use to mark a
+    route where the ground gives them nothing else. It does not move you forward. It tells you that
+    the way you are going is the way you think you are going.</p>
+
+    <p>I remain very pleased with the name. Everything after this point went less smoothly.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Missed detection rate of 15.08 percent on a real underground sequence">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">MISSED DETECTION RATE &#183; CERBERUS SUBT &#183; LOUISVILLE MEGA CAVERN</text>
+
+        <g>
+          <rect x="0"   y="40" width="26" height="26" fill="#2A2C33"/><rect x="32"  y="40" width="26" height="26" fill="#2A2C33"/><rect x="64" y="40" width="26" height="26" fill="#2A2C33"/><rect x="96" y="40" width="26" height="26" fill="#2A2C33"/><rect x="128" y="40" width="26" height="26" fill="#2A2C33"/><rect class="v-rare" x="160" y="40" width="26" height="26" fill="#2A2C33"/>
+          <rect x="192" y="40" width="26" height="26" fill="#2A2C33"/><rect x="224" y="40" width="26" height="26" fill="#2A2C33"/><rect x="256" y="40" width="26" height="26" fill="#2A2C33"/><rect x="288" y="40" width="26" height="26" fill="#2A2C33"/><rect x="320" y="40" width="26" height="26" fill="#2A2C33"/><rect class="v-rare" x="352" y="40" width="26" height="26" fill="#2A2C33"/>
+        </g>
+        <text x="390" y="59" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">ONE EPOCH IN SIX</text>
+
+        <text x="0" y="112" font-family="IBM Plex Mono, monospace" font-size="30" font-weight="600" fill="#FF4100">15.08%</text>
+        <text x="130" y="104" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">outside the bound it promised,</text>
+        <text x="130" y="120" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">reporting NOMINAL the whole time</text>
+
+        <text x="0" y="152" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#16A34A">I started drafting the partnership email.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.3 · <b>The number that made the business case.</b> Real robot, real tunnels, real ground truth.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">Step one: prove the problem exists</h2>
+
+    <p>You cannot sell a smoke detector to people who do not believe in fire. So the first
+    experiment was simple: take a real underground dataset, take the positioning system's own
+    self-reported uncertainty, and count how often true error escaped the bound it claimed.</p>
+
+    <p>The metric is <b>missed detection rate</b>. The fraction of epochs where the system was wrong
+    <em>and</em> still said NOMINAL. Confidently wrong. The dangerous kind. It sits alongside false
+    alarm rate and availability, but it is the only one of the three that gets people hurt.</p>
+
+    <p>I ran it on a CERBERUS SubT sequence from the Louisville Mega Cavern. A legged robot, real
+    tunnels, surveyed ground truth. 15.08 percent.</p>
+
+    <p>One epoch in six. I was thrilled. That number was a slide, a business, a reason for someone
+    to reply to an email.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Missed detection rate plotted against the assumed sigma, showing that a well chosen static sigma already achieves under 0.1 percent">
+        <line x1="46" y1="140" x2="620" y2="140" stroke="#6B7280" stroke-width="1"/>
+        <line x1="46" y1="24" x2="46" y2="140" stroke="#6B7280" stroke-width="1"/>
+        <text x="0" y="30" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">MDR</text>
+        <text x="560" y="158" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">SIGMA &#8594;</text>
+
+        <path class="v-fork" d="M56 30 L110 38 L160 58 L205 88 L240 116 L290 132 L360 137 L460 139 L610 140" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+
+        <line x1="150" y1="24" x2="150" y2="146" stroke="#C4453A" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <text x="82" y="20" font-family="IBM Plex Mono, monospace" font-size="9" fill="#C4453A">MY GUESS &#183; 5 cm</text>
+        <text x="156" y="70" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#C4453A">15.08%</text>
+
+        <line x1="232" y1="24" x2="232" y2="146" stroke="#16A34A" stroke-width="1.8" stroke-dasharray="5 4"/>
+        <text x="240" y="20" font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">SIGMA-STAR &#183; 6.94 cm</text>
+        <text x="240" y="128" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#16A34A">&#8804; 0.1%</text>
+
+        <text x="0" y="176" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">1.94 cm OF ASSUMPTION SEPARATES A BUSINESS CASE FROM A SOLVED PROBLEM.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.4 · <b>Where the 15% actually came from.</b> At sigma-star the protection level is about 0.258 m, roughly 0.74 times the run's ATE.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">Step two: destroy my own result</h2>
+
+    <p>Then a small, irritating voice pointed out something. The CERBERUS trajectory exports do not
+    carry covariance. So where did the uncertainty come from that I was calling overconfident?</p>
+
+    <p>I made it up.</p>
+
+    <p>Not maliciously. I picked a sigma of 5 cm as a realistic value for a LiDAR-inertial system,
+    plugged it in, and measured how often reality escaped it. Which means 15.08 percent was never a
+    measurement of the system being overconfident. It was a measurement of
+    <b>my assumption being too tight.</b></p>
+
+    <p>Any reviewer finds this in thirty seconds, so I swept it: sigma from 1 cm to 1 metre, missed
+    detection at every point. Near sigma-star, about 6.94 cm, missed detection drops below 0.1
+    percent with a protection level around 0.258 m on a run with roughly 0.35 m of error. Tight.
+    Useful. A well-tuned static uncertainty was already fine.</p>
+
+    <p class="v-pull">The thesis I had been building on was dead. There is a specific feeling when
+    this happens. It is not quite disappointment, it is more like walking confidently into a glass
+    door in front of people.</p>
+
+    <p>The old CP-7 tables that used the assumed 5 cm are still in the repository, marked as
+    context only, pointed at from the methodology doc. They are not cited as results anywhere.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="In the field the two sigma choices are indistinguishable because ground truth is unavailable">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT YOU CAN SEE FROM INSIDE THE MINE</text>
+
+        <rect x="0" y="34" width="300" height="58" fill="#2A2C33"/>
+        <text x="16" y="58" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">sigma = 5.00 cm</text>
+        <text x="16" y="78" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">from a spec sheet</text>
+
+        <rect x="332" y="34" width="300" height="58" fill="#2A2C33"/>
+        <text x="348" y="58" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">sigma = 6.94 cm</text>
+        <text x="348" y="78" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">from a bench calibration</text>
+
+        <text x="284" y="66" font-family="IBM Plex Mono, monospace" font-size="16" fill="#6B7280">?</text>
+
+        <text x="0" y="118" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT THEY ACTUALLY COST YOU</text>
+        <rect x="0" y="128" width="300" height="22" fill="#C4453A"/>
+        <text x="16" y="144" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#14151A">15% MISSED DETECTIONS</text>
+        <rect x="332" y="128" width="300" height="22" fill="#16A34A"/>
+        <text x="348" y="144" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#14151A">0.1% MISSED DETECTIONS</text>
+
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="9" fill="#FF4100">SIGMA-STAR WAS FOUND BY FITTING AGAINST GROUND TRUTH. THE MINE HAS NO GROUND TRUTH.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.5 · <b>The replacement thesis.</b> Two indistinguishable choices, two very different outcomes, and no way to tell which you made.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Step three: find the better thesis underneath</h2>
+
+    <p>Here is the thing about that sigma sweep. I found sigma-star by fitting it against ground
+    truth over the entire run. That option does not exist in a mine.</p>
+
+    <p>In the field you take sigma from a spec sheet or a bench calibration, and you have no way to
+    know whether you picked 5 cm or 6.94 cm. One gives you 15 percent missed detections and the
+    other gives you 0.1 percent, and you cannot tell which one you chose.</p>
+
+    <p class="v-pull">The problem was never that static covariance is overconfident. The problem is
+    that you cannot tune for a failure you have not seen yet.</p>
+
+    <p>That reframing is what saved the project. It also changed the experiment: stop testing on
+    clean data, start injecting faults. Bias. Dropout. Slow accumulating drift, which is the one
+    that actually kills people, because it is the failure with no moment of obvious breakage.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Under injected drift the naive covariance monitor never alarms while error reaches 20.5 metres, and the consistency monitor leaves nominal after 12 seconds at 0.54 metres of error">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">INJECTED ALONG-TRACK DRIFT &#183; ONSET AT T=0</text>
+
+        <line x1="60" y1="24" x2="60" y2="176" stroke="#6B7280" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <text x="18" y="20" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">ONSET</text>
+
+        <path class="v-fork" d="M60 150 L140 142 L240 124 L340 96 L450 62 L560 34 L620 26" fill="none" stroke="#C4453A" stroke-width="2.4" stroke-linecap="round"/>
+        <text x="470" y="22" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#C4453A">TRUE ERROR &#8594; 20.5 m</text>
+
+        <circle class="v-pulse" cx="124" cy="144" r="5" fill="#FF4100"/>
+        <text x="134" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">CONSISTENCY LEAVES NOMINAL &#183; 12 s &#183; 0.54 m</text>
+
+        <rect x="0" y="182" width="640" height="0" fill="none"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="184" width="310" height="0" fill="none"/>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 07.6 · <b>Twelve seconds versus never.</b> Half a metre versus twenty. Rolling 5 s alarm duty at or above 50%.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">Twelve seconds versus never</h2>
+
+    <table class="v-table">
+      <thead><tr><th>Monitor</th><th>Alarm</th><th>Error when it noticed</th></tr></thead>
+      <tbody>
+        <tr><td>Naive self-reported covariance</td><td class="v-unev">never</td><td>reached 20.5 m, still NOMINAL</td></tr>
+        <tr><td>Cross-source consistency</td><td class="v-pass">12 s after onset</td><td>0.54 m</td></tr>
+      </tbody>
+    </table>
+
+    <p>Naive covariance monitoring essentially never noticed. Error climbed to twenty and a half
+    metres while the system reported NOMINAL the entire way. Cross-source consistency left NOMINAL
+    twelve seconds after onset, when true error was fifty-four centimetres.</p>
+
+    <p>That is the result, and it is a better one than I started with. I only found it because the
+    first one fell over.</p>
+
+    <p>The solution-separation side holds up too, on synthetic independent sources: configured
+    family-wise false-alarm probability of 0.05 across 2000 trials returned an empirical false-alarm
+    rate of 5.05 percent, and an injected LiDAR bias was correctly isolated. The configured rate and
+    the observed rate agree, which is the least glamorous kind of good news and the kind I trust
+    most.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="When all sources share a map or clock they fail together, look consistent, and the monitor misses 73 percent of faults">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">COMMON-MODE FAULT &#183; SHARED MAP, CLOCK, OR GEOMETRY</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <rect x="0" y="36" width="120" height="28" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/><text x="14" y="55">LIDAR</text>
+          <rect x="0" y="74" width="120" height="28" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/><text x="14" y="93">INERTIAL</text>
+          <rect x="0" y="112" width="120" height="28" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/><text x="14" y="131">ODOMETRY</text>
+        </g>
+        <text x="0" y="162" font-family="IBM Plex Mono, monospace" font-size="9" fill="#C4453A">ALL THREE WRONG, BY THE SAME AMOUNT, IN THE SAME DIRECTION</text>
+
+        <path class="v-flow" d="M122 50 L200 88 M122 88 L200 88 M122 126 L200 88" fill="none" stroke="#6B7280" stroke-width="1.8"/>
+
+        <rect x="204" y="70" width="150" height="36" fill="#2A2C33" stroke="#6B7280" stroke-width="1.6"/>
+        <text x="218" y="93" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">CONSISTENCY</text>
+
+        <path class="v-flow" d="M356 88 L420 88" fill="none" stroke="#16A34A" stroke-width="2"/>
+        <rect x="424" y="70" width="130" height="36" fill="#2A2C33" stroke="#16A34A" stroke-width="1.6"/>
+        <text x="440" y="93" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" fill="#16A34A">NOMINAL</text>
+
+        <text x="424" y="132" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="600" fill="#FF4100">73%</text>
+        <text x="424" y="150" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">MISSED DETECTION</text>
+        <text x="204" y="132" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">they agree, so nothing</text>
+        <text x="204" y="146" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">looks wrong</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.7 · <b>The method that went 94 to 12 collapses here.</b> Consistency checking is structurally blind to unanimous lies.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">Step four: break the good result too</h2>
+
+    <p>Cross-source consistency works by checking whether independent sensors agree. Disagreement is
+    the signal. Which raises the obvious question: what happens when they are all wrong together?</p>
+
+    <p>Shared map. Shared clock. Shared degenerate geometry. Correlated corruption. Missed detection
+    goes to 73 percent. The method that just took drift detection from never to twelve seconds
+    collapses almost completely, because every source is telling the same lie and consistency
+    checking cannot see a unanimous lie by construction.</p>
+
+    <p>This is written in the README, the limitations section, the methodology doc, and the security
+    policy. Named, measured, stated plainly, in the first screen of the repository.</p>
+
+    <p class="v-pull">There is a version of this project where I quietly leave that out. That version
+    demos better and is worth much less, because the first person to find it themselves stops
+    believing anything else I have written.</p>
+
+    <p>Solution separation is necessary, not sufficient. That sentence is the honest summary of the
+    entire method and it is in the repo in those words.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cairn consumes pose sources and emits an integrity report, and never writes the position itself">
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <rect x="0" y="30" width="112" height="24" fill="#2A2C33"/><text x="12" y="46">LIDAR SLAM</text>
+          <rect x="0" y="62" width="112" height="24" fill="#2A2C33"/><text x="12" y="78">INERTIAL</text>
+          <rect x="0" y="94" width="112" height="24" fill="#2A2C33"/><text x="12" y="110">UWB / ODOM</text>
+        </g>
+
+        <path class="v-flow" d="M114 42 L180 74 M114 74 L180 74 M114 106 L180 74" fill="none" stroke="#6B7280" stroke-width="1.6"/>
+        <path class="v-flow" d="M114 42 L180 150 M114 74 L180 150 M114 106 L180 150" fill="none" stroke="#2A2C33" stroke-width="1.4"/>
+
+        <rect x="184" y="54" width="126" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="2"/>
+        <text x="200" y="79" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#FF4100">CAIRN</text>
+
+        <rect x="184" y="136" width="126" height="28" fill="#2A2C33" stroke="#6B7280" stroke-width="1.4" stroke-dasharray="4 3"/>
+        <text x="196" y="155" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">YOUR ESTIMATOR</text>
+
+        <path class="v-flow" d="M312 74 L372 74" fill="none" stroke="#FF4100" stroke-width="2"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <rect x="376" y="30" width="180" height="24" fill="#2A2C33"/><text x="388" y="46">PROTECTION LEVEL</text>
+          <rect x="376" y="62" width="180" height="24" fill="#2A2C33"/><text x="388" y="78">INTEGRITY STATE</text>
+          <rect x="376" y="94" width="180" height="24" fill="#2A2C33"/><text x="388" y="110">TIME SINCE CORROBORATION</text>
+        </g>
+
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">CAIRN DOES NOT COMPUTE POSITION. THAT IS THE ENTIRE POINT.</text>
+        <text x="376" y="155" font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">UNDER 1 ms PER EPOCH &#183; FITS ON BODY-WORN COMPUTE</text>
+      </svg>
+      <figcaption class="v-cap">FIG 07.8 · <b>It sits on top and says whether to believe them.</b> Better-resourced people are computing position, and all of them have the same silent failure.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">Where it landed</h2>
+
+    <p>Cairn is public, Apache 2.0, with tests, hash-pinned dependencies, a reproduce-everything
+    script, a security policy, and a slightly humiliating limitations page. It runs in under a
+    millisecond per epoch, so it fits on body-worn compute. It consumes pose estimates from any
+    source and emits three things: a protection level, an integrity state, and how long since
+    anyone independently corroborated the position.</p>
+
+    <p>It does not compute position. That is deliberate and it is the whole design.</p>
+
+    <p>The bundled quickstart is synthetic, generated by a committed script at a fixed seed, about
+    700 poses at 10 Hz with an injected drift segment. That is so a fresh clone can reproduce a
+    detection in under fifteen minutes without downloading 24 GB. The full CERBERUS sequences are
+    In Copyright, Non-Commercial, so they are never committed; there is a prepare script and a DOI
+    instead.</p>
+  </section>
+
+  <!-- ================= 09 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Status board: mechanism demonstrated, field evidence absent">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT IS ACTUALLY SHOWN</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="45" fill="#D7DBE4">Consistency beats naive covariance on injected drift</text>
+          <text x="536" y="45" fill="#16A34A" font-weight="600">SHOWN</text>
+
+          <rect x="0" y="58" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="75" fill="#D7DBE4">Configured false-alarm rate matches the empirical one</text>
+          <text x="536" y="75" fill="#16A34A" font-weight="600">SHOWN</text>
+
+          <rect x="0" y="88" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="105" fill="#D7DBE4">Common-mode faults defeat the method</text>
+          <text x="536" y="105" fill="#16A34A" font-weight="600">SHOWN</text>
+
+          <rect x="0" y="118" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="135" fill="#D7DBE4">Any of this holds on a failure I did not write myself</text>
+          <circle class="v-blip" cx="522" cy="131" r="5" fill="#FF4100"/>
+          <text x="536" y="135" fill="#FF4100" font-weight="600">NOT SHOWN</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 07.9 · <b>Every fault in this log was injected by me.</b> That is a demonstration of mechanism and not evidence of field performance.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 09</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>My headline was an artifact of my own assumption.</b> The 15.08 percent measured how tight
+    I had guessed, not how overconfident the system was. Covered above. It cost me the framing I had
+    built the project on and it is the most useful thing that happened.</p>
+
+    <p><b>Every fault in this log was injected by me.</b> I wrote the drift. I chose its magnitude
+    and its onset. I then demonstrated that my detector catches the drift I designed, which is a
+    legitimate demonstration that the mechanism works and completely insufficient as evidence it
+    works in a real mine. What I have is one dataset and a fault generator. What I need is a
+    sequence where the failure was not put there by me.</p>
+
+    <p><b>The exports carry no covariance, so the self-report is a stand-in.</b> CERBERUS TUM
+    trajectories ship without a filter matrix. The claimed diagonal sigma is a realistic
+    overconfident LIO prior, not the literal CompSLAM covariance. Change sigma and the missed
+    detection rate moves a lot, which is exactly the point of section 05, and it also means every
+    number here is conditional on that choice.</p>
+
+    <p><b>Corridor localizability is inferred, not decoded.</b> The trajectory-only bundles do not
+    open the 24 GB LiDAR bag. A precomputed ICP-Hessian corridor template is aligned with travel
+    direction instead: straight reads as corridor, turn reads as corner. Synthetic cloud unit tests
+    exercise the real Hessian detector, but full-bag scan replay is not done.</p>
+
+    <p><b>Umeyama alignment absorbs a global SE(3) bias before scoring.</b> Standard for ATE-style
+    comparison, and not a substitute for aligned frames on a live robot.</p>
+
+    <p><b>The sigma sweep result is provisional.</b> One sequence is not a finding. Calling static
+    covariance adequate or inadequate needs multi-sequence evaluation and a matched false-alarm-rate
+    ROC, and until those exist the honest label is provisional rather than a product claim.</p>
+
+    <p><b>This is research scaffolding, not a certified integrity monitor.</b> No SIL or ASIL claim,
+    no formal proof of missed-detection bounds, no warranty for field use. Single-fault,
+    position-only solution separation. Multi-fault isolation and full SE(3) fusion are not
+    implemented.</p>
+
+    <p>If you work with underground positioning and have data where something went genuinely wrong,
+    I would like to hear from you. Especially if it makes the detector look bad. Especially then.</p>
+
+    <p class="v-pull">Run the experiment that kills your idea. Run it early, before you have told
+    anyone, and run it properly rather than in a way designed to survive. Better a glass door in
+    private than a glass door in front of an audience.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://github.com/GautamTalksDev/Cairn" rel="noopener noreferrer external">Read the code &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="/#work">Back to the spec sheet</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-007 · Cairn · Rev 2026.08.14</span>
+    <span><a href="/vernier.html">Previous log: GK-006 · Vernier &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
