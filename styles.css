@@ -602,20 +602,33 @@
   .slide.active .cpip { animation:cpip 4.4s ease-in-out infinite; }
   @keyframes cpip { 0%,38%{opacity:0} 46%,90%{opacity:1} 100%{opacity:0} }
 
-  /* ===== COMMENDATION CARD: the award is pinned, not rotated past ===== */
-  .mini.commend { position:relative; background:var(--ink); border-color:var(--ink); overflow:hidden; padding-top:26px; }
-  .mini.commend h4 a { color:#fff; }
-  .mini.commend h4 a:hover { color:var(--orange); }
-  .mini.commend p { color:#B9BDC7; }
-  .mini.commend:hover { box-shadow:5px 5px 0 var(--orange); }
-  .cstamp { position:absolute; top:14px; right:-30px; transform:rotate(9deg); font-family:"IBM Plex Mono",monospace;
-    font-size:10px; font-weight:600; letter-spacing:2px; color:var(--orange); border:2px solid var(--orange);
-    padding:4px 34px; pointer-events:none; }
-  .cwin { display:block; margin-top:12px; font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
-    letter-spacing:1.5px; color:var(--orange); }
-  @media (max-width:640px){ .cstamp{ right:-24px; padding:4px 26px; font-size:9px; } }
-  @media print { .mini.commend{ background:#fff; } .mini.commend h4 a,.mini.commend p{ color:#14151A; }
-    .cstamp{ position:static; transform:none; display:inline-block; padding:3px 10px; margin-bottom:8px; } }
+  /* ===== COMMENDATIONS: judged work, permanently visible =====
+     An award inside a rotating carousel is seen one sixth of the time. This
+     strip is always on screen, and it takes a third entry without a redesign. */
+  .cmds { margin-top:40px; border:2px solid var(--ink); background:var(--ink); }
+  .cmds-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:10px 18px; border-bottom:2px solid #2A2C33; font-family:"IBM Plex Mono",monospace;
+    font-size:11px; letter-spacing:2px; color:#6B7280; }
+  .cmds-head b { color:var(--orange); font-weight:600; }
+  .cmds-note { font-size:10px; }
+  .cmds-grid { display:grid; grid-template-columns:1fr 1fr; }
+  @media (max-width:760px){ .cmds-grid{ grid-template-columns:1fr; } }
+  .cmd { position:relative; padding:22px 24px 20px 58px; border-right:2px solid #2A2C33; }
+  .cmd:last-child { border-right:0; }
+  @media (max-width:760px){ .cmd{ border-right:0; border-bottom:2px solid #2A2C33; }
+    .cmd:last-child{ border-bottom:0; } }
+  .cmd-medal { position:absolute; left:20px; top:21px; font-size:20px; line-height:1; }
+  .cmd-title { font-size:17px; font-weight:900; text-transform:uppercase; letter-spacing:-.3px; color:#fff; }
+  .cmd-org { font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:1.5px;
+    color:var(--orange); font-weight:600; margin-top:3px; }
+  .cmd-proj { font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:#B9BDC7; margin-top:9px; }
+  .cmd-proj a { color:#fff; text-decoration:none; border-bottom:1.5px solid var(--orange); }
+  .cmd-proj a:hover { color:var(--orange); }
+  .cmd-sub { color:#6B7280; }
+  @media print { .cmds{ background:#fff; border-color:#14151A; }
+    .cmds-head, .cmd{ border-color:#DEDED7; }
+    .cmds-head b, .cmd-title, .cmd-proj, .cmd-proj a{ color:#14151A; }
+    .cmd-proj a::after{ content:none; } }
 
   /* footer copyright links to the licence: the notice sits one click away */
   footer .meta a.lic { color:inherit; text-decoration:none; border-bottom:1px dotted var(--steel); }
