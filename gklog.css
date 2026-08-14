@@ -93,24 +93,21 @@ a{color:inherit}
 .v-top-id b{color:var(--orange); font-weight:600}
 
 /* ---------- layout -------------------------------------------------------
-   The article is a white sheet resting on the drafting grid. Body copy never
-   sits directly on the grid: 48px hairlines running behind 1.62 line height
-   is a readability problem on anything longer than a card. */
+   The reading column carries a solid paper fill so the drafting grid stops
+   where the text starts. No border and no shadow: this is not a card sitting
+   on the page, it is the page, and the grid is what frames it. Matches the
+   treatment used by the GK-002 to GK-005 logs. */
 .v-wrap{
-  max-width:840px;
-  margin:0 auto 72px;
-  padding:6px 48px 60px;
-  background:#FFFFFF;
-  border-left:1px solid var(--hairline);
-  border-right:1px solid var(--hairline);
-  border-bottom:1px solid var(--hairline);
-  box-shadow:0 1px 0 rgba(20,21,26,.05), 0 20px 50px -32px rgba(20,21,26,.32);
+  max-width:800px;
+  margin:0 auto;
+  padding:10px 34px 64px;
+  background:var(--paper);
 }
 @media (max-width:900px){
-  .v-wrap{ padding:6px 26px 46px; margin-bottom:44px; border-left:0; border-right:0; }
+  .v-wrap{ padding:10px 24px 48px; }
 }
 @media (max-width:520px){
-  .v-wrap{ padding:6px 18px 38px; }
+  .v-wrap{ padding:10px 18px 40px; }
 }
 
 /* ---------- document reference block ------------------------------------ */
@@ -118,7 +115,7 @@ a{color:inherit}
   margin:44px 0 30px;
   padding:11px 14px;
   border:1px solid var(--ink);
-  background:var(--paper);
+  background:var(--panel);
   font-family:"IBM Plex Mono", ui-monospace, monospace;
   font-size:10.5px; font-weight:500;
   letter-spacing:.09em; text-transform:uppercase;
@@ -194,7 +191,7 @@ a{color:inherit}
   margin:26px 0;
   padding:16px 20px;
   border-left:4px solid var(--orange);
-  background:var(--paper);
+  background:var(--panel);
   font-size:19px;
   line-height:1.5;
   font-weight:500;
@@ -206,7 +203,7 @@ code, .v-mono{
   font-size:.88em;
 }
 code{
-  background:var(--paper);
+  background:var(--panel);
   border:1px solid var(--hairline);
   padding:1px 5px;
 }
@@ -232,7 +229,7 @@ code{
   margin:24px 0;
   font-family:"IBM Plex Mono", ui-monospace, monospace;
   font-size:12.5px;
-  background:#FFFFFF;
+  background:var(--panel);
 }
 .v-table th, .v-table td{
   border:1px solid var(--hairline);
@@ -361,7 +358,7 @@ code{
 /* ---------- print -------------------------------------------------------- */
 @media print{
   body{background:#fff}
-  .v-wrap{ box-shadow:none; border:0; padding:0; margin:0; max-width:none; }
+  .v-wrap{ background:#fff; padding:0; margin:0; max-width:none; }
   .v-hazard, .v-top, .v-cta{display:none}
   .v-fig{background:#fff; border:1px solid #999}
   .v-fig svg{fill:#333}
