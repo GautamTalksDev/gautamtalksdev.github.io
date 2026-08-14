@@ -594,3 +594,25 @@
   @keyframes vdraw { 0%,20%{stroke-dashoffset:260} 70%,90%{stroke-dashoffset:0} 100%{stroke-dashoffset:0} }
   .slide.active .vpip { animation:vpip 4.6s ease-in-out infinite; }
   @keyframes vpip { 0%,40%{opacity:.25} 50%,90%{opacity:1} 100%{opacity:.25} }
+
+  /* Cairn: true error escapes a flat protection level while the state reads NOMINAL */
+  .slide .cerr { stroke-dasharray:520; stroke-dashoffset:520; }
+  .slide.active .cerr { animation:cdraw 4.4s ease-in-out infinite; }
+  @keyframes cdraw { 0%,10%{stroke-dashoffset:520} 65%,90%{stroke-dashoffset:0} 100%{stroke-dashoffset:0} }
+  .slide.active .cpip { animation:cpip 4.4s ease-in-out infinite; }
+  @keyframes cpip { 0%,38%{opacity:0} 46%,90%{opacity:1} 100%{opacity:0} }
+
+  /* ===== COMMENDATION CARD: the award is pinned, not rotated past ===== */
+  .mini.commend { position:relative; background:var(--ink); border-color:var(--ink); overflow:hidden; padding-top:26px; }
+  .mini.commend h4 a { color:#fff; }
+  .mini.commend h4 a:hover { color:var(--orange); }
+  .mini.commend p { color:#B9BDC7; }
+  .mini.commend:hover { box-shadow:5px 5px 0 var(--orange); }
+  .cstamp { position:absolute; top:14px; right:-30px; transform:rotate(9deg); font-family:"IBM Plex Mono",monospace;
+    font-size:10px; font-weight:600; letter-spacing:2px; color:var(--orange); border:2px solid var(--orange);
+    padding:4px 34px; pointer-events:none; }
+  .cwin { display:block; margin-top:12px; font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+    letter-spacing:1.5px; color:var(--orange); }
+  @media (max-width:640px){ .cstamp{ right:-24px; padding:4px 26px; font-size:9px; } }
+  @media print { .mini.commend{ background:#fff; } .mini.commend h4 a,.mini.commend p{ color:#14151A; }
+    .cstamp{ position:static; transform:none; display:inline-block; padding:3px 10px; margin-bottom:8px; } }
