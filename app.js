@@ -95,7 +95,7 @@
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
-    work: () => 'AEGIS [edge/QNX]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
+    work: () => 'AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
     edition: () => 'today: <b>' + (window.__EDITION ? window.__EDITION.id : 'SAFETY') + '</b> · this site reissues itself daily from a date seed. come back tomorrow.',
@@ -550,6 +550,7 @@
       ['Read the Plumbline log (transparency log)', 'GK-004', () => location.href = 'plumbline.html'],
       ['Read the label-to-lab log (a study that failed)', 'GK-005', () => location.href = 'labtolab.html'],
       ['Read the Vernier log (temperature 0 is not deterministic)', 'GK-006', () => location.href = 'vernier.html'],
+      ['Read the Cairn log (when a robot is confidently lost)', 'GK-007', () => location.href = 'cairn.html'],
       ['View selected work', 'GO', () => location.hash = '#work'],
       ['Operating principles', 'GO', () => location.hash = '#principles'],
       ['Field record', 'GO', () => location.hash = '#experience'],
