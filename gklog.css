@@ -100,29 +100,21 @@ a{color:inherit}
 .v-wrap{
   max-width:800px;
   margin:0 auto;
-  padding:10px 34px 64px;
-  background:var(--paper);
+  padding:0 34px;
 }
-@media (max-width:900px){
-  .v-wrap{ padding:10px 24px 48px; }
-}
-@media (max-width:520px){
-  .v-wrap{ padding:10px 18px 40px; }
-}
+@media (max-width:900px){ .v-wrap{ padding:0 24px; } }
+@media (max-width:520px){ .v-wrap{ padding:0 18px; } }
 
 /* ---------- document reference block ------------------------------------ */
 .v-doc{
-  margin:44px 0 30px;
-  padding:11px 14px;
-  border:1px solid var(--ink);
-  background:var(--panel);
+  display:flex; flex-wrap:wrap; gap:8px 26px;
+  margin:52px 0 26px;
   font-family:"IBM Plex Mono", ui-monospace, monospace;
-  font-size:10.5px; font-weight:500;
-  letter-spacing:.09em; text-transform:uppercase;
+  font-size:11px; font-weight:500;
+  letter-spacing:.12em; text-transform:uppercase;
   color:var(--steel);
-  line-height:1.9;
 }
-.v-doc b{color:var(--ink); font-weight:600}
+.v-doc b{color:var(--orange); font-weight:600}
 .v-doc .v-flag{color:var(--orange); font-weight:600}
 
 /* ---------- headline ----------------------------------------------------- */
@@ -142,9 +134,9 @@ a{color:inherit}
 .v-h1 .v-acc{color:var(--orange)}
 
 .v-stand{
-  font-size:20.5px;
-  line-height:1.56;
-  margin:0 0 20px;
+  font-size:17px;
+  line-height:1.62;
+  margin:0 0 4px;
   max-width:62ch;
 }
 .v-stand a{color:var(--orange); text-underline-offset:3px}
@@ -165,8 +157,18 @@ a{color:inherit}
 .v-meta li.v-hot{background:var(--orange); color:#fff; border-color:var(--orange)}
 
 /* ---------- section ------------------------------------------------------ */
-.v-sec{margin:0; padding:56px 0 0}
-.v-sec + .v-sec{border-top:1px solid var(--hairline); margin-top:56px}
+/* The paper fill starts at the first figure, not behind the header, and the
+   sections butt together so the column reads as continuous. Negative margins
+   let the fill run wider than the text measure, matching GK-002 to GK-005. */
+.v-sec{
+  margin:0 -34px;
+  padding:104px 34px 0;
+  background:var(--paper);
+}
+.v-sec:first-of-type{ padding-top:88px; }
+.v-sec:last-of-type{ padding-bottom:96px; }
+@media (max-width:900px){ .v-sec{ margin:0 -24px; padding-left:24px; padding-right:24px; } }
+@media (max-width:520px){ .v-sec{ margin:0 -18px; padding-left:18px; padding-right:18px; padding-top:72px; } }
 
 .v-num{
   font-family:"IBM Plex Mono", ui-monospace, monospace;
@@ -247,7 +249,7 @@ code{
 
 /* ---------- figures: dark instrument panel ------------------------------ */
 .v-fig{
-  margin:0 0 26px;
+  margin:0 0 34px;
   background:var(--instrument);
   border:1px solid var(--ink);
   padding:16px 16px 12px;
@@ -314,7 +316,7 @@ code{
 /* ---------- CTA pair ----------------------------------------------------- */
 .v-cta{
   display:flex; flex-wrap:wrap; gap:12px;
-  margin:44px 0 0;
+  margin:52px 0 0;
 }
 .v-btn{
   display:inline-block;
@@ -335,8 +337,9 @@ code{
 
 /* ---------- footer ------------------------------------------------------- */
 .v-foot{
-  margin-top:52px;
-  padding-top:20px;
+  margin:0 -34px;
+  padding:22px 34px 70px;
+  background:var(--paper);
   border-top:1px solid var(--hairline);
   font-family:"IBM Plex Mono", ui-monospace, monospace;
   font-size:10.5px;
@@ -345,6 +348,8 @@ code{
   color:var(--steel);
   display:flex; flex-wrap:wrap; gap:14px; justify-content:space-between;
 }
+@media (max-width:900px){ .v-foot{ margin:0 -24px; padding-left:24px; padding-right:24px; } }
+@media (max-width:520px){ .v-foot{ margin:0 -18px; padding-left:18px; padding-right:18px; } }
 .v-foot a{color:var(--steel)}
 
 /* ---------- reduced motion ---------------------------------------------- */
@@ -358,7 +363,8 @@ code{
 /* ---------- print -------------------------------------------------------- */
 @media print{
   body{background:#fff}
-  .v-wrap{ background:#fff; padding:0; margin:0; max-width:none; }
+  .v-wrap{ padding:0; margin:0; max-width:none; }
+  .v-sec,.v-foot{ background:#fff; margin:0; padding:16pt 0 0; }
   .v-hazard, .v-top, .v-cta{display:none}
   .v-fig{background:#fff; border:1px solid #999}
   .v-fig svg{fill:#333}
