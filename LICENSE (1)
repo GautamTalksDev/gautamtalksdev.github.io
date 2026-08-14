@@ -1,0 +1,76 @@
+Copyright (c) 2026 Gautam Khosla. All rights reserved.
+
+This repository contains the source code, design, written content, and
+visual identity of the website published at https://gautamkhosla.com
+
+PROPRIETARY. THIS IS NOT OPEN SOURCE SOFTWARE.
+
+No permission is granted to copy, reproduce, modify, adapt, translate,
+publish, distribute, sublicense, sell, deploy, host, or create derivative
+works from any part of this repository, in whole or in part, by any means
+or in any medium, whether or not for commercial purpose.
+
+This applies to, without limitation: the HTML, CSS, and JavaScript source;
+the page layouts and interaction design; the SVG schematics and diagrams;
+the written copy, including the engineering logs; the photographs; and the
+overall look, feel, and arrangement of the site.
+
+WHAT IS PERMITTED WITHOUT ASKING
+
+  1. Viewing the source, in a browser or on GitHub.
+  2. Forking on GitHub, which GitHub's Terms of Service grant to all users
+     of the platform for any public repository. A fork conveys no licence
+     beyond what those Terms provide and does not permit republication,
+     deployment, or use of this material under your own name.
+  3. Reading the code to learn from it, and independently writing your own
+     implementation of a technique you understood here. Ideas and
+     techniques are not claimed. This specific expression of them is.
+  4. Quoting short excerpts with attribution and a link, where fair dealing
+     under the Copyright Act (Canada), fair use under 17 U.S.C. section 107,
+     or the equivalent provision in your jurisdiction applies.
+
+WHAT IS NOT PERMITTED
+
+  Deploying this site, or a recognisably derivative version of it, at any
+  domain. Using it as a template, theme, or starting point for your own
+  portfolio. Removing or altering this notice. Redistributing the written
+  content. Training a model on this repository for the purpose of
+  reproducing its expression.
+
+THIRD-PARTY MATERIAL
+
+  This repository redistributes fonts that are NOT covered by the above
+  and are NOT mine to restrict. They remain under their own licences and
+  you may use them accordingly:
+
+    /fonts/archivo-var.woff2
+      Archivo, Omnibus-Type. SIL Open Font License 1.1.
+      https://github.com/Omnibus-Type/Archivo
+
+    /fonts/plexmono-400.woff2
+    /fonts/plexmono-500.woff2
+    /fonts/plexmono-600.woff2
+      IBM Plex Mono, IBM. SIL Open Font License 1.1.
+      https://github.com/IBM/plex
+
+  These files are subsetted copies of the originals. The SIL Open Font
+  License permits this and requires that the licence travel with the fonts,
+  which this notice satisfies. See THIRD-PARTY.md for the full text
+  reference.
+
+NO WARRANTY
+
+  This material is provided "as is", without warranty of any kind, express
+  or implied, including but not limited to the warranties of
+  merchantability, fitness for a particular purpose, and noninfringement.
+  In no event shall the author be liable for any claim, damages, or other
+  liability arising from, out of, or in connection with this material or
+  its use.
+
+PERMISSION AND CONTACT
+
+  Licences for use beyond the above are available on request and are
+  frequently granted, particularly for education. Ask first:
+  developwith.gt@gmail.com
+
+  Enquiries are answered. Silent copying is not.
