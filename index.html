@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-aeIzuyfmDdWySe+lUZc4uNYiHkqA4zZiSGbUmqaJ1H4=';
+  script-src 'self' 'sha256-x96yjgrbSCIxNW4XG3OYcicTEBpx1tOzCCP0Lf7ZDtY=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-08-14",
+  "dateModified": "2026-08-22",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -90,6 +90,9 @@
       "Pre-registered statistical analysis",
       "Computer vision",
       "AI agent evaluation and determinism",
+      "Algorithm-based fault tolerance",
+      "Silent data corruption and GPU numerics",
+      "Extreme value statistics",
       "Integrity monitoring and GPS-denied positioning",
       "SLAM and state estimation"
     ],
@@ -99,6 +102,7 @@
     ],
     "sameAs": [
       "https://github.com/GautamTalksDev",
+      "https://orcid.org/0009-0006-7404-8877",
       "https://www.linkedin.com/in/gautam-khosla/",
       "https://www.youtube.com/@GautamKhoslaOfficial",
       "https://www.instagram.com/gautamk.talks/",
@@ -136,6 +140,12 @@
         "@type": "Article",
         "name": "Cairn Engineering Log",
         "url": "https://gautamkhosla.com/cairn.html"
+      },
+      {
+        "@type": "ScholarlyArticle",
+        "name": "Calibrating the Checksum: An Empirical False-Positive Bound for One-Sided ABFT on bfloat16 GEMM, and What It Fails to Catch",
+        "identifier": "https://doi.org/10.5281/zenodo.22054179",
+        "url": "https://gautamkhosla.com/assay.html"
       }
     ]
   }
@@ -321,28 +331,37 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">APPEND-ONLY MERKLE LOG · DIFF CLASSIFIER</text>
-              <g stroke="#2A2C33" stroke-width="1.5" fill="none">
-                <path d="M60 150 L110 105 M160 150 L110 105 M260 150 L310 105 M360 150 L310 105 M110 105 L210 60 M310 105 L210 60"/>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">DETECTION BY BIT POSITION &#183; bf16 GEMM</text>
+              <g font-family="monospace" font-size="9.5" fill="#D7DBE4">
+                <text x="10" y="46">EXP</text>
+                <rect x="86" y="36" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a1" x="86" y="36" width="175" height="13" fill="#FF4100"/>
+                <text x="326" y="46" fill="#FF4100">76%</text>
+                <text x="10" y="76">SIGN</text>
+                <rect x="86" y="66" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a2" x="86" y="66" width="178" height="13" fill="#6B7280"/>
+                <text x="326" y="76" fill="#6B7280">77%</text>
+                <text x="10" y="106">MAN HI</text>
+                <rect x="86" y="96" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a3" x="86" y="96" width="16" height="13" fill="#6B7280"/>
+                <text x="326" y="106" fill="#6B7280">5%</text>
+                <text x="10" y="136">MAN LO</text>
+                <rect x="86" y="126" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <text x="326" y="136" fill="#C4453A">0%</text>
+                <text x="96" y="136" fill="#C4453A" font-size="9">blind</text>
               </g>
-              <rect class="pleaf p1" x="46"  y="150" width="28" height="20" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect class="pleaf p2" x="146" y="150" width="28" height="20" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect class="pleaf p3" x="246" y="150" width="28" height="20" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect class="pleaf p4" x="346" y="150" width="28" height="20" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect x="92"  y="94" width="36" height="22" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect x="292" y="94" width="36" height="22" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
-              <rect class="proot" x="188" y="48" width="44" height="24" fill="#2A2C33" stroke="#FF4100" stroke-width="2"/>
-              <text x="196" y="65" fill="#FF4100" font-family="monospace" font-size="10">ROOT</text>
-              <text x="10" y="196" fill="#6B7280" font-family="monospace" font-size="9.5">GREY = COSMETIC  ·  ORANGE = CAPABILITY-RELEVANT</text>
-              <text x="10" y="212" fill="#6B7280" font-family="monospace" font-size="9">KT-1 / KT-2 KILL TESTS DECIDE IF THIS SHIPS AT ALL</text>
+              <line class="abar-line" x1="293" y1="28" x2="293" y2="146" stroke="#C4453A" stroke-width="2" stroke-dasharray="5 4"/>
+              <text x="228" y="166" fill="#C4453A" font-family="monospace" font-size="9">PRE-REGISTERED BAR 90%</text>
+              <text x="10" y="188" fill="#6B7280" font-family="monospace" font-size="9">CALIBRATED ON 8 x 10^7 CLEAN RESIDUALS &#183; FPR 1e-6 PER GEMM</text>
+              <text x="10" y="206" fill="#6B7280" font-family="monospace" font-size="9">INJECTED AT THE OUTPUT TENSOR. NOT A CLAIM ABOUT REAL SILICON.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE C/F · TRANSPARENCY / GO</div>
-            <h3>Plumbline <span class="net-tag cloud">LIVE LOG</span></h3>
-            <div class="tg">Watching what agent tools quietly change about themselves</div>
-            <p>MCP servers can rewrite a tool's description after you trusted it. Plumbline canonicalizes, hashes into an append-only merkle log, and classifies each diff as cosmetic or capability-relevant. Anyone can verify the log independently.</p>
-            <a href="plumbline.html">READ THE ENGINEERING LOG →</a>
+            <div class="sk">SHOWCASE C/F &#183; NUMERICS / PUBLISHED</div>
+            <h3>assay-gpu <span class="net-tag edge">PEER-SHAREABLE &#183; DOI</span></h3>
+            <div class="tg">The detector that failed its own test</div>
+            <p>Silicon sometimes returns a wrong answer silently. The 1984 checksum that catches it has a threshold that is undefined at bfloat16, so I measured the distribution instead and calibrated one. It catches 76% of exponent-bit flips against a 90% bar I registered first, and none of 600 low-mantissa flips. Four predictions failed, four findings retracted, all published.</p>
+            <a href="assay.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
 
@@ -438,19 +457,25 @@
 
 
     <div class="more-grid reveal">
-      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p></div>
-      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p></div>
-      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p></div>
-      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p></div>
-      <div class="mini"><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p></div>
-      <div class="mini"><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p></div>
-      <div class="mini"><h4>NeuroDesk</h4><p>Agentic middleware turning natural language into audited action: budgets, approval gates, full transaction log.</p></div>
-      <div class="mini"><h4>Omni-Context OS</h4><p>Stateful RAG memory across Slack, email, and web. Top 9 at Backboard.io × McHacks.</p></div>
+      <div class="mini"><span class="mid">A-01</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><div class="mtags"><i>PYTHON</i><i>FASTAPI</i><i>SNOWFLAKE</i><i>MONGODB</i></div></div>
+      <div class="mini"><span class="mid">A-02</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p><div class="mtags"><i>TYPESCRIPT</i><i>HONO</i><i>BULLMQ</i><i>POSTGRES</i></div></div>
+      <div class="mini"><span class="mid">A-03</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p><div class="mtags"><i>5 AGENTS</i><i>BULLMQ</i><i>ZOD</i><i>TURBOREPO</i></div></div>
+      <div class="mini"><span class="mid">A-04</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p><div class="mtags"><i>POSTGRES RLS</i><i>WEBSOCKETS</i><i>STRIPE</i><i>METERING</i></div></div>
+      <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p><div class="mtags"><i>SLACK</i><i>FASTIFY</i><i>CF WORKERS</i></div></div>
+      <div class="mini"><span class="mid">A-06</span><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p><div class="mtags"><i>NATS</i><i>14 LIVE APIS</i><i>DIGITAL TWIN</i><i>TEAM OF 4</i></div></div>
+      <div class="mini"><span class="mid">A-07</span><h4>NeuroDesk</h4><p>Agentic middleware turning natural language into audited action: budgets, approval gates, full transaction log.</p><div class="mtags"><i>FASTAPI</i><i>REDIS</i><i>SSE</i><i>APPROVAL GATES</i></div></div>
+      <div class="mini"><span class="mid">A-08</span><h4>Omni-Context OS</h4><p>Stateful RAG memory across Slack, email, and web. Top 9 at Backboard.io &#215; McHacks.</p><div class="mtags"><i>RAG</i><i>SLACK</i><i>EMAIL</i><i>WEB</i></div></div>
     </div>
 
     <div class="cmds reveal">
-      <div class="cmds-head"><span><b>COMMENDATIONS</b></span><span class="cmds-note">JUDGED WORK &#183; NOT SELF-REPORTED</span></div>
-      <div class="cmds-grid">
+      <div class="cmds-head"><span><b>COMMENDATIONS &amp; PUBLICATIONS</b></span><span class="cmds-note">JUDGED OR PUBLISHED &#183; NOT SELF-REPORTED</span></div>
+      <div class="cmds-grid cmds-3">
+        <div class="cmd">
+          <span class="cmd-medal" aria-hidden="true">&#128220;</span>
+          <div class="cmd-title">Calibrating the Checksum</div>
+          <div class="cmd-org">First research paper &#183; DOI 10.5281/zenodo.22054179</div>
+          <div class="cmd-proj"><a rel="noopener noreferrer external" href="https://doi.org/10.5281/zenodo.22054179">assay-gpu</a> <span class="cmd-sub">&#183; CC BY 4.0, data and pre-registrations released</span></div>
+        </div>
         <div class="cmd">
           <span class="cmd-medal" aria-hidden="true">&#127942;</span>
           <div class="cmd-title">Best Use of Snowflake API</div>
@@ -472,9 +497,9 @@
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><div class="num" data-count="6" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
+      <div class="stat"><div class="num" data-count="7" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
       <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
-      <div class="stat"><div class="num" data-count="6">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
+      <div class="stat"><div class="num" data-count="7">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
     </div>
   </div>
