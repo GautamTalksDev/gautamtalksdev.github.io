@@ -95,7 +95,7 @@
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
-    work: () => 'AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
+    work: () => 'assay-gpu [published \u00b7 DOI]  AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
     edition: () => 'today: <b>' + (window.__EDITION ? window.__EDITION.id : 'SAFETY') + '</b> · this site reissues itself daily from a date seed. come back tomorrow.',
@@ -551,6 +551,8 @@
       ['Read the label-to-lab log (a study that failed)', 'GK-005', () => location.href = 'labtolab.html'],
       ['Read the Vernier log (temperature 0 is not deterministic)', 'GK-006', () => location.href = 'vernier.html'],
       ['Read the Cairn log (when a robot is confidently lost)', 'GK-007', () => location.href = 'cairn.html'],
+      ['Read the assay-gpu log (a detector that failed its own bar)', 'GK-008', () => location.href = 'assay.html'],
+      ['Read the paper (DOI)', 'PAPER', () => open('https://doi.org/10.5281/zenodo.22054179', '_blank', 'noopener')],
       ['View selected work', 'GO', () => location.hash = '#work'],
       ['Operating principles', 'GO', () => location.hash = '#principles'],
       ['Field record', 'GO', () => location.hash = '#experience'],
@@ -624,6 +626,31 @@
   }
   document.querySelectorAll('.scramble').forEach(el => el.addEventListener('mouseenter', () => scramble(el)));
   document.querySelectorAll('.scramble-auto').forEach(el => setTimeout(() => scramble(el), 1300));
+
+  /* ---- also-built cards: pointer-tracked 3D tilt, no library ----
+     CSS perspective plus a rotate driven by cursor position inside the card.
+     The existing hard shadow shifts with the tilt so the depth reads as one
+     object rather than a flat card with a sticker behind it. */
+  if (matchMedia('(hover:hover)').matches) {
+    document.querySelectorAll('.more-grid .mini').forEach(card => {
+      card.addEventListener('pointermove', e => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - .5;
+        const py = (e.clientY - r.top) / r.height - .5;
+        const ry = (px * 9).toFixed(2), rx = (-py * 7).toFixed(2);
+        card.classList.add('tilting');
+        card.style.transform = 'perspective(1100px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translate3d(-3px,-3px,14px)';
+        card.style.boxShadow = (5 - px * 4).toFixed(1) + 'px ' + (5 - py * 4).toFixed(1) + 'px 0 var(--orange)';
+      });
+      const reset = () => {
+        card.classList.remove('tilting');
+        card.style.transform = '';
+        card.style.boxShadow = '';
+      };
+      card.addEventListener('pointerleave', reset);
+      card.addEventListener('pointercancel', reset);
+    });
+  }
 
   /* ---- draggable badge with spring-back ---- */
   const badge = $('#badge');
