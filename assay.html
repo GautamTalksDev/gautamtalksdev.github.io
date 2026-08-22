@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Q24J/d20AmMoN1Dfj7w80ussSIxBInbLUn90GT0YNpw='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-008 · The detector that failed its own test · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-008. I calibrated a checksum fault detector for bfloat16 matrix multiplication in a regime where the classical threshold is undefined, then measured that it catches 76% against a bar of 90% I had registered in advance. Four predictions failed. Four findings were retracted.">
+<link rel="canonical" href="https://gautamkhosla.com/assay.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The detector that failed its own test">
+<meta property="og:description" content="A checksum that catches three quarters of the errors it was built for, and why I published that.">
+<meta property="og:url" content="https://gautamkhosla.com/assay.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"Calibrating the Checksum: An Empirical False-Positive Bound for One-Sided ABFT on bfloat16 GEMM, and What It Fails to Catch","description":"An empirically calibrated detection threshold for one-sided checksum ABFT at bfloat16, in a regime where the classical threshold is undefined, and a bit-stratified characterization of what the resulting detector fails to catch.","url":"https://gautamkhosla.com/assay.html","identifier":"https://doi.org/10.5281/zenodo.22054179","datePublished":"2026-08-22","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"assay-gpu","codeRepository":"https://github.com/GautamTalksDev/assay-gpu","programmingLanguage":"Python","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-008 · assay-gpu</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    <span>DOC <b>GK-008</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>ASSAY-GPU</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    The detector<br>
+    <span class="v-out">that failed</span><br>
+    its <span class="v-acc">own test.</span>
+  </h1>
+
+  <p class="v-stand">
+    Hardware sometimes returns a wrong answer without saying so. There is a cheap check for it from
+    1984, but its threshold is mathematically undefined at the precision machine learning actually
+    runs in. I measured the distribution the threshold was supposed to describe, calibrated one from
+    it, and then measured that the detector catches 76% of what it was built to catch against a bar
+    of 90% I had written down first. Paper:
+    <a href="https://doi.org/10.5281/zenodo.22054179" rel="noopener noreferrer external">doi.org/10.5281/zenodo.22054179</a>.
+    Code and pre-registrations:
+    <a href="https://github.com/GautamTalksDev/assay-gpu" rel="noopener noreferrer external">assay-gpu</a>.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A computation completes normally and returns a wrong answer, with no crash and no error reported">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT SILENT CORRUPTION LOOKS LIKE FROM SOFTWARE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="36" width="112" height="30" fill="#2A2C33"/><text x="16" y="55">issue GEMM</text>
+          <rect x="140" y="36" width="112" height="30" fill="#2A2C33"/><text x="156" y="55">multiply</text>
+          <rect x="280" y="36" width="112" height="30" fill="#2A2C33"/><text x="296" y="55">complete</text>
+          <rect x="420" y="36" width="130" height="30" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/><text x="436" y="55" fill="#C4453A">wrong answer</text>
+        </g>
+        <path class="v-flow" d="M114 51 H140 M254 51 H280 M394 51 H420" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <text x="0" y="96" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#16A34A">exit code 0 &#183; no exception &#183; no ECC event &#183; no log line</text>
+        <line x1="0" y1="112" x2="640" y2="112" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="136" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">ECC PROTECTS STORAGE. THIS HAPPENS INSIDE THE DATAPATH.</text>
+        <text x="0" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">IF THE MULTIPLY ITSELF IS WRONG, THERE IS NOTHING FOR ECC TO CORRECT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.1 · <b>Not a crash.</b> Google called the affected chips cores that don't count. Meta reported the same thing at fleet scale.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">Hardware that lies quietly</h2>
+
+    <p>Not a crash. Not an exception. The computation finishes, the number is wrong, and nothing
+    anywhere reports a problem. Google traced this to manufacturing defects in CPU cores. Meta
+    reported it at fleet scale. Both found rates higher than software engineers assume.</p>
+
+    <p>Error-correcting memory does not help, because the corruption happens inside the datapath
+    rather than in storage. If a multiply produces the wrong result, ECC has nothing to correct.</p>
+
+    <p>For machine learning workloads the obvious place to look is matrix multiplication, which is
+    where nearly all the arithmetic happens.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The classical ABFT threshold requires Ku below 0.01, which holds at float32 and fails at float16 and bfloat16">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">THE CHECK: COMPARE Ce AGAINST A(Be). TWO PATHS, ONE QUANTITY.</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="30" width="118" height="26" fill="#2A2C33"/><text x="16" y="47">C e</text>
+          <rect x="0" y="62" width="118" height="26" fill="#2A2C33"/><text x="16" y="79">A (B e)</text>
+        </g>
+        <path class="v-flow" d="M120 43 L168 59 M120 75 L168 59" fill="none" stroke="#6B7280" stroke-width="1.8"/>
+        <rect x="172" y="46" width="150" height="26" fill="#2A2C33" stroke="#FF4100" stroke-width="1.6"/>
+        <text x="186" y="63" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">disagree &gt; tau ?</text>
+        <text x="332" y="63" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">tau = K u , requires K u &#8804; 0.01</text>
+
+        <line x1="0" y1="102" x2="640" y2="102" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="124" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">AT K = 4096, THE EMBEDDING DIMENSION TRANSFORMERS USE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="0" y="136" width="200" height="22" fill="#2A2C33"/>
+          <text x="12" y="151" fill="#D7DBE4">float32   Ku = 0.0005</text>
+          <text x="212" y="151" fill="#16A34A" font-weight="600">HOLDS</text>
+          <rect x="300" y="136" width="180" height="22" fill="#2A2C33"/>
+          <text x="312" y="151" fill="#D7DBE4">float16   Ku = 4</text>
+          <text x="492" y="151" fill="#C4453A" font-weight="600">FAILS</text>
+          <rect x="0" y="162" width="200" height="22" fill="#2A2C33" stroke="#FF4100" stroke-width="1.4"/>
+          <text x="12" y="177" fill="#FF4100">bfloat16  Ku = 32</text>
+          <text x="212" y="177" fill="#FF4100" font-weight="600">FAILS BY 3200x</text>
+          <text x="300" y="177" fill="#6B7280" font-size="9.5">and bfloat16 is what large models run in</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 08.2 · <b>Past float32 the threshold is not conservative. It is undefined.</b></figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">A 1984 check with a 2026 problem</h2>
+
+    <p>Algorithm-based fault tolerance, from Huang and Abraham in 1984: compute <code>C = A × B</code>,
+    then verify an identity that must hold in exact arithmetic. Take a vector of ones <code>e</code>
+    and compare <code>Ce</code> against <code>A(Be)</code>. Two paths to the same quantity. If they
+    disagree by more than rounding explains, something went wrong. The check costs a small fraction
+    of the multiply it protects.</p>
+
+    <p>The catch is the phrase "more than rounding explains".</p>
+
+    <p>Floating-point arithmetic makes the two paths disagree even when the hardware is perfect, so
+    the detector needs a tolerance. The classical tolerance inherits a condition from the rounding
+    bound it comes from: <code>Ku ≤ 0.01</code>. At bfloat16 with a contraction length of 4096,
+    <code>Ku</code> is about 32.</p>
+
+    <p class="v-pull">This is not hypothetical. Prior work testing checksum ABFT against real
+    corruption on genuinely unhealthy production nodes ran at float32 for exactly this reason,
+    reported false positives on healthy hardware at bfloat16, and named the extension to
+    low-precision datatypes as open work.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fitting a Generalized Pareto distribution to eighty million clean residuals and extrapolating a threshold at a stated false positive rate">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">MEASURE THE DISTRIBUTION THE BOUND WAS MEANT TO DESCRIBE</text>
+
+        <path d="M0 140 C 60 140, 90 40, 150 40 C 210 40, 250 132, 340 138 L 560 140" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <line x1="0" y1="140" x2="600" y2="140" stroke="#2A2C33" stroke-width="1"/>
+        <text x="24" y="60" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">7.99 x 10^7 clean per-row residuals</text>
+
+        <line x1="340" y1="26" x2="340" y2="150" stroke="#2A2C33" stroke-width="1.4" stroke-dasharray="4 4"/>
+        <text x="346" y="38" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">p99, fit starts here</text>
+
+        <path class="v-fork" d="M340 138 L420 139 L500 140 L575 140" fill="none" stroke="#FF4100" stroke-width="2.4"/>
+        <circle class="v-pulse" cx="575" cy="140" r="5" fill="#FF4100"/>
+        <text x="404" y="118" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">GPD tail fit, extrapolated</text>
+
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">tau = 3.1445 x 10^-6</text>
+        <text x="196" y="170" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">at a per-GEMM false-positive rate of 1 in a million</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.3 · <b>Not a better bound, a measured one.</b> The method and its abort conditions were fixed in writing before the tail was examined.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">Calibrate instead of derive</h2>
+
+    <p>I did not derive a better bound. I measured the distribution the bound was supposed to
+    describe, and calibrated a threshold from it.</p>
+
+    <p>Collect the residual from roughly 80 million clean per-row checks on correct hardware, fit a
+    Generalized Pareto distribution to the tail using peaks-over-threshold, and extrapolate to the
+    quantile corresponding to a per-GEMM false-positive rate of one in a million. That gives a
+    threshold with a stated error rate behind it, in a regime where the theoretical threshold has
+    gone vacuous.</p>
+
+    <p>The per-GEMM to per-row conversion assumes the 4096 row tests are independent. Rather than
+    assert that, I measured it: exceedance counts have variance 39.93 against 40.55 for the matching
+    binomial, a ratio of 0.985. Slightly under-dispersed relative to independent trials, which
+    supports the conversion at the fitting threshold and does not establish independence deep in the
+    tail. That last part is carried forward as a stated assumption rather than quietly dropped.</p>
+
+    <p>Total compute spend: zero dollars. Everything ran on free-tier Kaggle T4s.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The detector catches 304 of 400 single exponent bit flips, 76 percent, against a pre-registered bar of 90 percent">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">SINGLE EXPONENT-BIT FLIPS DETECTED, SCORED AT TAU</text>
+
+        <rect x="0" y="44" width="540" height="30" fill="#2A2C33"/>
+        <rect class="v-creep" x="0" y="44" width="410" height="30" fill="#FF4100"/>
+        <line x1="486" y1="32" x2="486" y2="88" stroke="#C4453A" stroke-width="2.4" stroke-dasharray="5 4"/>
+        <text x="420" y="26" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C4453A">BAR: 90%</text>
+
+        <text x="556" y="66" font-family="IBM Plex Mono, monospace" font-size="18" font-weight="600" fill="#FF4100">76%</text>
+        <text x="0" y="102" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">304 / 400</text>
+        <text x="94" y="102" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">Tesla T4 &#183; bf16 &#183; 4096 cubed</text>
+
+        <g class="v-stamp">
+          <rect x="212" y="116" width="196" height="34" fill="none" stroke="#C4453A" stroke-width="2.6"/>
+          <text x="310" y="139" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" letter-spacing="2" fill="#C4453A">KT-1 FAIL</text>
+        </g>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">THE BAR WAS IN THE README</text>
+        <text x="0" y="156" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">BEFORE ANY CODE EXISTED.</text>
+        <text x="424" y="140" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">IT WAS NEVER MOVED.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.4 · <b>Setting the bar at 75% after seeing 76% would mean nothing.</b> Setting it at 90% first and reporting 76% is the only version that carries information.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">76% against a bar of 90%</h2>
+
+    <p>The detector catches 304 of 400 single exponent-bit flips. The bar was 90%, written into the
+    repository README before any code was written, and never moved.</p>
+
+    <p>Two points of provenance, because a threshold-dependent number invites the obvious question.
+    The same quantity is 75.25% at one observed clean maximum and 80% at another. Those differ
+    because an observed maximum is a sample statistic that grows with the sample size, not because
+    any rule or fit changed. I report 76% as canonical because the calibrated threshold is the only
+    one with a stated false-positive rate behind it, and it happens to fall between the two sample
+    maxima, so it is not an artifact of either run.</p>
+
+    <p>The verdict was also determined before the fit existed. It was recorded in advance that the
+    extrapolated threshold would land at or above the observed clean maximum, and that detection is
+    monotone non-increasing in threshold, so 75.25% already bounded detection from above at any
+    defensible operating point. The bar was unreachable before the number was known.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Low mantissa flips are detected zero times out of six hundred, and one two and four flips produce identical residuals">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">LOW-MANTISSA FLIPS, DETECTED AT TAU</text>
+
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="200" height="26" fill="#2A2C33"/><text x="12" y="49" fill="#D7DBE4">1 flip</text><text x="150" y="49" fill="#C4453A" font-weight="600">0 / 200</text>
+          <rect x="0" y="62" width="200" height="26" fill="#2A2C33"/><text x="12" y="79" fill="#D7DBE4">2 flips</text><text x="150" y="79" fill="#C4453A" font-weight="600">0 / 200</text>
+          <rect x="0" y="92" width="200" height="26" fill="#2A2C33"/><text x="12" y="109" fill="#D7DBE4">4 flips</text><text x="150" y="109" fill="#C4453A" font-weight="600">0 / 200</text>
+        </g>
+
+        <text x="232" y="49" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">residual ratios, four significant figures:</text>
+        <text x="232" y="72" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">0.5247   0.6217   0.827</text>
+        <text x="232" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">0.5247   0.6217   0.827</text>
+        <text x="232" y="108" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">0.5247   0.6217   0.827</text>
+        <text x="232" y="128" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">MORE CORRUPTION PRODUCES THE SAME RESIDUAL</text>
+
+        <line x1="0" y1="142" x2="640" y2="142" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">NOT A TUNING PROBLEM. THE THRESHOLD IS BOUNDED BELOW BY THE FALSE-POSITIVE REQUIREMENT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.5 · <b>A hard negative.</b> A mantissa-LSB perturbation sits below the accumulation noise floor, and no number of them clears it.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Zero out of six hundred</h2>
+
+    <p>Low-mantissa flips are detected in zero samples in every cell. And more corruption does not
+    help: one flip, two flips, and four flips produce residuals identical to four significant
+    figures.</p>
+
+    <p>I checked whether that was an artifact of my injector rather than a property of the detector,
+    on the theory that a low-mantissa flip might be rounded away by the cast back to bfloat16. It
+    is not. Across 50 samples per class, zero injected flips were discarded and every sample showed
+    a strictly positive relative delta. The perturbations are real and the detector does not see
+    them.</p>
+
+    <p>This matters more than the 76% does. A perturbation below the accumulation floor is not
+    recoverable by lowering the threshold, because the threshold is bounded below by the
+    false-positive requirement. It is a blind spot, not a setting.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Detection stays flat across a sixteen fold range of contraction length, falsifying the mechanism the study was designed around">
+        <line x1="46" y1="120" x2="620" y2="120" stroke="#6B7280" stroke-width="1"/>
+        <line x1="46" y1="26" x2="46" y2="120" stroke="#6B7280" stroke-width="1"/>
+        <text x="0" y="32" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">DETECT</text>
+
+        <path d="M60 60 L190 74 L320 86 L450 98 L580 108" fill="none" stroke="#2A2C33" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="360" y="112" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">predicted: falls with K</text>
+
+        <path class="v-fork" d="M60 62 L190 68 L320 72 L450 58 L580 66" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+        <g fill="#FF4100" font-family="IBM Plex Mono, monospace" font-size="9">
+          <circle cx="60" cy="62" r="4"/><text x="48" y="50">79</text>
+          <circle cx="190" cy="68" r="4"/><text x="178" y="56">75</text>
+          <circle cx="320" cy="72" r="4"/><text x="308" y="60">73</text>
+          <circle cx="450" cy="58" r="4"/><text x="438" y="46">81</text>
+          <circle cx="580" cy="66" r="4"/><text x="568" y="54">77</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280" text-anchor="middle">
+          <text x="60" y="136">K=512</text><text x="190" y="136">1024</text><text x="320" y="136">2048</text><text x="450" y="136">4096</text><text x="580" y="136">8192</text>
+        </g>
+        <text x="0" y="162" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">NO TREND ACROSS A 16x RANGE. THE PRE-REGISTERED FALSIFIER FIRED.</text>
+        <text x="0" y="180" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">SIGNAL AND FLOOR BOTH SCALE WITH K. THEIR RATIO IS WHAT THE DETECTOR TESTS.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.6 · <b>The mechanism the study was built on.</b> The clean floor falls as K to the power minus 0.4999, and the signal scales against the same growing normalizer.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">The mechanism was wrong</h2>
+
+    <p>The intuition is natural: a fixed single-element error should get harder to spot as the row
+    sum it is hiding in grows. I believed it firmly enough to design an experiment around it, and I
+    registered the prediction in advance along with a falsifier. If detection stayed flat across a
+    16x range of contraction length, the mechanism was wrong.</p>
+
+    <p>The falsifier fired. Sign-flip detection at K from 512 to 8192: 79%, 75%, 73%, 81%, 77%. No
+    trend. Eight points of spread, consistent with sampling noise.</p>
+
+    <p>The clean noise floor does fall with K, at a measured exponent of minus 0.4999 over the full
+    range, which is about as clean a square-root law as you get from real hardware. But the
+    threshold is derived from that floor, and the signal scales against the same growing normalizer.
+    Signal and floor move together, and their ratio is what the detector actually tests.</p>
+
+    <p class="v-pull">What governs detectability is which bit flipped, not how long the contraction
+    was. Anyone reasoning about ABFT sensitivity from row-sum magnitude should check whether their
+    normalizer cancels the effect they are predicting.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="An infinite residual is the loudest possible signal and a naive comparison operator scores it as not detected">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">THE BUG THAT MANUFACTURED A FINDING</text>
+
+        <rect x="0" y="32" width="300" height="26" fill="#2A2C33"/>
+        <text x="12" y="49" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">residual = inf</text>
+        <text x="200" y="49" font-family="IBM Plex Mono, monospace" font-size="10" fill="#16A34A">caught</text>
+
+        <rect x="0" y="62" width="300" height="26" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/>
+        <text x="12" y="79" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C4453A">residual = nan</text>
+        <text x="200" y="79" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C4453A">scored as MISS</text>
+
+        <text x="330" y="49" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">r &gt; tau  is true for inf</text>
+        <text x="330" y="79" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">r &gt; tau  is FALSE for nan</text>
+
+        <line x1="0" y1="104" x2="640" y2="104" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="128" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">10 of 15 affected cells &#183; up to 14% of samples &#183; two runs agreed</text>
+        <text x="0" y="150" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">THE SECOND RUN WAS THE SAME BUG, NOT INDEPENDENT CONFIRMATION.</text>
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">THE CASE THAT MOST OBVIOUSLY INDICATES FAILURE IS THE CASE COMPARISONS HANDLE WORST.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.7 · <b>Found in a pre-publication audit, not by prediction.</b> Under the correct predicate the reported effect vanishes entirely.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">Four predictions failed. Four findings were retracted.</h2>
+
+    <p>Three of the four failed predictions were the mechanism the study was built on. Two of the
+    four retractions I caught by predicting them wrong. Two I caught by auditing my own code and
+    data in the week before publishing, which is a less flattering way to find out.</p>
+
+    <p><b>A comparison operator that discarded the loudest possible signal.</b> I had reported that
+    detection was non-monotone in flip count, meaning more corruption was detected less often, and
+    flagged it as an unexplained finding. It appeared in two separate runs, which I took as
+    corroboration. It was a bug. Exponent flips can produce a non-finite residual, which is the
+    checksum failing as loudly as it can, and a bare greater-than comparison evaluates false on a
+    NaN. Ten of fifteen affected cells contained non-finite residuals, up to 14% of samples. Under
+    the correct predicate the effect vanishes entirely and detection is monotone at every K. The
+    corroborating second run was the same bug.</p>
+
+    <p><b>A results document citing a data file that never existed.</b> Three of the paper's claims
+    rested on a JSONL file at a path that had never matched an actual filename, on a host with
+    ephemeral storage, gitignored per file. I found it, verified it reproduced every published
+    number exactly including the minus 0.4999 exponent, committed it, and recorded the provenance.
+    If I had not gone looking, the paper would have shipped with three claims nobody could
+    regenerate.</p>
+
+    <p><b>A prediction falsified at its precondition.</b> I registered a mechanism to explain the
+    mantissa floor: a flip in operand A perturbs both the numerator and the denominator of the
+    residual and may self-cancel, while a flip in B perturbs the numerator only. Then I found the
+    harness injects into the output tensor only, so no operand asymmetry exists anywhere in the
+    data. The predictions are untestable rather than unmeasured. No pass or fail is claimed, and
+    they are reported rather than deleted.</p>
+
+    <p class="v-pull">Writing the bar down first constrains what you may conclude from a
+    measurement. It does not guarantee the measurement is right.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scope boundary: corruption is injected at the output tensor and nothing here estimates fault rates in real silicon">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHERE THE CORRUPTION WAS INJECTED</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">
+          <rect x="0" y="30" width="120" height="24" fill="#2A2C33" stroke="#2A2C33"/><text x="12" y="46">operand A</text>
+          <rect x="132" y="30" width="120" height="24" fill="#2A2C33"/><text x="144" y="46">operand B</text>
+          <rect x="264" y="30" width="150" height="24" fill="#2A2C33"/><text x="276" y="46">accumulator</text>
+          <rect x="426" y="30" width="150" height="24" fill="#2A2C33"/><text x="438" y="46">control flow</text>
+        </g>
+        <text x="588" y="46" font-family="IBM Plex Mono, monospace" font-size="10" fill="#6B7280">never</text>
+
+        <rect x="0" y="66" width="240" height="28" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+        <text x="12" y="85" font-family="IBM Plex Mono, monospace" font-size="11" fill="#FF4100">output tensor C, post-GEMM</text>
+        <text x="252" y="85" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">the only thing perturbed</text>
+
+        <line x1="0" y1="110" x2="640" y2="110" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">ONE GPU MODEL &#183; ONE WORKLOAD &#183; ONE DATATYPE &#183; ONE SHAPE FAMILY</text>
+        <text x="0" y="154" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">NO NUMBER HERE ESTIMATES HOW OFTEN ANYTHING ACTUALLY GOES WRONG IN DEPLOYED HARDWARE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.8 · <b>A characterization of a detector, not of faults in silicon.</b> Stated as a scope boundary rather than argued away.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">Scope, stated plainly</h2>
+
+    <p>All corruption here is injected, at the level of the output tensor, after the multiply
+    completes. Operands are not perturbed. Neither are accumulator intermediates, instruction
+    encodings, or control flow. Instruction-level and micro-architectural effects are invisible to
+    this model, and finer-grained injection studies operate below this abstraction.</p>
+
+    <p>Also: one GPU model, one workload, one datatype, one shape family. The noise floor is
+    per-configuration by construction and should not be carried anywhere else.</p>
+
+    <p>The fleet corruption literature motivates why a cheap detector would be worth having. It does
+    not supply these numbers, and these numbers do not speak to it.</p>
+  </section>
+
+  <!-- ================= 09 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 156" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Both kill tests failed and neither bar was moved">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">STOP CONDITIONS, WRITTEN BEFORE ANY CODE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="49" fill="#D7DBE4">KT-1  detect 90% of exponent flips below 1e-6 false positives</text>
+          <text x="556" y="49" fill="#C4453A" font-weight="600">FAIL</text>
+
+          <rect x="0" y="62" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="81" fill="#D7DBE4">KT-2  protected inference overhead under 10%</text>
+          <text x="556" y="81" fill="#C4453A" font-weight="600">FAIL</text>
+
+          <rect x="0" y="94" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="113" fill="#D7DBE4">KT-3  three companies ask unprompted within three months</text>
+          <text x="540" y="113" fill="#6B7280">NOT OPENED</text>
+        </g>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">THE 10% BAR WAS NOT MOVED TO 25%. THE WATCH PRODUCT WAS CUT INSTEAD.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 08.9 · <b>Both evaluated kill tests failed.</b> The tool still ships, and returns INCONCLUSIVE rather than guessing.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 09</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>Both kill tests failed and I cut the product rather than the bar.</b> KT-1 failed at 76%
+    against 90%. KT-2 failed on overhead, so <code>assay watch</code> is cut as a product: there is
+    no tokens-per-second delta on any GPU that clears the 10% bar at any sampling rate. The bar was
+    not moved to 25%. The detector was not retuned.</p>
+
+    <p><b>The tool refuses to guess.</b> On uncharacterized hardware <code>assay run</code> prints
+    its measurements and returns INCONCLUSIVE, exit code 2. It never emits PASS or FAIL it cannot
+    support. A false positive would tell a company its expensive GPU is broken, which is a worse
+    failure than a missed detection, so the asymmetry is deliberate.</p>
+
+    <p><b>An earlier residual definition destroyed the signal, and I called it structural.</b> The
+    first version summed the checksum vector to a scalar before comparing, discarding degrees of
+    freedom. Under it, sign and mantissa flips were undetectable in all 1800 samples, and I
+    described that as structural invisibility of the ones-vector checksum. It was not structural, it
+    was the reduction. Under the per-row form, sign detection is 155 of 200 on the same workload,
+    shape, harness, and seeds. The voided evaluation is retained in the repository.</p>
+
+    <p><b>One percentile fit could not be evaluated at all.</b> The data collection stored only the
+    top 64 per-row residuals per GEMM. At the 95th percentile that truncates every single GEMM and
+    loses roughly two thirds of exceedances, systematically the smaller ones. At the 99th percentile
+    the effect is negligible, 2 GEMMs of 19500. This was discovered after the method was locked, so
+    it is reported as a data-collection limitation with two of three refits evaluable, not as a
+    change of method.</p>
+
+    <p><b>An open discrepancy I have not resolved.</b> Two checksum reduction backends disagree, one
+    accumulating in float32 and one in float64. Every result here uses a single float64 path, but
+    the discrepancy is unresolved and a threshold calibrated on one backend should not be assumed to
+    transfer to the other.</p>
+
+    <p><b>What I would change:</b> inject at operand level, not just the output tensor. The one
+    unexplained observation in the paper, a shared minimum ratio across every mantissa cell, has a
+    candidate mechanism that my harness structurally cannot test. I registered predictions about it
+    before discovering that, which is its own small lesson about checking what your instrument can
+    reach before predicting what it will find.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://doi.org/10.5281/zenodo.22054179" rel="noopener noreferrer external">Read the paper &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://github.com/GautamTalksDev/assay-gpu" rel="noopener noreferrer external">Code &amp; pre-registrations</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-008 · assay-gpu · DOI 10.5281/zenodo.22054179</span>
+    <span><a href="/cairn.html">Previous log: GK-007 · Cairn &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
