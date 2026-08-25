@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-9dmkaJiz8CrEFJxZWfgsnWizMLeYVv79cPOXQvlZINE='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-009 · It failed three times, and the third one found the other two · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-009. LADING tried to prove vulnerabilities were absent from shipped binaries. 99.6% of findings stopped before a binary was ever opened, every clearance it did make was unfalsifiable, and the fix for that was aimed one layer too shallow. Both kill tests resolved against it and the project stopped.">
+<link rel="canonical" href="https://gautamkhosla.com/lading.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="It failed three times, and the third one found the other two">
+<meta property="og:description" content="A tool that tried to prove vulnerabilities were absent from shipped software. It did not work. This is the measurement of how it failed.">
+<meta property="og:url" content="https://gautamkhosla.com/lading.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"Binary Grounded VEX Clearance Fails Three Times: Upstream of Evidence, on Internal Symbols, and on Version Applicability","description":"A pre registered negative result, and two corrections to it, across 55 scanned artifacts and 15,641 scanner findings. Both kill tests resolved against the approach and the project stopped by its own rule.","url":"https://gautamkhosla.com/lading.html","identifier":"https://doi.org/10.5281/zenodo.22099794","datePublished":"2026-08-25","inLanguage":"en","license":"https://creativecommons.org/licenses/by/4.0/","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"LADING","codeRepository":"https://github.com/GautamTalksDev/Lading","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-009 · LADING</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    <span>DOC <b>GK-009</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>LADING</b></span>
+    <span>STATUS <b>ARCHIVED</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    It failed<br>
+    <span class="v-out">three times.</span><br>
+    The third found<br>
+    the <span class="v-acc">other two.</span>
+  </h1>
+
+  <p class="v-stand">
+    Regulators now ask software makers to say which known flaws actually reach their product. I
+    built a tool to answer that from the shipped binary, wrote two stop conditions into the README
+    before writing any code, and both resolved against the approach. The project is archived. The
+    paper, the dataset, and two upstream bug reports are the output. Paper:
+    <a href="https://doi.org/10.5281/zenodo.22099794" rel="noopener noreferrer external">10.5281/zenodo.22099794</a>.
+    Dataset: <a href="https://doi.org/10.5281/zenodo.22093232" rel="noopener noreferrer external">10.5281/zenodo.22093232</a>.
+    Code: <a href="https://github.com/GautamTalksDev/Lading" rel="noopener noreferrer external">Lading</a>.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A scanner returns hundreds of findings and somebody must justify each one, because reachability starts or does not start a regulatory clock">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE FIRMWARE IMAGE, ONE SCANNER RUN</text>
+        <rect x="0" y="30" width="180" height="30" fill="#2A2C33"/>
+        <text x="14" y="50" font-family="IBM Plex Mono, monospace" font-size="12" fill="#D7DBE4">hundreds of CVEs</text>
+        <path class="v-flow" d="M182 45 H236" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <text x="244" y="50" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#6B7280">somebody must justify every row</text>
+
+        <line x1="0" y1="80" x2="640" y2="80" stroke="#2A2C33" stroke-width="1"/>
+
+        <rect x="0" y="98" width="290" height="30" fill="#2A2C33" stroke="#16A34A" stroke-width="1.6"/>
+        <text x="14" y="118" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#16A34A">unreachable &#183; clock does not start</text>
+        <rect x="320" y="98" width="290" height="30" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/>
+        <text x="334" y="118" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#C4453A">reachable &#183; mandatory reporting clock</text>
+
+        <text x="0" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">UNDER THE EU CYBER RESILIENCE ACT THIS STOPPED BEING PAPERWORK AND BECAME A DEADLINE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.1 · <b>The economics are why anyone would automate this.</b> Hundreds of findings per release, each needing a written justification.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">The problem in plain language</h2>
+
+    <p>Modern software is assembled from thousands of pieces written by other people. Somebody
+    publishes a list of known security flaws in those pieces. A scanner compares your product
+    against that list and hands you a few hundred results.</p>
+
+    <p>Most of those results do not matter to you. The flawed feature was switched off at build
+    time, or the code was never included, or your product does not use that part at all. But
+    somebody still has to write down why each one does not matter, because regulators and customers
+    now ask.</p>
+
+    <p>So the obvious idea: automate the check. Open the file that actually ships, look for the
+    broken function, and answer yes or no.</p>
+
+    <p class="v-pull">That is the idea this repository tested. It does not work, and the interesting
+    part is exactly where it stops working.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two kill tests written into the README before any code existed, one on coverage and one on soundness">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WRITTEN AT THE FIRST COMMIT. NEITHER EVER MOVED.</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="640" height="42" fill="#2A2C33"/>
+          <text x="12" y="50" fill="#D7DBE4">KT-1  can it decide at scale?</text>
+          <text x="12" y="66" fill="#6B7280">bar: 30% of findings resolve to a decidable clearance</text>
+          <text x="470" y="58" fill="#FF4100" font-weight="600">NOT EVALUABLE</text>
+
+          <rect x="0" y="80" width="640" height="42" fill="#2A2C33"/>
+          <text x="12" y="98" fill="#D7DBE4">KT-2  are its decisions sound?</text>
+          <text x="12" y="114" fill="#6B7280">bar: zero false clearances. not a rate. one.</text>
+          <text x="518" y="106" fill="#C4453A" font-weight="600">FAIL</text>
+        </g>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">A FALSE REFUSAL COSTS A REVIEWER TIME.</text>
+        <text x="0" y="162" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">A FALSE CLEARANCE REMOVES A REAL VULNERABILITY FROM SOMEBODY'S RADAR.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.2 · <b>The asymmetry is deliberate.</b> KT-2's bar was one, because there is no partial credit on a claim filed with a regulator.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">Two bars, set before any code existed</h2>
+
+    <p>LADING was refusal-first. It emitted a clearance only when it could point at specific bytes
+    on disk and re-derive the reasoning offline. Anything short of that produced
+    "under investigation". No scoring, no heuristic, no model in the decision path.</p>
+
+    <p>Of the five justifications the VEX standard permits, three require proving a negative about
+    program behaviour. LADING refuses to emit those at all, enforced by a CI check that greps the
+    source for them. The refusal is the positioning, not a limitation: every competitor sells
+    proprietary exploitability probabilities, and this sells the verifiable subset and openly
+    declines the rest.</p>
+
+    <p>Two thresholds went into the README at the first commit. Neither moved across three
+    instrument passes.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Termination stage histogram: 91.93 percent stop at identity resolution, 7.67 percent at manifest lookup, and zero at the symbol table stage">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHERE 15,385 FINDINGS TERMINATED</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="40" fill="#D7DBE4">S1 identity</text>
+          <rect x="130" y="30" width="420" height="14" fill="#2A2C33"/>
+          <rect class="v-bar" x="130" y="30" width="386" height="14" fill="#FF4100"/>
+          <text x="560" y="40" fill="#FF4100">91.93%</text>
+
+          <text x="0" y="64" fill="#D7DBE4">S2 manifest</text>
+          <rect x="130" y="54" width="420" height="14" fill="#2A2C33"/>
+          <rect class="v-bar v-b2" x="130" y="54" width="32" height="14" fill="#FF4100"/>
+          <text x="560" y="64" fill="#6B7280">7.67%</text>
+
+          <text x="0" y="88" fill="#C4453A">S3 symbols</text>
+          <rect x="130" y="78" width="420" height="14" fill="#2A2C33"/>
+          <text x="560" y="88" fill="#C4453A" font-weight="600">0.00%</text>
+          <text x="140" y="88" fill="#C4453A" font-size="9">the zero is the finding</text>
+
+          <text x="0" y="112" fill="#D7DBE4">S5 stripped</text>
+          <rect x="130" y="102" width="420" height="14" fill="#2A2C33"/>
+          <text x="560" y="112" fill="#C4453A" font-weight="600">0.00%</text>
+
+          <text x="0" y="136" fill="#D7DBE4">S7 decided</text>
+          <rect x="130" y="126" width="420" height="14" fill="#2A2C33"/>
+          <text x="560" y="136" fill="#6B7280">0.03%</text>
+        </g>
+        <line x1="0" y1="152" x2="640" y2="152" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="172" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">83% OF CORPUS BINARIES ARE STRIPPED. WE SPENT MONTHS DESIGNING AROUND THAT.</text>
+        <text x="0" y="190" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">THE STRIPPED GATES NEVER FIRED ONCE. THE TOOL DIED FAR UPSTREAM OF THEM.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.3 · <b>99.60% stop before any binary is opened.</b> 55 scanned directories, 53 catalogued artifacts including 12 firmware images, 15,641 scanner findings.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">Result 1: it almost never got far enough to look</h2>
+
+    <p>Out of 15,385 attributed findings across 55 scanned directories, 99.60% stopped before any
+    file was opened. Zero findings terminated at a symbol table stage.</p>
+
+    <p>The zero in the middle is the finding. Eighty three percent of the binaries in the corpus
+    have had their symbol tables stripped out, and the whole design was built around that
+    constraint. It never came up. The tool died much earlier, on the deeply unglamorous problem of
+    working out that the name a Debian scanner uses and the name an advisory uses refer to the same
+    project.</p>
+
+    <p>Termination was not uniform either. On the three RPM-based artifacts, the dominant failure
+    was not a bad mapping but no mapping at all: 19, 318 and 61 refusals with no alias entry in
+    existence. The alias seed was Debian-shaped. Identity resolution is not one problem solved once,
+    it appears to need separate work per packaging ecosystem, and a table built against one
+    distribution family underperforms on another without failing loudly.</p>
+
+    <p class="v-pull">Identity, not evidence, is the wall. Until that is solved, the interesting
+    question never gets asked.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The vulnerable function is absent from the export table but present 597 times in executable code, so the check could only ever return absent">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE SHARED LIBRARY, TWO DIFFERENT SURFACES</text>
+
+        <rect x="0" y="32" width="300" height="70" fill="#2A2C33" stroke="#6B7280" stroke-width="1.4"/>
+        <text x="14" y="52" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">EXPORT TABLE</text>
+        <text x="14" y="70" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">what other programs may call</text>
+        <text x="14" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#16A34A">function ABSENT</text>
+
+        <rect x="332" y="32" width="300" height="70" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/>
+        <text x="346" y="52" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">EXECUTABLE CODE</text>
+        <text x="346" y="70" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">everything the library actually does</text>
+        <text x="346" y="90" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C4453A">597 references PRESENT</text>
+
+        <text x="0" y="126" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">the check read the left box and made a claim about the right one</text>
+
+        <g class="v-stamp">
+          <rect x="196" y="140" width="248" height="34" fill="none" stroke="#C4453A" stroke-width="2.6"/>
+          <text x="320" y="163" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" letter-spacing="2" fill="#C4453A">UNFALSIFIABLE</text>
+        </g>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">35 OF 35</text>
+        <text x="0" y="180" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">CLEARANCES</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.4 · <b>A rule that always says yes, reporting its output as evidence.</b> The function is internal to OpenSSL and appears in no export map ever built.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">Result 2: the check could only return one answer</h2>
+
+    <p>The tool cleared 35 findings. Every one of them said: the vulnerable function is not in the
+    file, therefore you are safe.</p>
+
+    <p>The function really was absent. It was also absent from every copy of that library ever built
+    anywhere, because it is internal and never exported. A shared library presents two distinct
+    surfaces: the export table lists what other programs may call, and the executable code contains
+    everything the library does, most of which is private. The check read the export table and
+    treated absence there as evidence about the code.</p>
+
+    <div class="v-pre">$ readelf --dyn-syms -W libcrypto.so.3 | grep -i CRMF
+<i>OSSL_CRMF_ENCRYPTEDVALUE_free, OSSL_CRMF_CERTID_new, ...</i>
+<i>the vulnerable function is not among them</i>
+
+$ objdump -d libcrypto.so.3 | grep -ic crmf
+<b>597</b></div>
+
+    <p>The subsystem is compiled in. There are 597 references to it in executable code. The
+    deallocation function for the exact data type the vulnerability operates on is exported. The
+    single thing absent is the one function the check looked for, and its absence was structurally
+    guaranteed before the check ran.</p>
+
+    <p>Hand verification of 100 statements found 20 of 20 clearances false and 80 of 80 refusals
+    correct. KT-2's bar was one. It failed on the first statement examined, and would have failed on
+    any of the other nineteen.</p>
+
+    <p class="v-pull">The tool did not catch this. Nothing in its design was capable of catching it.
+    It took a person with readelf and an afternoon of suspicion.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three layers each failed to check whether the flaw applied to the shipped version">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">DID THE FLAW EVEN APPLY TO THIS VERSION?</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="48" fill="#D7DBE4">the scanner</text>
+          <text x="180" y="48" fill="#6B7280">reported findings on versions its own advisory excludes</text>
+          <text x="576" y="48" fill="#C4453A" font-weight="600">no</text>
+
+          <rect x="0" y="62" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="80" fill="#D7DBE4">the engine</text>
+          <text x="180" y="80" fill="#6B7280">loads the affected version list, never consults it</text>
+          <text x="576" y="80" fill="#C4453A" font-weight="600">no</text>
+
+          <rect x="0" y="94" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="112" fill="#D7DBE4">the human</text>
+          <text x="180" y="112" fill="#6B7280">asked if the evidence held, not if the question applied</text>
+          <text x="576" y="112" fill="#C4453A" font-weight="600">no</text>
+        </g>
+        <line x1="0" y1="138" x2="640" y2="138" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="158" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">7 OF 35 CLEARANCES WERE CORRECT FOR A REASON NEVER COMPUTED.</text>
+        <text x="0" y="172" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">ONE CVE TARGETS A SUBSYSTEM THAT DID NOT EXIST IN THE BRANCH BEING MEASURED.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.5 · <b>Found days later, after result 2 was already written up.</b> Version applicability is cheap and it is the first gate. It was never built.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Result 3: nobody checked whether the flaw applied at all</h2>
+
+    <p>Two of the four flaws in the manifest do not affect the software versions they were decided
+    on. One of them targets a subsystem that did not exist in that release. So the answer was
+    correct, arrived at by reasoning that had nothing to do with why it was correct.</p>
+
+    <p>That reclassifies 7 of the 35 clearances as correct by accident, leaving 28 unsound, and
+    corrects 4 of the 20 hand labels, leaving 16. KT-2 still fails, because the bar was one and not
+    a rate. Both columns are published rather than one replacing the other, and the labelled file
+    records the original label alongside a dated amendment rather than overwriting it.</p>
+
+    <p>My own supporting evidence had compounded the error. Having already corrected a wrong library
+    check, I went on to count references to the wrong protocol entirely, on a build that did not
+    contain the component in question, and reported those counts as proof.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The fix closed the symbol layer and left three deeper layers untouched">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT THE FIX CLOSED, AND WHAT IT DID NOT</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="640" height="26" fill="#2A2C33" stroke="#16A34A" stroke-width="1.4"/>
+          <text x="12" y="48" fill="#16A34A">symbol observability</text>
+          <text x="540" y="48" fill="#16A34A" font-weight="600">CLOSED</text>
+
+          <rect x="0" y="62" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="80" fill="#6B7280">version applicability</text>
+          <text x="536" y="80" fill="#C4453A" font-weight="600">UNTOUCHED</text>
+
+          <rect x="0" y="94" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="112" fill="#6B7280">library home binding</text>
+          <text x="536" y="112" fill="#C4453A" font-weight="600">UNTOUCHED</text>
+
+          <rect x="0" y="126" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="144" fill="#6B7280">which copy of the library was measured</text>
+          <text x="536" y="144" fill="#C4453A" font-weight="600">UNTOUCHED</text>
+        </g>
+        <text x="0" y="166" font-family="IBM Plex Mono, monospace" font-size="9" fill="#FF4100">THE RECORD LOOKS REPAIRED WHILE THE DEEPER DEFECT IS STILL THERE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.6 · <b>The most portable lesson here.</b> A correction aimed one layer too shallow is worse than none, because it stops you looking.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">The fix was aimed one layer too shallow</h2>
+
+    <p>After result 2, the rule was changed to refuse unless the manifest asserts the symbol is
+    verifiably exported. Re-running over the corpus converts all 35 clearances to refusals. The tool
+    now emits zero clearances on this corpus.</p>
+
+    <p>That is the correct behaviour and it is also not a product. A clearance tool that clears
+    nothing has removed its own reason to exist. It does not restore KT-1 either, because 99.60% of
+    findings still terminate before any binary is opened.</p>
+
+    <p>And it did not fix the defect underneath the one it was aimed at. Result 3 was sitting there
+    the whole time.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One scanner reading one image through two input paths returns 409 findings one way and 137 the other, with no error">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">SAME TOOL &#183; SAME IMAGE &#183; SAME DAY &#183; TWO INPUT PATHS</text>
+
+        <rect x="0" y="34" width="270" height="34" fill="#2A2C33" stroke="#6B7280" stroke-width="1.4"/>
+        <text x="14" y="56" font-family="IBM Plex Mono, monospace" font-size="11" fill="#D7DBE4">scan the image directly</text>
+        <text x="292" y="56" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="#D7DBE4">409</text>
+
+        <rect x="0" y="78" width="270" height="34" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/>
+        <text x="14" y="100" font-family="IBM Plex Mono, monospace" font-size="11" fill="#C4453A">scan its bill of materials</text>
+        <text x="292" y="100" font-family="IBM Plex Mono, monospace" font-size="15" font-weight="600" fill="#C4453A">137</text>
+
+        <text x="366" y="56" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">no error &#183; no warning &#183; valid file</text>
+        <text x="366" y="76" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">278 IDs in one and not the other</text>
+        <text x="366" y="94" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">6 IDs the other way. neither is a superset.</text>
+
+        <line x1="0" y1="128" x2="640" y2="128" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="150" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">ask for a different standard format:</text>
+        <text x="300" y="150" font-family="IBM Plex Mono, monospace" font-size="11" fill="#FF4100">151 packages become 1</text>
+        <text x="0" y="172" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">ZERO FLAWS REPORTED, FROM A COMPLETE AND CORRECT FILE. A ZERO LOOKS LIKE A CLEAN PRODUCT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.7 · <b>Both filed upstream with full reproductions before publication.</b> Discussions 11139 and 11140.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">A secondary result with more immediate consequence</h2>
+
+    <p>While assembling the corpus I hit something unrelated in two widely used open source tools.
+    Scan a container image directly and get 409 unique findings. Generate a bill of materials of the
+    same image and scan that, same tool, same database, same day, and get 137. No error, no warning,
+    and the file is schema valid.</p>
+
+    <p>The disagreement runs in both directions: 278 IDs appear only in the direct path and 6 only
+    in the document path, so neither result is a superset of the other and treating the direct scan
+    as ground truth overstates what the data shows. Across 22 public images, 14 are affected.</p>
+
+    <p>The second one matters more than it looks. Asked for the same inventory in a different
+    standard format, 151 packages become 1 and zero flaws are reported. A zero is indistinguishable
+    from a genuinely clean product when you are looking at it from outside, and some organisations
+    standardise on exactly that format for their regulatory paperwork.</p>
+
+    <p>Both were reported upstream with complete reproductions on public images before the paper was
+    prepared, and neither was withheld pending publication. Where an arithmetic error was later
+    found in my own filed report, I posted a correction on the same thread rather than editing the
+    original, so the record shows the correction.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three consecutive not evaluable readings trigger the pre registered stop rule">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">INSTRUMENT PASSES, EACH INTENDED TO RESTORE EVALUABILITY</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="200" height="30" fill="#2A2C33"/><text x="14" y="52" fill="#FF4100">NOT EVALUABLE</text>
+          <rect x="216" y="32" width="200" height="30" fill="#2A2C33"/><text x="230" y="52" fill="#FF4100">NOT EVALUABLE</text>
+          <rect x="432" y="32" width="200" height="30" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/><text x="446" y="52" fill="#FF4100">NOT EVALUABLE</text>
+        </g>
+        <path class="v-flow" d="M202 47 H216 M418 47 H432" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <text x="0" y="88" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">THE RULE, WRITTEN AT THE FIRST COMMIT AND NEVER EDITED:</text>
+        <text x="0" y="108" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">"three consecutive not evaluable results constitute a pattern;</text>
+        <text x="0" y="126" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">the pre registered action is stop."</text>
+        <rect x="0" y="138" width="180" height="26" fill="#C4453A"/>
+        <text x="14" y="156" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#14151A">PROJECT ARCHIVED</text>
+        <text x="200" y="156" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">the dataset, the paper and two upstream bug reports are the output</text>
+      </svg>
+      <figcaption class="v-cap">FIG 09.8 · <b>The rule also caps how many times the instrument may be repaired</b> before the result is the repair record rather than the measurement.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">Why it is archived rather than iterated</h2>
+
+    <p>KT-1 is recorded as not evaluable rather than fail, and the distinction is deliberate. A fail
+    would mean the idea was tested and lost. What happened is that the test never ran, because the
+    pipeline stopped upstream of the question. Calling it a fail would claim a measurement that was
+    never made. An earlier reading of the same data did label it fail; that label is formally
+    withdrawn and the withdrawn reading is preserved rather than deleted.</p>
+
+    <p>Three consecutive not-evaluable readings were recorded, across three instrument passes each
+    intended to restore evaluability. Under the rule written at the first commit, three is a pattern
+    and the action is stop.</p>
+
+    <p class="v-pull">Nothing here is maintained and you should not deploy it. The dataset, the
+    paper and the two upstream bug reports are the output.</p>
+  </section>
+
+  <!-- ================= 09 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 156" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four things worth knowing before building something similar">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">IF YOU ARE BUILDING SOMETHING LIKE THIS</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <rect x="0" y="28" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="45" fill="#FF4100">01</text><text x="40" y="45" fill="#D7DBE4">symbol absence proves less than it looks like it proves</text>
+          <rect x="0" y="58" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="75" fill="#FF4100">02</text><text x="40" y="75" fill="#D7DBE4">check whether the flaw applies before you check anything else</text>
+          <rect x="0" y="88" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="105" fill="#FF4100">03</text><text x="40" y="105" fill="#D7DBE4">identity resolution is not one problem solved once</text>
+          <rect x="0" y="118" width="640" height="26" fill="#2A2C33"/>
+          <text x="12" y="135" fill="#FF4100">04</text><text x="40" y="135" fill="#D7DBE4">ask the filesystem, do not assume the layout</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 09.9 · <b>All four learned the expensive way.</b> The fourth cost two near misses in one afternoon.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 09</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>I measured the wrong library, then the wrong path pattern, then evidence from a second
+    copy of a library at a different version on the same image.</b> Three instances of one defect
+    class, in a project whose entire premise was deterministic evidence. The shared mistake is
+    assuming file layout instead of asking the filesystem, and it appears a third time at the level
+    of the corpus itself, where two traversals disagree about what the corpus even is. Both are
+    published as an audit record rather than reconciled away.</p>
+
+    <p><b>My soundness pass was near-tautological before the corpus produced real verdicts.</b> An
+    early reading had KT-2 passing on 100 statements, but every one of them came from constructed
+    fixtures because zero corpus statements reached a verdict. That result meant "sound on inputs I
+    designed". The ground truth was rebuilt from real pipeline output, and that is the version that
+    failed.</p>
+
+    <p><b>Precision and recall of 1.000 is in the data, and printing it alone would be a lie.</b>
+    Per reason code, the refusal rows score perfectly. The clearances carry no reason code and
+    appear in the same table with recall 0.000 and 20 false negatives. An accurate sentence
+    assembled into a false impression is still a false impression, so the two are always printed
+    together.</p>
+
+    <p><b>The corpus was probably the wrong corpus.</b> LADING reads native symbols, and much of the
+    CVE mass in general-purpose container images is Go and npm packages with no symbol table to
+    interrogate. The firmware stratum, where the binary profile was most favourable at 75.5%
+    stripped against 96.6% in containers, is also where identity resolution performed worst. I would
+    run the packaging-ecosystem histogram before writing another line of the mapping layer.</p>
+
+    <p><b>I do not redistribute the scanned artifacts.</b> The corpus contains proprietary vendor
+    firmware whose licences do not permit republishing. The catalogue records a source URL and a
+    SHA-256 for each instead, so reproduction depends on those sources staying up. The hashes let
+    you verify whatever you retrieve; they cannot guarantee you can retrieve it. That is the honest
+    trade against republishing material I have no right to republish.</p>
+
+    <p><b>What I would change:</b> build the version gate first. It is the cheapest check in the
+    entire pipeline, it would have terminated 7 of the 40 decisions before any symbol rule ran, and
+    not having it cost a third of a result and four wrong hand labels.</p>
+
+    <p class="v-pull">Corrections are welcome and will be published alongside the original. That is
+    not a courtesy. Two of the three results here exist because somebody went back and checked
+    something that had already been written up.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://doi.org/10.5281/zenodo.22099794" rel="noopener noreferrer external">Read the paper &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://github.com/GautamTalksDev/Lading" rel="noopener noreferrer external">Code, corpus &amp; audits</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-009 · LADING · Archived · DOI 10.5281/zenodo.22099794</span>
+    <span><a href="/assay.html">Previous log: GK-008 · assay-gpu &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
