@@ -680,3 +680,10 @@
   /* three-up commendations once a publication joins the awards */
   .cmds-grid.cmds-3 { grid-template-columns:repeat(3,1fr); }
   @media (max-width:1000px){ .cmds-grid.cmds-3{ grid-template-columns:1fr; } }
+
+  /* LADING: the histogram fills, and the project stops */
+  .slide.active .lbar-s { transform-origin:left center; animation:lsgrow 4.4s cubic-bezier(.2,.9,.2,1) infinite; }
+  .slide.active .lbar-s.l2 { animation-delay:.2s; }
+  @keyframes lsgrow { 0%{transform:scaleX(0)} 38%,90%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
+  .slide.active .lstop { opacity:0; animation:lstopin 4.4s steps(1) infinite; }
+  @keyframes lstopin { 0%,52%{opacity:0} 58%,94%{opacity:1} 100%{opacity:0} }
