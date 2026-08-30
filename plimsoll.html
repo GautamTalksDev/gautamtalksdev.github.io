@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hrrijenw16rdsvoWC7cv+de+RqoF7xuLbWE6Rfq5KJU='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-010 · How many times did you run it? · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-010. PLIMSOLL is a public append-only log for evaluation pre-registration. Seal the threshold before you run, bind results afterwards, and the log assigns the attempt number rather than the claimant. Currently N=0 and all three kill tests are unevaluable.">
+<link rel="canonical" href="https://gautamkhosla.com/plimsoll.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="How many times did you run it?">
+<meta property="og:description" content="Commit your evaluation's threshold before you run it. Prove afterwards that you did.">
+<meta property="og:url" content="https://gautamkhosla.com/plimsoll.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"PLIMSOLL Pre-Registration and Attestation Specification, Version 1","description":"A mechanism making evaluation process facts checkable by a third party who trusts neither the claimant nor the operator of the verification service. The log, not the client, assigns each attestation its attempt number.","url":"https://gautamkhosla.com/plimsoll.html","identifier":"https://doi.org/10.5281/zenodo.22107451","datePublished":"2026-08-26","inLanguage":"en","license":"https://creativecommons.org/publicdomain/zero/1.0/","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"PLIMSOLL","codeRepository":"https://github.com/GautamTalksDev/plimsoll","programmingLanguage":"Go","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-010 · PLIMSOLL</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    <span>DOC <b>GK-010</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>PLIMSOLL</b></span>
+    <span>FIELD DATA <b>N = 0</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    How many<br>
+    <span class="v-out">times did you</span><br>
+    <span class="v-acc">run it?</span>
+  </h1>
+
+  <p class="v-stand">
+    Someone tells you their model scores 0.87 on their internal eval, up from 0.81. You cannot check
+    any of it. Not because they are lying, but because nothing about that claim is checkable. The
+    quietest failure is not a moved threshold, it is nine runs and one publication. PLIMSOLL makes
+    the attempt count a published fact instead of an optional disclosure. Spec:
+    <a href="https://doi.org/10.5281/zenodo.22107451" rel="noopener noreferrer external">10.5281/zenodo.22107451</a>,
+    released CC0. Code:
+    <a href="https://github.com/GautamTalksDev/plimsoll" rel="noopener noreferrer external">plimsoll</a>.
+    Live log: <a href="https://plimsoll.gautamkhosla.com" rel="noopener noreferrer external">plimsoll.gautamkhosla.com</a>.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nine evaluation runs happen, one clears the bar and is published, and the other eight are never mentioned">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">NINE RUNS. SLIGHTLY DIFFERENT SEEDS, TEMPERATURES, RETRIEVAL SETTINGS.</text>
+        <line x1="0" y1="76" x2="580" y2="76" stroke="#6B7280" stroke-width="1.6" stroke-dasharray="6 5"/>
+        <text x="588" y="80" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">BAR</text>
+        <g>
+          <rect x="0"   y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="44"  y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="88"  y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="132" y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect class="v-rare" x="176" y="44" width="34" height="26" fill="#2A2C33"/>
+          <rect x="220" y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="264" y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="308" y="88" width="34" height="26" fill="#2A2C33"/>
+          <rect x="352" y="88" width="34" height="26" fill="#2A2C33"/>
+        </g>
+        <text x="176" y="38" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">published</text>
+        <text x="0" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">the other eight are never mentioned</text>
+        <line x1="0" y1="146" x2="640" y2="146" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="168" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">NOTHING WAS FALSIFIED. EVERY NUMBER IS REAL. THE CLAIM IS STILL UNCHECKABLE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.1 · <b>Moving a threshold after the fact is the amateur version</b>, and everybody already watches for it.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">The question almost nobody asks out loud</h2>
+
+    <p>Did they pick the bar before running, or after seeing the number? Is the dataset the same one
+    they used last quarter? And the one that matters most: how many times did they run it?</p>
+
+    <p>Run the eval nine times with slightly different seeds, temperatures or retrieval settings.
+    Publish the run that cleared the bar. Omit the other eight. Nothing was falsified and every
+    number is real.</p>
+
+    <p class="v-pull">Git commits do not catch this. Signed results do not catch this. A vendor's
+    own eval platform structurally cannot catch this, because it belongs to the vendor.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Seal before running, run with your own tools, attest afterwards, and anyone can verify offline">
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="34" width="140" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+          <text x="14" y="52" fill="#FF4100">SEAL</text>
+          <text x="14" y="68" font-size="9" fill="#6B7280">rule + threshold + digests</text>
+
+          <rect x="176" y="34" width="150" height="40" fill="#2A2C33" stroke="#6B7280" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <text x="190" y="52">YOUR EVAL</text>
+          <text x="190" y="68" font-size="9" fill="#6B7280">your tool, your machine</text>
+
+          <rect x="362" y="34" width="140" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+          <text x="376" y="52" fill="#FF4100">ATTEST</text>
+          <text x="376" y="68" font-size="9" fill="#6B7280">bind results to the seal</text>
+
+          <rect x="538" y="34" width="102" height="40" fill="#2A2C33"/>
+          <text x="552" y="52">VERIFY</text>
+          <text x="552" y="68" font-size="9" fill="#6B7280">anyone</text>
+        </g>
+        <path class="v-flow" d="M142 54 H176 M328 54 H362 M504 54 H538" fill="none" stroke="#6B7280" stroke-width="2"/>
+
+        <text x="176" y="102" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#C4453A">results.json NEVER UPLOADED</text>
+
+        <line x1="0" y1="118" x2="640" y2="118" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT CROSSES THE WIRE</text>
+        <rect x="0" y="150" width="300" height="24" fill="#2A2C33"/>
+        <text x="12" y="166" font-family="IBM Plex Mono, monospace" font-size="10" fill="#16A34A">digests, metadata, verdicts</text>
+        <rect x="332" y="150" width="308" height="24" fill="#2A2C33"/>
+        <text x="344" y="166" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C4453A">never: datasets, models, prompts, outputs</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.2 · <b>A notary, not a lab.</b> No scorers, no metrics, no judge. The eval stack sits outside the system permanently.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">The mark on the hull</h2>
+
+    <p>A plumb line is a weighted string that defines true vertical. The Plimsoll line is the mark
+    on a ship's hull, set in advance by an independent authority, showing how deep it may be loaded.
+    Anyone standing on the dock can look at the waterline and see whether the ship is overloaded.
+    The mark is public, it was placed before the cargo went on, and it cannot be quietly moved.</p>
+
+    <p>Before you run, you write down your metric, threshold, dataset hash and decision rule. It is
+    canonicalized, hashed, signed and appended to a public append-only log. Then you run your eval
+    with whatever you already use. Afterwards you bind your results to the seal, and the engine
+    applies only the rule you sealed.</p>
+
+    <p>The architectural commitment underneath is the part I would defend hardest: PLIMSOLL has no
+    scorers, no metrics, no judge, no assessment framework. It never receives a dataset or a model.
+    It is a notary, and that is permanent rather than a v1 limitation.</p>
+
+    <p>The verifier also points anywhere. It works against any conforming log, not just mine. A
+    transparency log with exactly one operator is just a database with good manners, so if I vanish,
+    go rogue, or start rewriting history, it is detectable by anyone holding the CLI.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The log assigns the attempt number inside a transaction, so the client cannot choose it">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE SEAL, FIVE ATTESTATIONS</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <rect x="0" y="30" width="640" height="22" fill="#2A2C33"/><text x="12" y="46" fill="#D7DBE4">attempt 1</text><text x="120" y="46" fill="#C4453A">FAIL</text>
+          <rect x="0" y="56" width="640" height="22" fill="#2A2C33"/><text x="12" y="72" fill="#D7DBE4">attempt 2</text><text x="120" y="72" fill="#C4453A">FAIL</text>
+          <rect x="0" y="82" width="640" height="22" fill="#2A2C33"/><text x="12" y="98" fill="#D7DBE4">attempt 3</text><text x="120" y="98" fill="#C4453A">FAIL</text>
+          <rect x="0" y="108" width="640" height="22" fill="#2A2C33"/><text x="12" y="124" fill="#D7DBE4">attempt 4</text><text x="120" y="124" fill="#C4453A">FAIL</text>
+          <rect x="0" y="134" width="640" height="22" fill="#2A2C33" stroke="#16A34A" stroke-width="1.4"/><text x="12" y="150" fill="#D7DBE4">attempt 5</text><text x="120" y="150" fill="#16A34A">PASS</text>
+        </g>
+        <text x="200" y="46" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">the log assigns this number inside a transaction</text>
+        <text x="200" y="98" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">there is no API that sets it</text>
+        <text x="200" y="150" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">VERIFIED WITH DISCLOSURES &#183; no flag suppresses this</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.3 · <b>Iterating is normal. Hiding iteration is the problem.</b> A badge showing three attempts is blue, not red.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">The attempt ledger</h2>
+
+    <p>When you publish an attestation, the log assigns the attempt number inside a database
+    transaction. The client cannot pick it. There is no API that sets it. A seal with five
+    attestations shows five attempts, in order, with all five verdicts, forever.</p>
+
+    <p>That distinction between iterating and hiding iteration is deliberate and it is a design
+    constraint, not a slogan. If the tool shames iteration, nobody publishes anything and the log
+    dies empty. So the disclosure is mandatory and the presentation is neutral.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A sealed rule cannot be amended, only superseded with a public reason, and the whole chain is reported">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">A SEALED DECISION RULE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="200" height="24" fill="#2A2C33"/><text x="12" y="47" fill="#6B7280">edit with a flag</text><text x="160" y="47" fill="#C4453A">no</text>
+          <rect x="0" y="58" width="200" height="24" fill="#2A2C33"/><text x="12" y="75" fill="#6B7280">env variable</text><text x="160" y="75" fill="#C4453A">no</text>
+          <rect x="0" y="86" width="200" height="24" fill="#2A2C33"/><text x="12" y="103" fill="#6B7280">config file</text><text x="160" y="103" fill="#C4453A">no</text>
+          <rect x="0" y="114" width="200" height="24" fill="#2A2C33"/><text x="12" y="131" fill="#6B7280">paid tier</text><text x="160" y="131" fill="#C4453A">no</text>
+        </g>
+        <text x="228" y="60" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">a test fails if a code path that mutates</text>
+        <text x="228" y="78" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">a sealed field ever appears</text>
+        <text x="228" y="110" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">SUPERSEDE: new seal, required public reason,</text>
+        <text x="228" y="128" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">whole chain reported on every verification</text>
+        <line x1="0" y1="146" x2="640" y2="146" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">AMENDMENT IS IMPOSSIBLE. DISCLOSURE IS MANDATORY.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.4 · <b>Not moralism.</b> The moment an override exists, the artifact is worth nothing to the person it was meant to convince.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">There is no override</h2>
+
+    <p>A sealed decision rule cannot be edited. Not with a flag, not with an environment variable,
+    not with a config file, not on a paid tier. I went looking for a code path that mutates a sealed
+    field and wrote a test that fails if one ever appears.</p>
+
+    <p>If your pre-registration turns out to be wrong, you issue a superseding seal. It references
+    the old one, carries a required public reason, and every verification reports the whole chain.</p>
+
+    <p>This is the only reason a sceptical third party would accept the output at all.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nine independent verification checks, with the inclusion proof establishing the before claim">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">plimsoll verify RUNS NINE CHECKS AND REPORTS EACH</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">
+          <rect x="0" y="28" width="150" height="20" fill="#2A2C33"/><text x="10" y="42">V1 attest signature</text>
+          <rect x="162" y="28" width="150" height="20" fill="#2A2C33"/><text x="172" y="42">V2 seal signature</text>
+          <rect x="324" y="28" width="150" height="20" fill="#2A2C33" stroke="#FF4100" stroke-width="1.5"/><text x="334" y="42" fill="#FF4100">V3 seal in log</text>
+          <rect x="486" y="28" width="154" height="20" fill="#2A2C33"/><text x="496" y="42">V4 attest in log</text>
+
+          <rect x="0" y="54" width="150" height="20" fill="#2A2C33"/><text x="10" y="68">V5 seal predates</text>
+          <rect x="162" y="54" width="150" height="20" fill="#2A2C33"/><text x="172" y="68">V6 dataset matches</text>
+          <rect x="324" y="54" width="150" height="20" fill="#2A2C33"/><text x="334" y="68">V7 same verdict</text>
+          <rect x="486" y="54" width="154" height="20" fill="#2A2C33"/><text x="496" y="68">V8 attempt count</text>
+
+          <rect x="0" y="80" width="150" height="20" fill="#2A2C33"/><text x="10" y="94">V9 log consistent</text>
+        </g>
+        <line x1="0" y1="112" x2="640" y2="112" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="134" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#C4453A">your own signature on a timestamp proves nothing. you control your clock.</text>
+        <text x="0" y="156" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">V3 is what makes "before" real: inclusion proof against a signed checkpoint.</text>
+        <text x="0" y="172" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">AN UNPUBLISHED SEAL IS A LOCAL NOTE TO YOURSELF, NOT EVIDENCE. THE CLI SAYS SO LOUDLY.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.5 · <b>Nothing in the trust path is probabilistic.</b> RFC 8785 canonicalization, fixed-precision decimals with no float64, RFC 6962 Merkle with domain separation.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Determinism, all the way down</h2>
+
+    <p>Comparisons use fixed-precision decimals from the original lexical form, never through
+    binary64. A threshold of 0.82 comparing wrongly against 0.8200000000000001 is exactly the kind
+    of bug that would destroy the tool's credibility, so the type system prevents it rather than a
+    review catching it.</p>
+
+    <p>Dataset hashing treats a dataset as an unordered multiset of canonicalized rows, so
+    reordering your JSONL does not raise a false "dataset changed" alarm, while duplicating a row
+    does change the hash. Canonicalization is version-tagged so a future change cannot silently
+    invalidate history.</p>
+
+    <p>Same seal plus same results equals the same verdict, on any machine, forever.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="All three kill tests are currently unevaluable because there is no field data">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">PRE-REGISTERED AGAINST ITSELF, IN THE FIRST COMMIT</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="49" fill="#D7DBE4">KT-1  25 distinct organizations publish a seal in 8 weeks</text>
+          <circle class="v-blip" cx="500" cy="45" r="5" fill="#FF4100"/>
+          <text x="514" y="49" fill="#FF4100" font-weight="600">UNEVALUABLE</text>
+
+          <rect x="0" y="62" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="81" fill="#D7DBE4">KT-2  10% of 100 evals show iteration or supersession</text>
+          <circle class="v-blip" cx="500" cy="77" r="5" fill="#FF4100"/>
+          <text x="514" y="81" fill="#FF4100" font-weight="600">UNEVALUABLE</text>
+
+          <rect x="0" y="94" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="113" fill="#D7DBE4">KT-3  one unprompted request for a private log in 3 months</text>
+          <circle class="v-blip" cx="500" cy="109" r="5" fill="#FF4100"/>
+          <text x="514" y="113" fill="#FF4100" font-weight="600">UNEVALUABLE</text>
+        </g>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="10" fill="#C4453A">PILOT N = 0. THE ONLY ENTRIES IN THE PUBLIC LOG ARE MY OWN FIXTURES.</text>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">THEY COUNT TOWARD NOTHING, AND RESULTS.md SAYS SO IN ITS OWN SECTION.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.6 · <b>Not PASS and not FAIL.</b> Writing anything else would be the exact behaviour this tool exists to make visible.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">What this has not shown</h2>
+
+    <p>There is no field data. All three kill tests are unevaluable at N equals zero, and the
+    entries currently in the public log are my own fixtures, authored and verified by the same
+    person, against a five-row synthetic dataset. They count toward nothing.</p>
+
+    <p>That sits at the top of the README rather than in a footnote, because a tool whose entire
+    purpose is making unstated iteration visible cannot itself round an empty log up to a result.</p>
+
+    <p class="v-pull">KT-2 is not evaluable: neither PASS nor FAIL. Writing anything else would be
+    the exact behaviour this tool exists to make visible.</p>
+
+    <p>Three further limits are stated in the technical note rather than discovered by a reader.
+    Digest-to-artifact correspondence cannot be verified by a system that declines to receive the
+    artifact. A single-operator log admits equivocation without a gossip protocol. And no empirical
+    study of the underlying phenomenon has been conducted, by me or as far as I can find by anyone
+    else, so the premise that selective reporting occurs at a meaningful rate in machine learning
+    evaluation is currently an assumption.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 156" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five things the project will never do, listed as permanent design commitments">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">DESIGN COMMITMENTS &#183; PULL REQUESTS THAT VIOLATE THESE ARE DECLINED</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <rect x="0" y="28" width="640" height="22" fill="#2A2C33"/><text x="12" y="43">never receive, store or transmit a dataset or a model</text>
+          <rect x="0" y="54" width="640" height="22" fill="#2A2C33"/><text x="12" y="69">never define, select or bundle an assessment framework</text>
+          <rect x="0" y="80" width="640" height="22" fill="#2A2C33"/><text x="12" y="95">never compute a quality metric, score or evaluation result</text>
+          <rect x="0" y="106" width="640" height="22" fill="#2A2C33"/><text x="12" y="121">never be the only party able to verify an attestation</text>
+        </g>
+        <text x="0" y="150" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">EACH ONE REMOVES A FEATURE SOMEBODY WILL EVENTUALLY ASK FOR.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.7 · <b>Certificate Transparency was not built by a Certificate Authority.</b> A vendor attesting to its own numbers has the same conflict.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">Where this sits</h2>
+
+    <p>PLIMSOLL is not a new idea. It is an old idea pointed somewhere new. Medicine solved this in
+    2005, when trial registration before enrolment became a condition of publication, because
+    selective reporting was distorting what everyone believed to be true. Certificate Transparency
+    solved the log half in 2013: make issuance public and append-only, and misissuance becomes
+    detectable without anyone having to be trusted.</p>
+
+    <p>The lineage matters more than the novelty. Claiming this was invented here would be both
+    false and weaker, because the prior art is the argument that the mechanism works.</p>
+
+    <p>The specification is released CC0 precisely so that nobody has to ask permission to
+    implement it, and so that if I abandon the project someone else can implement it cleanly while
+    existing logs remain verifiable.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 156" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Running the public log costs zero dollars a month across every line item">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">COST OF OPERATING THE PUBLIC LOG</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="440" height="20" fill="#2A2C33"/><text x="12" y="43" fill="#D7DBE4">Cloudflare Pages</text><text x="470" y="43" fill="#16A34A">$0</text>
+          <rect x="0" y="52" width="440" height="20" fill="#2A2C33"/><text x="12" y="67" fill="#D7DBE4">Cloudflare Workers</text><text x="470" y="67" fill="#16A34A">$0</text>
+          <rect x="0" y="76" width="440" height="20" fill="#2A2C33"/><text x="12" y="91" fill="#D7DBE4">GitHub Actions and storage</text><text x="470" y="91" fill="#16A34A">$0</text>
+          <rect x="0" y="100" width="440" height="20" fill="#2A2C33" stroke="#FF4100" stroke-width="1.4"/><text x="12" y="115" fill="#FF4100">total</text><text x="470" y="115" fill="#FF4100" font-weight="600">$0 / month</text>
+        </g>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">A LOG NOBODY CAN AFFORD TO RUN IS A LOG WITH ONE OPERATOR, WHICH IS THE FAILURE MODE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 10.8 · <b>The cost table is a design output, not an economy.</b> Running your own has to be realistic or the trust argument collapses.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>The publish path is asynchronous and the first version pretended it was not.</b> A seal is
+    not queryable until the log appends, which takes about a minute. Returning success on submit and
+    letting a user assume inclusion would be a lie of exactly the kind this tool exists to prevent,
+    so the CLI now prints what actually happened and offers an explicit wait flag and a poll
+    command.</p>
+
+    <p><b>I split three packages for reasons that look redundant and are not.</b> The Merkle
+    arithmetic lives separately from the log because the browser verifier compiles to WASM and
+    cannot link SQLite. A second, deliberately independent log server exists only so the test suite
+    can prove verification works against a log that is not mine. If the tests could only verify my
+    own implementation, the neutrality claim would be untested.</p>
+
+    <p><b>A reachable denial of service in the canonicalizer.</b> Found and fixed during hardening.
+    The canonicalizer is the first thing that touches untrusted input on the submit path, which is
+    the worst possible place for it and the most predictable.</p>
+
+    <p><b>The single-maintainer problem is real and I did not argue it away.</b> Current security
+    guidance tells organizations to avoid depending on single-maintainer projects for core
+    functions, and that guidance is correct. The answer is not to ask for trust: the log is
+    clonable and offline-verifiable, releases are signed with cosign keyless and carry SLSA
+    provenance, the dependency surface is two direct dependencies, the spec is CC0, and the verifier
+    already points at any log.</p>
+
+    <p><b>What I would change:</b> run the empirical study first. The premise is that selective
+    reporting happens often enough in machine learning evaluation to be worth a log, and I built the
+    log before measuring the phenomenon. KT-2 is essentially that measurement deferred until other
+    people show up, which means the project's own evidence depends on adoption it has not earned
+    yet. Building the instrument before the observation is the same ordering mistake I have now made
+    twice.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://doi.org/10.5281/zenodo.22107451" rel="noopener noreferrer external">Read the spec &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://plimsoll.gautamkhosla.com" rel="noopener noreferrer external">The public log</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-010 · PLIMSOLL · Spec DOI 10.5281/zenodo.22107451</span>
+    <span><a href="/lading.html">Previous log: GK-009 · LADING &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
