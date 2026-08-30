@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-A9yyxaKDY0vKlGT4M2QZuSuw3uty7USzwBqUKr45Ih0=';
+  script-src 'self' 'sha256-nY5+K6tgKCMGOl+3d+uhE5hPN8bo4WQqJ59yPWQBFrA=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-08-25",
+  "dateModified": "2026-08-26",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -95,6 +95,7 @@
       "Extreme value statistics",
       "Software bill of materials and VEX",
       "Binary analysis and symbol tables",
+      "Transparency logs and pre-registration",
       "Integrity monitoring and GPS-denied positioning",
       "SLAM and state estimation"
     ],
@@ -159,6 +160,12 @@
         "@type": "Dataset",
         "name": "LADING CP-11: a hand labelled corpus and stage attributed failure map for binary grounded VEX clearance across 55 shipped artifacts",
         "identifier": "https://doi.org/10.5281/zenodo.22093232"
+      },
+      {
+        "@type": "TechArticle",
+        "name": "PLIMSOLL Pre-Registration and Attestation Specification, Version 1",
+        "identifier": "https://doi.org/10.5281/zenodo.22107451",
+        "url": "https://gautamkhosla.com/plimsoll.html"
       }
     ]
   }
@@ -490,12 +497,18 @@
       <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p><div class="mtags"><i>SLACK</i><i>FASTIFY</i><i>CF WORKERS</i></div></div>
       <div class="mini"><span class="mid">A-06</span><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p><div class="mtags"><i>NATS</i><i>14 LIVE APIS</i><i>DIGITAL TWIN</i><i>TEAM OF 4</i></div></div>
       <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Bedrock">Bedrock</a></h4><p>Every scraper heals itself with AI now; nobody checks the repair was correct. Bedrock verifies each heal against golden fixtures before it ships, and every row carries a receipt naming the heals it refused.</p><div class="mtags"><i>NEXT.JS</i><i>POSTGRES</i><i>MCP</i><i>BRIGHT DATA</i></div></div>
-      <div class="mini"><span class="mid">A-08</span><h4>Omni-Context OS</h4><p>Stateful RAG memory across Slack, email, and web. Top 9 at Backboard.io &#215; McHacks.</p><div class="mtags"><i>RAG</i><i>SLACK</i><i>EMAIL</i><i>WEB</i></div></div>
+      <div class="mini"><span class="mid">A-08</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/keyring">keyring</a></h4><p>Access governance for people and agents. Finds every grant still held, holds it at a human approval gate, and writes a verifiable audit trail of what was granted and by whom.</p><div class="mtags"><i>TYPESCRIPT</i><i>MCP</i><i>AUDIT LOG</i><i>APPROVAL GATES</i></div></div>
     </div>
 
     <div class="cmds reveal">
       <div class="cmds-head"><span><b>COMMENDATIONS &amp; PUBLICATIONS</b></span><span class="cmds-note">JUDGED OR PUBLISHED &#183; NOT SELF-REPORTED</span></div>
-      <div class="cmds-grid">
+      <div class="cmds-grid cmds-3">
+        <div class="cmd">
+          <span class="cmd-medal" aria-hidden="true">&#128220;</span>
+          <div class="cmd-title">PLIMSOLL Pre-Registration Specification v1</div>
+          <div class="cmd-org">Technical note &#183; DOI 10.5281/zenodo.22107451</div>
+          <div class="cmd-proj"><a rel="noopener noreferrer external" href="https://doi.org/10.5281/zenodo.22107451">PLIMSOLL</a> <span class="cmd-sub">&#183; released CC0 so anyone can implement it</span></div>
+        </div>
         <div class="cmd">
           <span class="cmd-medal" aria-hidden="true">&#128220;</span>
           <div class="cmd-title">Binary Grounded VEX Clearance Fails Three Times</div>
@@ -529,9 +542,9 @@
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><div class="num" data-count="8" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
+      <div class="stat"><div class="num" data-count="9" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
       <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
-      <div class="stat"><div class="num" data-count="9">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
+      <div class="stat"><div class="num" data-count="11">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
     </div>
   </div>
@@ -550,6 +563,8 @@
       <div><span class="pgh" aria-hidden="true">06</span><div class="pn">P-06</div><h3>Caveat louder than you claim</h3><p>A measurement without its conditions is a rumour. If the harness distorts the number, that warning goes above the number, not in a footnote.</p><a class="pref" href="mayfly.html">PROVEN · GK-003: WSL2-relative timings, flagged before the table</a></div>
       <div><span class="pgh" aria-hidden="true">07</span><div class="pn">P-07</div><h3>Retract it when it's wrong</h3><p>Clearing your own pre-registered bar by five times is an alarm, not a triumph. The broken write-up stays published, marked do-not-cite, because deleting it makes the repo look better and the record worse.</p><a class="pref" href="vernier.html">PROVEN · GK-006: the 100% that turned out to be a dead hostname</a></div>
       <div><span class="pgh" aria-hidden="true">08</span><div class="pn">P-08</div><h3>Write the kill test before the code</h3><p>Name the number that ends the project while you still have nothing invested in the answer. Two of mine are still sitting at UNEVALUATED in public.</p><a class="pref" href="plumbline.html">PROVEN · GK-004: KT-1 and KT-2 committed before the first commit</a></div>
+      <div><span class="pgh" aria-hidden="true">09</span><div class="pn">P-09</div><h3>The refusal is the product</h3><p>A gate with an override is decorative. If a sealed rule can be amended by a flag, a config or a paid tier, the artifact is worth nothing to the person it was meant to convince.</p><a class="pref" href="plimsoll.html">PROVEN · GK-010: a test that fails if a code path to mutate a sealed field ever appears</a></div>
+      <div><span class="pgh" aria-hidden="true">10</span><div class="pn">P-10</div><h3>Stop when your own rule says stop</h3><p>A stop condition you argue your way past was never a stop condition. Three not-evaluable readings, and the pre-registered action was to archive it.</p><a class="pref" href="lading.html">PROVEN · GK-009: both kill tests resolved against it, so the project ended</a></div>
     </div>
   </div>
 </section>
