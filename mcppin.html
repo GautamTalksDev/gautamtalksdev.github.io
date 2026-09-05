@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BVE/fDjK596cDl24fl/BUs3yUmCQBS5FoJYUv7Xb/58='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-011 · The tool you approved is not the tool you're running · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-011. mcp-pin fingerprints MCP tool definitions at approval time, blocks the session when they change, and keeps a signed public history of every version. 4,812 log entries, 248 servers, and a recrawl that corrected the project's own earlier numbers.">
+<link rel="canonical" href="https://gautamkhosla.com/mcppin.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The tool you approved is not the tool you're running">
+<meta property="og:description" content="A changed tool description has the same reach as a changed system prompt, and nobody re-prompts you.">
+<meta property="og:url" content="https://gautamkhosla.com/mcppin.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"The tool you approved is not the tool you're running","description":"mcp-pin fingerprints the full metadata of every MCP tool at approval time, re-derives that decision on every connect, and publishes a hash linked signed history of every version it can reach. Zero inference: it computes a hash and compares it.","url":"https://gautamkhosla.com/mcppin.html","datePublished":"2026-09-05","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"mcp-pin","codeRepository":"https://github.com/GautamTalksDev/mcp-pin","programmingLanguage":"JavaScript","license":"https://opensource.org/licenses/MIT"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-011 · MCP-PIN</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    <span>DOC <b>GK-011</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>MCP-PIN</b></span>
+    <span>LOG <b>4,812 ENTRIES</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    The tool you<br>
+    <span class="v-out">approved is not</span><br>
+    <span class="v-acc">the tool you run.</span>
+  </h1>
+
+  <p class="v-stand">
+    You add an MCP server, your client shows you the tool descriptions, they look fine, you click
+    approve. That decision is never revisited. The server can serve one set of definitions on Monday
+    and a different set on Tuesday, and no major client re-prompts. mcp-pin fingerprints what you
+    approved and blocks the session when it moves. Code:
+    <a href="https://github.com/GautamTalksDev/mcp-pin" rel="noopener noreferrer external">mcp-pin</a>.
+    Public log: <a href="https://mcp-pin.gautamkhosla.com" rel="noopener noreferrer external">mcp-pin.gautamkhosla.com</a>.
+    MIT, zero runtime dependencies.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One approval on Monday covers a different set of tool definitions on Tuesday, with no second prompt">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE APPROVAL. EVERY SESSION AFTERWARDS.</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="32" width="150" height="44" fill="#2A2C33" stroke="#16A34A" stroke-width="1.6"/>
+          <text x="14" y="52" fill="#16A34A">MON</text>
+          <text x="14" y="68" font-size="9" fill="#6B7280">you read them. approve.</text>
+
+          <rect x="188" y="32" width="150" height="44" fill="#2A2C33"/>
+          <text x="202" y="52">TUE</text>
+          <text x="202" y="68" font-size="9" fill="#6B7280">definitions changed</text>
+
+          <rect x="376" y="32" width="150" height="44" fill="#2A2C33"/>
+          <text x="390" y="52">WED</text>
+          <text x="390" y="68" font-size="9" fill="#6B7280">changed again</text>
+        </g>
+        <path class="v-flow" d="M152 54 H188 M340 54 H376" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="0" y="106" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#C4453A">NO CLIENT RE-PROMPTS. NO INTEGRITY CHECK IN THE SPEC.</text>
+        <line x1="0" y1="122" x2="640" y2="122" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">A TOOL DESCRIPTION IS NOT DATA THE MODEL READS AND SETS ASIDE.</text>
+        <text x="0" y="166" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">IT IS AN INSTRUCTION. CHANGING IT HAS THE REACH OF A CHANGED SYSTEM PROMPT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.1 · <b>The problem is not that the model will certainly obey.</b> It is that nobody checked, and nobody was told.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">A consent that is never re-asked</h2>
+
+    <p>Approval in MCP is a single event at connect time. The client renders the tool list, you read
+    it, you accept. Nothing in the protocol requires the server to serve you the same list again,
+    and nothing in the clients I checked notices when it does not.</p>
+
+    <p>The reason this matters more than it sounds is the position tool descriptions occupy. They
+    are not passive metadata sitting next to the model. They are text the model reads as guidance
+    about what to do next, which puts a description edit in the same blast radius as a system prompt
+    edit, delivered by a third party, after you stopped looking.</p>
+
+    <p class="v-pull">The silence is the vulnerability. A server that changes what its tools say,
+    between the session where you consented and the session where it runs, produces no signal at
+    all.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The proxy compares a pinned fingerprint against the observed one and blocks the session on any difference">
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="30" width="150" height="40" fill="#2A2C33"/>
+          <text x="14" y="48">CLIENT</text>
+          <text x="14" y="63" font-size="9" fill="#6B7280">calls queued</text>
+
+          <rect x="190" y="30" width="170" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+          <text x="204" y="48" fill="#FF4100">MCP-PIN</text>
+          <text x="204" y="63" font-size="9" fill="#6B7280">pinned vs observed</text>
+
+          <rect x="400" y="30" width="150" height="40" fill="#2A2C33" stroke="#6B7280" stroke-width="1.4" stroke-dasharray="4 3"/>
+          <text x="414" y="48">SERVER</text>
+          <text x="414" y="63" font-size="9" fill="#6B7280">stdio</text>
+        </g>
+        <path class="v-flow" d="M152 50 H190" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <path d="M362 50 H400" fill="none" stroke="#C4453A" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="366" y="26" font-family="IBM Plex Mono, monospace" font-size="9" fill="#C4453A">blocked</text>
+
+        <line x1="0" y1="94" x2="640" y2="94" stroke="#2A2C33" stroke-width="1"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="116" fill="#6B7280">pinned&#160;&#160;&#160;40c179188ad9</text>
+          <text x="0" y="136" fill="#FF4100">observed&#160;7b21e004c5af</text>
+          <circle class="v-blip" cx="230" cy="131" r="5" fill="#FF4100"/>
+          <text x="246" y="136" fill="#FF4100" font-weight="600">SESSION BLOCKED</text>
+        </g>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">QUEUED CALLS WERE NOT FORWARDED. NOT WARNED ABOUT. NOT FORWARDED.</text>
+        <text x="0" y="180" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">ACCEPT IT DELIBERATELY:&#160;&#160;mcp-pin approve &lt;id&gt;</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.2 · <b>A warning that arrives after the call is a log entry, not a control.</b> Traffic is held until the check completes.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">Two surfaces, one engine, zero inference</h2>
+
+    <p>The proxy sits in front of a server you already run. First connect pins the full metadata of
+    every tool. Every connect after that re-derives the same fingerprint and compares. If anything
+    moved, the session stops and you get a diff.</p>
+
+    <p>The ordering here is the part that took the longest to get right. Client traffic is queued
+    until the check completes, and on drift nothing queued is forwarded. An earlier version
+    completed the handshake first and reported afterwards, which is a notification system wearing a
+    control system's name.</p>
+
+    <p>The tool never asks a model whether a change looks dangerous. It computes a hash and compares
+    it. That is deliberate: a deterministic check keeps working when a model has a bad day, and it
+    keeps working on the subtle changes a model would wave through.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Key order, tool order and whitespace do not change the fingerprint, but one character of a description does">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">RFC 8785 CANONICALIZATION, THEN SHA-256</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="300" height="22" fill="#2A2C33"/><text x="12" y="44" fill="#6B7280">key order</text><text x="240" y="44" fill="#16A34A">ignored</text>
+          <rect x="0" y="54" width="300" height="22" fill="#2A2C33"/><text x="12" y="70" fill="#6B7280">tool order</text><text x="240" y="70" fill="#16A34A">ignored</text>
+          <rect x="0" y="80" width="300" height="22" fill="#2A2C33"/><text x="12" y="96" fill="#6B7280">whitespace</text><text x="240" y="96" fill="#16A34A">ignored</text>
+          <rect x="0" y="106" width="300" height="22" fill="#2A2C33" stroke="#FF4100" stroke-width="1.4"/><text x="12" y="122" fill="#FF4100">one character of a description</text><text x="240" y="122" fill="#FF4100" font-weight="600">counts</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <text x="336" y="44">name</text>
+          <text x="336" y="66">description</text>
+          <text x="336" y="88">input schema</text>
+          <text x="336" y="110">annotations</text>
+        </g>
+        <text x="336" y="20" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">IN SCOPE</text>
+        <line x1="0" y1="140" x2="640" y2="140" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="160" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">THE RULE: IF THE MODEL CAN READ IT, IT IS IN SCOPE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.3 · <b>Adding or removing a tool moves the set hash too</b>, so a server cannot quietly drop one either.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">What counts as a change</h2>
+
+    <p>The whole tool object is fingerprinted: name, description, input schema and annotations,
+    canonicalized per RFC 8785 and hashed with SHA-256. Reformatting is invisible. A single
+    character of a description is not.</p>
+
+    <p>Scoping this by hand would have been the obvious mistake. Any rule of the form "watch the
+    description but not the schema" hands an attacker the exact field to use, and a schema change
+    that adds an argument the model is told to populate is a description change wearing different
+    clothes. The rule is mechanical instead: if the model can read it, it is in scope.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The public log is hash linked with an Ed25519 signed head, verifiable against a pinned public key">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">4,812 ENTRIES &#183; 248 SERVERS &#183; CHAIN INTACT</text>
+        <g>
+          <rect class="v-rare" x="0" y="32" width="96" height="30" fill="#2A2C33"/>
+          <rect x="120" y="32" width="96" height="30" fill="#2A2C33"/>
+          <rect x="240" y="32" width="96" height="30" fill="#2A2C33"/>
+          <rect x="360" y="32" width="96" height="30" fill="#2A2C33"/>
+          <rect x="480" y="32" width="160" height="30" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+        </g>
+        <path class="v-flow" d="M96 47 H120 M216 47 H240 M336 47 H360 M456 47 H480" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <text x="492" y="52" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">HEAD &#183; Ed25519</text>
+        <text x="0" y="84" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">each entry hash linked to the one before it</text>
+        <line x1="0" y1="98" x2="640" y2="98" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="120" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">the verifier pins PUBLIC_KEY.txt</text>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#C4453A">it will not accept a head signed by whatever key arrives with the file</text>
+        <text x="0" y="162" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">CHANGE ONE BYTE OF HISTORY AND ANYONE HOLDING AN OLDER COPY CAN PROVE IT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.4 · <b>The log records changes, not heartbeats.</b> A server that never moves produces exactly one entry, which is why a quiet log is a good log.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">A history for what you install</h2>
+
+    <p>The proxy answers "did this change since I approved it". The log answers a question the proxy
+    structurally cannot: what did a server you did not write look like last Tuesday. Nobody was
+    keeping that record, so there was no way to check it retroactively.</p>
+
+    <p>The point of a transparency log is that you do not have to trust whoever runs it. Entries are
+    hash linked, the head is signed with Ed25519, and the verifier pins the published key rather
+    than trusting one that arrives alongside the data. Downloading the log and verifying it takes
+    one command and does not involve me.</p>
+
+    <p>The badge server authors can display only ever states a fact about time. It says unchanged
+    91d or changed today. It never says safe, because the project cannot know that and will not
+    imply it.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The kill test pre-registered on 1 September 2026, currently unevaluated">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">PRE-REGISTERED 1 SEPTEMBER 2026, BEFORE ANY CODE WAS WRITTEN</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="51" fill="#D7DBE4">10 public MCP server READMEs carry the badge</text>
+          <circle class="v-blip" cx="486" cy="47" r="5" fill="#FF4100"/>
+          <text x="500" y="51" fill="#FF4100" font-weight="600">UNEVALUATED</text>
+
+          <rect x="0" y="66" width="640" height="28" fill="#2A2C33"/>
+          <text x="12" y="85" fill="#D7DBE4">OR 100 unique proxy installs, CI excluded</text>
+          <circle class="v-blip" cx="486" cy="81" r="5" fill="#FF4100"/>
+          <text x="500" y="85" fill="#FF4100" font-weight="600">UNEVALUATED</text>
+        </g>
+        <text x="0" y="118" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#C4453A">DEADLINE 15 OCTOBER 2026. NEITHER: ARCHIVE, AND PUBLISH THE NUMBERS AS THEY STAND.</text>
+        <line x1="0" y1="132" x2="640" y2="132" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="154" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">IT LIVES IN THE README SO IT CANNOT BE QUIETLY RENEGOTIATED LATER.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.5 · <b>Adoption, not correctness.</b> The code working is not evidence that anyone needed it.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">The condition for stopping</h2>
+
+    <p>One kill test, written on 1 September before any code existed. By 15 October 2026 either ten
+    public MCP server READMEs carry the badge, or there are a hundred unique proxy installs
+    excluding CI. If neither, the repository is archived and the numbers are published as they
+    stand.</p>
+
+    <p>It measures adoption rather than correctness on purpose. I can already show the hash
+    comparison works; that proves nothing about whether the problem was worth solving. The thing I
+    do not know is whether anyone else considers unannounced tool drift a risk they will spend sixty
+    seconds on, and only strangers can answer that.</p>
+
+    <p>It sits in the README, above the fold, rather than in a private note, because a stop
+    condition nobody can see is a stop condition I can argue my way past.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="mcp-warden is better at CI gating; mcp-pin answers a different question about third party servers">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">PRIOR ART, NAMED IN THE README</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">
+          <rect x="0" y="30" width="300" height="94" fill="#2A2C33" stroke="#6B7280" stroke-width="1.5"/>
+          <text x="14" y="50" fill="#6B7280">MCP-WARDEN &#183; v1</text>
+          <text x="14" y="72" font-size="10">a lockfile for the server you build</text>
+          <text x="14" y="90" font-size="10">classifies each schema mutation</text>
+          <text x="14" y="108" font-size="10">uploads SARIF, inspects results</text>
+
+          <rect x="340" y="30" width="300" height="94" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+          <text x="354" y="50" fill="#FF4100">MCP-PIN</text>
+          <text x="354" y="72" font-size="10">a history for the servers you install</text>
+          <text x="354" y="90" font-size="10">blocks the session, not the build</text>
+          <text x="354" y="108" font-size="10">public log across every reachable server</text>
+        </g>
+        <text x="0" y="148" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">ON SCHEMA DIFFING, WARDEN IS MORE THOROUGH THAN THIS PROJECT. IT WAS ALSO FIRST.</text>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">IF YOU MAINTAIN A SERVER AND WANT A CI GATE, USE WARDEN. THE README SAYS SO.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.6 · <b>One is a lockfile for what you ship.</b> The other is a history for what you install.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">Someone got there first</h2>
+
+    <p>mcp-warden exists, it is at v1, it uses the same RFC 8785 plus SHA-256 canonicalization, and
+    on schema diffing it is better than this project: it classifies each mutation individually
+    rather than reporting one opaque change, and it uploads SARIF to code scanning.</p>
+
+    <p>That comparison is in my README, recommending warden for the job it does better. Discovering
+    it after I had built most of this was uncomfortable, and burying it would have been the cheap
+    move, but a security tool that hides the competitor has already told you what kind of tool it
+    is.</p>
+
+    <p>The overlap turned out to be narrower than it first looked. A lockfile tells you that your
+    own server changed since your last commit. It cannot tell you what a third party's tools said
+    last Tuesday, because nobody kept that record. That gap is the only thing this project
+    justifies, and stating it plainly forced me to work out whether there was one.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six limitations listed in the README rather than discovered by a user">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">LISTED IN THE README, NOT DISCOVERED BY A USER</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
+          <rect x="0" y="28" width="640" height="20" fill="#2A2C33"/><text x="12" y="43">same-user malware can delete the pin store and re-pin itself</text>
+          <rect x="0" y="52" width="640" height="20" fill="#2A2C33"/><text x="12" y="67">day-one malice that never changes looks perfectly stable</text>
+          <rect x="0" y="76" width="640" height="20" fill="#2A2C33"/><text x="12" y="91">stdio only: HTTP and SSE servers are crawled, not proxied</text>
+          <rect x="0" y="100" width="640" height="20" fill="#2A2C33"/><text x="12" y="115">about 38% of discovered npm packages yield a toolset at all</text>
+          <rect x="0" y="124" width="640" height="20" fill="#2A2C33"/><text x="12" y="139">not a prompt injection defence: it reports that bytes differ</text>
+        </g>
+        <text x="0" y="168" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">A PIN IS NOT A SAFETY RATING. A SECURITY TOOL THAT OVERSELLS ITSELF IS WORSE THAN NONE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.7 · <b>The claim the evidence supports</b> is that definitions changed between sessions. Everything wider than that is somebody else's sentence.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">What it does not protect against</h2>
+
+    <p>A local pin store cannot defend against a process running as you. That program can delete the
+    store and re-pin itself. This is an architectural limit rather than a bug, and it will not be
+    fixed by writing the same files harder.</p>
+
+    <p>Day-one malice is invisible for the same structural reason. The tool detects change; a server
+    that ships hostile definitions on the first connect and never touches them again is, to a
+    difference engine, perfectly well behaved.</p>
+
+    <p>One limitation cuts against the project's own reason to exist and is in the table anyway.
+    Testing on 2 September showed Claude Desktop refusing obvious injected instructions inside tool
+    descriptions and warning the user unprompted. The model catches the loud version already. The
+    argument for a deterministic check is that it does not depend on the payload being obvious, and
+    that is a narrower argument than the one I started with.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A controlled recrawl of all 248 servers found 18 higher tool counts, 17 resolved, and the cause was not pagination">
+        <text x="0" y="16" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">4 SEPTEMBER RE-PROBE OF ALL 248 RECORDED SERVERS</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="300" height="24" fill="#2A2C33"/><text x="12" y="49" fill="#D7DBE4">higher tool count than recorded</text><text x="262" y="49" fill="#FF4100">18</text>
+          <rect x="0" y="60" width="300" height="24" fill="#2A2C33"/><text x="12" y="77" fill="#D7DBE4">resolved by the re-probe</text><text x="262" y="77" fill="#16A34A">17</text>
+          <rect x="0" y="88" width="300" height="24" fill="#2A2C33"/><text x="12" y="105" fill="#D7DBE4">that returned nextCursor</text><text x="262" y="105" fill="#C4453A">0</text>
+        </g>
+        <text x="336" y="49" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">I assumed pagination.</text>
+        <text x="336" y="71" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">The extra tools were on page 1.</text>
+        <text x="336" y="99" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">listings depend on the environment</text>
+        <text x="336" y="115" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">the crawler ran under</text>
+        <line x1="0" y1="132" x2="640" y2="132" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="154" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">PRE-0.1.1 RECORDS ARE PUBLISHED AS A FLOOR, NOT A COUNT.</text>
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">THE CRAWL SCHEDULE IS DISABLED UNTIL THE ENVIRONMENT IS RECORDED PER LISTING.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 11.8 · <b>The fix that looks like a fix.</b> Pagination was a real bug. It was not this bug.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>Versions at or below 0.1.0 silently lost concurrent pin writes while reporting success.</b>
+    Two connects racing produced a confirmation and no record. For a tool whose entire product is a
+    reliable record of what you approved, reporting success without writing is the single worst
+    available failure mode, and it shipped. Use 0.1.2.</p>
+
+    <p><b>The crawler ignored nextCursor, so paginated servers were truncated.</b> I found it, fixed
+    it, and republished every affected record as a floor rather than a count. Then the controlled
+    re-probe on 4 September came back with eighteen servers reporting more tools than I had
+    recorded, and none of those eighteen return nextCursor at all. The extra tools were on page one.
+    Pagination was a real bug that I fixed correctly, and it was not the cause of the numbers I had
+    attributed to it. The actual dependency is the environment the crawl runs under, so the schedule
+    is off until each listing records the conditions it was taken under.</p>
+
+    <p class="v-pull">I patched the defect I found, the record looked repaired, and the deeper one
+    was still sitting underneath untouched. That is the second time this month.</p>
+
+    <p><b>The GitHub Action shipped and does not work.</b> Its bootstrap instructions reference a
+    package that is not on npm, and the baseline does not survive the runner. It is now marked
+    experimental with an explicit do-not-adopt line rather than quietly removed, because somebody
+    may already have copied it into a workflow.</p>
+
+    <p><b>A reachable denial of service in the canonicalizer</b>, found during hardening. It is the
+    first thing that touches untrusted input, which is both the worst place for that bug and the
+    most predictable.</p>
+
+    <p><b>What I would change:</b> record the environment before the first crawl, not after the
+    numbers disagree. Every wrong conclusion in the last week came from a measurement whose
+    conditions were not stored alongside it, which is a caveat I have written on the front of other
+    people's numbers and did not apply to my own.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://github.com/GautamTalksDev/mcp-pin" rel="noopener noreferrer external">Read the code &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://mcp-pin.gautamkhosla.com" rel="noopener noreferrer external">The public log</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-011 · MCP-PIN · MIT · 4,812 log entries, 248 servers</span>
+    <span><a href="/plimsoll.html">Previous log: GK-010 · PLIMSOLL &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
