@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-nY5+K6tgKCMGOl+3d+uhE5hPN8bo4WQqJ59yPWQBFrA=';
+  script-src 'self' 'sha256-jat/p8arnivOS+QWXKouC3ETisFRgEDwvuY1Wz+USq8=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-08-26",
+  "dateModified": "2026-09-05",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -97,7 +97,9 @@
       "Binary analysis and symbol tables",
       "Transparency logs and pre-registration",
       "Integrity monitoring and GPS-denied positioning",
-      "SLAM and state estimation"
+      "SLAM and state estimation",
+      "Model Context Protocol tool integrity",
+      "Supply chain security and signed release provenance"
     ],
     "award": [
       "MLH Best Use of Snowflake API, HackConcordia",
@@ -143,6 +145,11 @@
         "@type": "Article",
         "name": "Cairn Engineering Log",
         "url": "https://gautamkhosla.com/cairn.html"
+      },
+      {
+        "@type": "Article",
+        "name": "mcp-pin Engineering Log",
+        "url": "https://gautamkhosla.com/mcppin.html"
       },
       {
         "@type": "ScholarlyArticle",
@@ -315,36 +322,34 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">RESTORE-TO-USABLE · FAULTS ARE THE THESIS</text>
-              <g font-family="monospace" font-size="10" fill="#D7DBE4">
-                <text x="10" y="52">File</text>
-                <rect x="70" y="41" width="230" height="15" fill="none" stroke="#2A2C33"/>
-                <rect class="mbar m1" x="70" y="41" width="190" height="15" fill="#6B7280"/>
-                <text x="310" y="52" fill="#6B7280">38 ms</text>
-                <text x="10" y="92">4K</text>
-                <rect x="70" y="81" width="230" height="15" fill="none" stroke="#2A2C33"/>
-                <rect class="mbar m2" x="70" y="81" width="230" height="15" fill="#6B7280"/>
-                <text x="310" y="92" fill="#6B7280">67 ms</text>
-                <text x="10" y="132">2M</text>
-                <rect x="70" y="121" width="230" height="15" fill="none" stroke="#2A2C33"/>
-                <rect class="mbar m3" x="70" y="121" width="120" height="15" fill="#FF4100"/>
-                <text x="310" y="132" fill="#FF4100">30 ms</text>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">PINNED AT APPROVAL &#183; RE-DERIVED EVERY CONNECT</text>
+              <g font-family="monospace" font-size="10.5" fill="#D7DBE4">
+                <rect x="10" y="40" width="96" height="34" fill="none" stroke="#6B7280" stroke-width="1.5"/><text x="24" y="61">client</text>
+                <rect x="138" y="40" width="112" height="34" fill="none" stroke="#FF4100" stroke-width="2"/><text x="152" y="61" fill="#FF4100">mcp-pin</text>
+                <rect x="282" y="40" width="96" height="34" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/><text x="296" y="61">server</text>
               </g>
-              <g class="mfault">
-                <rect x="70" y="160" width="7" height="7" fill="#FF4100"/><rect x="82" y="160" width="7" height="7" fill="#FF4100"/>
-                <rect x="94" y="160" width="7" height="7" fill="#FF4100"/><rect x="106" y="160" width="7" height="7" fill="#FF4100"/>
+              <path class="flow" d="M106 57 H138" stroke="#FF4100" stroke-width="2" fill="none"/>
+              <path d="M250 57 H282" stroke="#C4453A" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
+              <text x="254" y="34" fill="#C4453A" font-family="monospace" font-size="9">blocked</text>
+              <g font-family="monospace" font-size="10">
+                <text x="10" y="106" fill="#6B7280">pinned</text>
+                <rect class="kh k1" x="76" y="96" width="150" height="13" fill="#6B7280"/>
+                <text x="10" y="132" fill="#FF4100">observed</text>
+                <rect class="kh k2" x="76" y="122" width="150" height="13" fill="#FF4100"/>
               </g>
-              <text x="10" y="167" fill="#6B7280" font-family="monospace" font-size="9.5">FAULTS</text>
-              <text x="130" y="167" fill="#6B7280" font-family="monospace" font-size="9.5">1563 @ 4K  ·  25 @ 2M</text>
-              <text x="10" y="196" fill="#6B7280" font-family="monospace" font-size="9">WSL2-RELATIVE. RATIOS AND COUNTS, NOT ABSOLUTE MS.</text>
+              <rect class="kblock" x="10" y="150" width="180" height="24" fill="none" stroke="#C4453A" stroke-width="2"/>
+              <text class="kblock" x="22" y="167" fill="#C4453A" font-family="monospace" font-size="10.5" letter-spacing="1">SESSION BLOCKED</text>
+              <text x="204" y="167" fill="#6B7280" font-family="monospace" font-size="9">QUEUED CALLS NOT FORWARDED</text>
+              <text x="10" y="196" fill="#6B7280" font-family="monospace" font-size="9">4,812 LOG ENTRIES &#183; 248 SERVERS &#183; CHAIN INTACT, HEAD SIGNED</text>
+              <text x="10" y="212" fill="#6B7280" font-family="monospace" font-size="9">ZERO INFERENCE. IT HASHES AND COMPARES.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE B/F · MICROVM / SNAPSHOTS</div>
-            <h3>Mayfly Guest <span class="net-tag edge">MEASURED</span></h3>
-            <div class="tg">Cutting a microVM's restore working set to 1563 pages</div>
-            <p>A snapshot-optimised Linux guest for Firecracker: trimmed kernel config, static PID 1, and open harnesses that measure restore-to-usable across File, UFFD 4K, and 2M hugepages. Every number ships with the caveat that earns it.</p>
-            <a href="mayfly.html">READ THE ENGINEERING LOG →</a>
+            <div class="sk">SHOWCASE B/F &#183; AGENT SECURITY</div>
+            <h3>mcp-pin <span class="net-tag edge">SIGNED PUBLIC LOG</span></h3>
+            <div class="tg">The tool you approved is not the tool you're running</div>
+            <p>You approve an MCP server's tools once and that decision is never revisited, even though a tool description is an instruction with the reach of a system prompt. mcp-pin fingerprints what you approved, blocks the session when it moves, and keeps a signed public history of every version across 248 servers. Its own recrawl corrected 17 of its earlier numbers.</p>
+            <a href="mcppin.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
 
@@ -494,7 +499,7 @@
       <div class="mini"><span class="mid">A-02</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p><div class="mtags"><i>TYPESCRIPT</i><i>HONO</i><i>BULLMQ</i><i>POSTGRES</i></div></div>
       <div class="mini"><span class="mid">A-03</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p><div class="mtags"><i>5 AGENTS</i><i>BULLMQ</i><i>ZOD</i><i>TURBOREPO</i></div></div>
       <div class="mini"><span class="mid">A-04</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p><div class="mtags"><i>POSTGRES RLS</i><i>WEBSOCKETS</i><i>STRIPE</i><i>METERING</i></div></div>
-      <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Work-Shift">Work-Shift</a></h4><p>AI drafts your Slack messages; nothing sends until a human approves. Fastify + Cloudflare Workers.</p><div class="mtags"><i>SLACK</i><i>FASTIFY</i><i>CF WORKERS</i></div></div>
+      <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/groundhog">Groundhog</a></h4><p>Ranks the chores you keep paying an agent to redo, from local session history that never leaves the machine. It refuses to render a partial scan as a clean null, and every missing file is named in a NOT COUNTED ledger.</p><div class="mtags"><i>PYTHON</i><i>LOCAL ONLY</i><i>STDLIB ONLY</i><i>SELF-CHECK</i></div></div>
       <div class="mini"><span class="mid">A-06</span><h4>Chronos</h4><p>Digital-twin crisis management over 14 live APIs on NATS. Led a team of 4 at uOttaHack; outages degrade, never kill.</p><div class="mtags"><i>NATS</i><i>14 LIVE APIS</i><i>DIGITAL TWIN</i><i>TEAM OF 4</i></div></div>
       <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Bedrock">Bedrock</a></h4><p>Every scraper heals itself with AI now; nobody checks the repair was correct. Bedrock verifies each heal against golden fixtures before it ships, and every row carries a receipt naming the heals it refused.</p><div class="mtags"><i>NEXT.JS</i><i>POSTGRES</i><i>MCP</i><i>BRIGHT DATA</i></div></div>
       <div class="mini"><span class="mid">A-08</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/keyring">keyring</a></h4><p>Access governance for people and agents. Finds every grant still held, holds it at a human approval gate, and writes a verifiable audit trail of what was granted and by whom.</p><div class="mtags"><i>TYPESCRIPT</i><i>MCP</i><i>AUDIT LOG</i><i>APPROVAL GATES</i></div></div>
@@ -542,7 +547,7 @@
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><div class="num" data-count="9" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
+      <div class="stat"><div class="num" data-count="10" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
       <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
       <div class="stat"><div class="num" data-count="11">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
@@ -565,6 +570,8 @@
       <div><span class="pgh" aria-hidden="true">08</span><div class="pn">P-08</div><h3>Write the kill test before the code</h3><p>Name the number that ends the project while you still have nothing invested in the answer. Two of mine are still sitting at UNEVALUATED in public.</p><a class="pref" href="plumbline.html">PROVEN · GK-004: KT-1 and KT-2 committed before the first commit</a></div>
       <div><span class="pgh" aria-hidden="true">09</span><div class="pn">P-09</div><h3>The refusal is the product</h3><p>A gate with an override is decorative. If a sealed rule can be amended by a flag, a config or a paid tier, the artifact is worth nothing to the person it was meant to convince.</p><a class="pref" href="plimsoll.html">PROVEN · GK-010: a test that fails if a code path to mutate a sealed field ever appears</a></div>
       <div><span class="pgh" aria-hidden="true">10</span><div class="pn">P-10</div><h3>Stop when your own rule says stop</h3><p>A stop condition you argue your way past was never a stop condition. Three not-evaluable readings, and the pre-registered action was to archive it.</p><a class="pref" href="lading.html">PROVEN · GK-009: both kill tests resolved against it, so the project ended</a></div>
+      <div><span class="pgh" aria-hidden="true">11</span><div class="pn">P-11</div><h3>Name the competitor who did it better</h3><p>Finding prior art that beats you on the job it does is uncomfortable and burying it is cheap. A security tool that hides the alternative has already told you what kind of tool it is.</p><a class="pref" href="mcppin.html">PROVEN · GK-011 §06: the README recommends mcp-warden over my own project</a></div>
+      <div><span class="pgh" aria-hidden="true">12</span><div class="pn">P-12</div><h3>Store the conditions with the measurement</h3><p>A number whose environment was not recorded cannot be re-derived, only re-argued. I have written that caveat on other people's results and then failed to apply it to my own crawl.</p><a class="pref" href="mcppin.html">PROVEN · GK-011 §08: the recrawl that disproved my own explanation</a></div>
     </div>
   </div>
 </section>
