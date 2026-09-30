@@ -277,22 +277,39 @@
 
 <section id="sim-sec" data-log="SEC.00 · LIVE SIMULATION">
   <div class="wrap">
-    <div class="sec-head reveal"><span class="sec-no">SEC. 00</span><h2>Live simulation · AEGIS</h2></div>
-    <div class="sim-shell reveal" id="simShell">
-      <div class="sim-bar">
-        <span><b>AEGIS-SIM</b> · CAM-01 · ZONE A</span>
+    <div class="sec-head reveal"><span class="sec-no">SEC. 00</span><h2>Live simulation · <span id="simName">AEGIS</span></h2></div>
+    <div class="sim-tabs reveal" role="tablist" aria-label="Choose a camera">
+      <button class="sim-tab on" role="tab" id="tabAegis" data-sim="aegis" aria-selected="true" aria-controls="simShell">CAM-01 · WORKSITE<i>AEGIS · EDGE SAFETY LOOP · SOLO</i></button>
+      <button class="sim-tab" role="tab" id="tabPl" data-sim="pl" aria-selected="false" aria-controls="simShell" tabindex="-1">CAM-02 · STREET<i>PORCHLIGHT · NEIGHBOUR MESH · TEAM OF FOUR</i></button>
+    </div>
+    <div class="sim-shell reveal" id="simShell" role="tabpanel" aria-labelledby="tabAegis">
+      <div class="sim-bar" data-cam="aegis">
+        <span><b>AEGIS-SIM</b> · CAM-01 · WORKSITE · ZONE A</span>
         <span class="rec">● REC</span>
         <span>SSD-MOBILENET · 300×300 · ON-DEVICE</span>
       </div>
-      <canvas id="simCv" width="1000" height="380"></canvas>
-      <div class="sim-foot">
+      <div class="sim-bar is-off" data-cam="pl">
+        <span><b>PORCHLIGHT-SIM</b> · CAM-02 · STREET · GRID DOWN</span>
+        <span class="gossip">● GOSSIP</span>
+        <span>LOSS 30% · DROPPED <span id="plDrop">0</span></span>
+      </div>
+      <canvas id="townCv" width="1000" height="380" role="img" aria-label="One town in a storm. At the west end, a worksite where AEGIS watches workers for hard hats and fires a relay when someone enters the hazard zone without one. At the east end, a street where Porchlight passes calls for help between neighbours' laptops to City Hall."></canvas>
+      <div class="sim-foot" data-cam="aegis">
         <div class="sim-cell"><div class="k">SAFETY STATE</div><div class="v safe" id="simState">SAFE</div></div>
         <div class="sim-cell"><div class="k">RELAY / GPIO</div><div class="v" id="simRelay">IDLE</div></div>
         <div class="sim-cell"><div class="k">EVENTS UPLINKED</div><div class="v orange" id="simSent">0</div></div>
         <div class="sim-cell"><div class="k">OFFLINE BUFFER</div><div class="v" id="simBuf">0</div></div>
       </div>
+      <div class="sim-foot is-off" data-cam="pl">
+        <div class="sim-cell"><div class="k">CITY LINK</div><div class="v safe" id="plLink">LIVE</div></div>
+        <div class="sim-cell"><div class="k">HELD ON THE STREET</div><div class="v" id="plHeld">0</div></div>
+        <div class="sim-cell"><div class="k">DELIVERED · EXACTLY ONCE</div><div class="v orange" id="plDel">0</div></div>
+        <div class="sim-cell"><div class="k">CALLS LOST</div><div class="v safe" id="plLost">0 OF 0</div></div>
+      </div>
     </div>
-    <p class="sim-note reveal">This is the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink, reimplemented in ~150 lines of browser JS. Workers without hard hats trigger a violation when they enter the hazard zone; the relay fires <b>before</b> the voice, exactly like the SCHED_FIFO ordering on the device. <b>Now flip the UPLINK switch above</b> and watch events buffer offline, then flush when the link returns. Nothing in the safety loop notices. Full design decisions in <a href="aegis.html">the engineering log</a>. <b>And the switch is not just a toy:</b> turn your wifi off and reload this page. It still loads, and the switch flips itself.</p>
+    <p class="sim-note reveal"><b>One town, one storm.</b> The worksite at the west end runs AEGIS; the street at the east end runs Porchlight. <b>Flip the UPLINK switch above</b> and the same outage hits both at once. Switch cameras to fly across town, or drag to orbit. Drawn in 3D with a hand-written projection and no library, so this page still makes zero third-party requests.</p>
+    <p class="sim-note" data-cam="aegis">CAM-01 runs the real AEGIS pipeline logic: detection → zone rules → state machine → alarm → async uplink. A worker without a hard hat who walks into the hazard zone trips the relay first and the voice after, exactly like the SCHED_FIFO ordering on the device. Cut the uplink and events stack up on the edge device, then flush in chunks of three when it returns. The safety loop never notices. Full design decisions in <a href="aegis.html">the engineering log</a>. <b>And the switch is not just a toy:</b> turn your wifi off and reload this page. It still loads, and the switch flips itself.</p>
+    <p class="sim-note is-off" data-cam="pl">CAM-02 is a sketch of Porchlight's delivery rules: a beacon press is resent until a neighbour's node acknowledges it, nodes gossip every call to each other and repair gaps on the next exchange, and <b>30% of all messages are dropped on purpose</b>. Cut the uplink and calls wait on the street, then reach City Hall exactly once when it returns. The project's own test runs 30 nodes, cuts the City link 50 times, and delivers 200 of 200 calls. Like this one, it is a simulation, not a field trial. Built by a team of four at Hack the Hill III, second place in Civic Technology. <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/porchlight">Read the source</a>.</p>
   </div>
 </section>
 
