@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LkuHhcJTavfwIKt0OhtWMU0BlhVj7aYTQq0LOoz0reo='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-012 · The CRA disagrees with the CRA · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-012. Takehome computes Canadian payroll deductions from the CRA's T4127 formulas and checks itself against the CRA's own calculator: 8,838 of 9,002 boundary cases agree, and all 164 disagreements are published. Along the way it found the calculator does not follow the formula.">
+<link rel="canonical" href="https://gautamkhosla.com/takehome.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="The CRA disagrees with the CRA">
+<meta property="og:description" content="A payroll engine checked against the government's own calculator. 98.2% agreement, every disagreement published, and one place the calculator departs from the formula.">
+<meta property="og:url" content="https://gautamkhosla.com/takehome.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"The CRA disagrees with the CRA: building a payroll engine against the government's own calculator","description":"Engineering log for Takehome, a Canadian payroll deduction engine implementing the CRA T4127 formulas in Rust, compiled to WebAssembly and native, with a published conformance record against the CRA Payroll Deductions Online Calculator.","url":"https://gautamkhosla.com/takehome.html","datePublished":"2026-09-29","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareApplication","name":"Takehome","url":"https://takehome.gautamkhosla.com","applicationCategory":"FinanceApplication","operatingSystem":"Web","codeRepository":"https://github.com/GautamTalksDev/takehome","license":"https://www.apache.org/licenses/LICENSE-2.0"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-012 · TAKEHOME</span>
+</nav>
+
+<main class="v-wrap">
+
+  <div class="v-doc">
+    <span>DOC <b>GK-012</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>TAKEHOME</b></span>
+    <span>AGREEMENT <b>8,838 / 9,002</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    The CRA<br>
+    <span class="v-out">disagrees with</span><br>
+    <span class="v-acc">the CRA.</span>
+  </h1>
+
+  <p class="v-stand">
+    Every Canadian employer withholds income tax, CPP and EI from every paycheque using arithmetic the
+    Canada Revenue Agency publishes as the T4127. Takehome implements it in one Rust engine and checks
+    itself against the CRA's own calculator: 8,838 of 9,002 boundary cases agree, and all 164
+    disagreements are published. Building that check turned up a place where the calculator does not
+    follow the formula it is meant to implement. Live:
+    <a href="https://takehome.gautamkhosla.com" rel="noopener noreferrer external">takehome.gautamkhosla.com</a>.
+    Code: <a href="https://github.com/GautamTalksDev/takehome" rel="noopener noreferrer external">takehome</a>,
+    Apache-2.0.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A mid-year rate change: the second half of the year uses a prorated rate that is correct only across the full year">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">1 JULY 2026 &#183; BC, NEWFOUNDLAND AND LABRADOR, PEI, SIMULTANEOUSLY</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">
+          <text x="0" y="44">JAN</text><text x="300" y="44">JUL</text><text x="604" y="44">DEC</text>
+        </g>
+        <rect x="0" y="54" width="296" height="30" fill="#2A2C33"/>
+        <text x="12" y="73" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">old rate, already withheld</text>
+        <rect class="v-rare" x="300" y="54" width="340" height="30" fill="#2A2C33"/>
+        <text x="312" y="73" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">prorated rate, deliberately off</text>
+        <path d="M0 100 H640" stroke="#FF4100" stroke-width="2" stroke-dasharray="6 5"/>
+        <text x="0" y="118" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">THE YEAR AVERAGES OUT TO THE NEW RATE. NO SINGLE MONTH IS CORRECT.</text>
+        <line x1="0" y1="138" x2="640" y2="138" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="160" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">ONE DATASET IS RIGHT FOR JAN TO JUN OR FOR JUL TO DEC, AND DOES NOT SAY WHICH.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.1 · <b>The CRA does not order a true-up.</b> It publishes a rate for the second half that is wrong on purpose, so the year comes out right.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">The rules change twice a year, and one of the changes is wrong on purpose</h2>
+
+    <p>When a province raises a tax rate backdated to January, employers have already withheld six
+    months at the old rate. The CRA does not ask anyone to fix those six months. It publishes a
+    prorated rate for July to December that averages out correctly across the whole year, and is
+    incorrect for any other purpose.</p>
+
+    <p>On 1 July 2026 that happened to three provinces at once. A payroll engine holding a single
+    dataset for the year cannot represent it. It is correct for one half and silently wrong for the
+    other, and nothing in its answer tells you which half you asked about.</p>
+
+    <p class="v-pull">Nobody in this market publishes an error rate. Verifying a vendor means trusting
+    a sales call.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A rule set is keyed on four things including the calculation option, and every response names the version that answered">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT A RULE IS KEYED ON</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="148" height="34" fill="#2A2C33"/><text x="12" y="50" fill="#D7DBE4">jurisdiction</text>
+          <rect x="160" y="28" width="148" height="34" fill="#2A2C33"/><text x="172" y="50" fill="#D7DBE4">factor</text>
+          <rect x="320" y="28" width="148" height="34" fill="#2A2C33"/><text x="332" y="50" fill="#D7DBE4">date interval</text>
+          <rect x="480" y="28" width="160" height="34" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/><text x="492" y="50" fill="#FF4100">calculation option</text>
+        </g>
+        <text x="480" y="80" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">same place, same date,</text>
+        <text x="480" y="93" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">different published values</text>
+        <line x1="0" y1="110" x2="640" y2="110" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="132" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">ask for February's rules in November, get February's rules</text>
+        <path class="v-flow" d="M0 146 H420" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <text x="430" y="150" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#16A34A">response names the rule set version</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.2 · <b>Not a feature that can be added later.</b> Flattening the option dimension makes the second method silently wrong for half of any year with a mid-year change.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">A schema decision made in the first hour</h2>
+
+    <p>Every rule carries a validity interval rather than a year. Every call accepts an optional pay
+    date and defaults to today, and every response names the rule set version that answered it.</p>
+
+    <p>The fourth key is the one that is easy to miss. The CRA publishes different values for the
+    same jurisdiction on the same date depending on which of two calculation methods you use. Key a
+    rule on three things and the second method is wrong for six months of any year with a mid-year
+    change, without an error anywhere.</p>
+
+    <p>Rules are data, never literals. No rate, threshold or maximum appears in engine code, so when
+    the CPP base rate falls from 4.95% to 4.75% on 1 January 2027, supporting it is adding a row. A
+    preview of that rule set already ships, labelled proposed and not yet enacted, with the warning
+    above the number rather than below it.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="3500 divided by 12 truncates to 291.66 where rounding gives 291.67, and both are pinned as a paired canary test">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">CPP BASIC EXEMPTION, MONTHLY</text>
+        <text x="0" y="52" font-family="IBM Plex Mono, monospace" font-size="22" fill="#D7DBE4">3500 &#247; 12 = 291.6666&#8230;</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <rect x="0" y="72" width="300" height="34" fill="#2A2C33" stroke="#16A34A" stroke-width="1.6"/>
+          <text x="12" y="94" fill="#16A34A">TRUNCATE &#8594; 291.66</text>
+          <text x="196" y="94" font-size="9.5" fill="#6B7280">what the CRA says</text>
+          <rect x="340" y="72" width="300" height="34" fill="#2A2C33" stroke="#C4453A" stroke-width="1.6"/>
+          <text x="352" y="94" fill="#C4453A">ROUND &#8594; 291.67</text>
+          <text x="512" y="94" font-size="9.5" fill="#6B7280">what habit says</text>
+        </g>
+        <line x1="0" y1="124" x2="640" y2="124" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">PAIRED CANARY: BOTH PATHS PINNED SO THEY CAN NEVER COLLAPSE INTO ONE.</text>
+        <text x="0" y="164" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">A FLOAT TYPE ANYWHERE IN THE ENGINE FAILS THE BUILD.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.3 · <b>Three rounding behaviours, and two of them differ by a cent.</b> The cent is the whole job.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">No binary floating point in a money path</h2>
+
+    <p>The type system makes IEEE-754 floats unreachable in anything that touches money, and a CI
+    check fails the build if a float type appears in the engine at all. That is enforcement, not a
+    review comment.</p>
+
+    <p>It matters more than it sounds, because the CRA specifies three different rounding behaviours.
+    The CPP basic exemption truncates the third decimal where every other quantity rounds half up.
+    3,500 divided by 12 is $291.66, not $291.67. That figure sits in the suite as a canary, paired
+    with its rounded twin, so the two code paths can never quietly merge.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One Rust core compiles to WebAssembly and native, and a test asserts both produce byte-identical output">
+        <rect x="0" y="62" width="130" height="44" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/>
+        <text x="14" y="82" font-family="IBM Plex Mono, monospace" font-size="11" fill="#FF4100">RUST CORE</text>
+        <text x="14" y="97" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">no I/O, no clock</text>
+        <path class="v-flow" d="M132 76 C 180 76, 190 38, 236 38 M132 92 C 180 92, 190 130, 236 130" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="238" y="20" width="190" height="36" fill="#2A2C33"/><text x="250" y="36" fill="#D7DBE4">WASM</text><text x="250" y="50" font-size="9" fill="#6B7280">browser &#183; npm</text>
+          <rect x="238" y="112" width="190" height="36" fill="#2A2C33"/><text x="250" y="128" fill="#D7DBE4">NATIVE</text><text x="250" y="142" font-size="9" fill="#6B7280">API &#183; CLI &#183; PyPI</text>
+        </g>
+        <path d="M430 38 C 480 38, 480 84, 520 84 M430 130 C 480 130, 480 84, 520 84" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <rect x="520" y="66" width="120" height="36" fill="#2A2C33" stroke="#16A34A" stroke-width="1.6"/>
+        <text x="532" y="82" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#16A34A">SAME BYTES</text>
+        <text x="532" y="96" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">asserted, not assumed</text>
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">EVERY RESPONSE CARRIES THE BUILD HASH THAT PRODUCED IT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.4 · <b>The date is data.</b> It arrives in the request, so the engine never reads it from the environment and every determinism property follows.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">One engine, every runtime</h2>
+
+    <p>A single Rust core compiles to WebAssembly and to native, with thin bindings for JavaScript and
+    Python. The browser, the API and the command line all run the identical compiled artifact, and a
+    test runs the same vectors through WASM and native and asserts byte-identical output.</p>
+
+    <p>The engine has no input, no output, no network and no clock. Give it a request and a rule set,
+    get a response. Because the rule data is static and the engine is WASM, the calculator pages work
+    with no network after the first load, and no salary figure ever leaves the visitor's device.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A grid of test cases where most agree with the official calculator and a small fraction are published disagreements">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">THE OFFICIAL CALCULATOR HAS NO API, SO IT BECAME THE ORACLE</text>
+        <rect x="0.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="28.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="294.4" y="40.8" width="10" height="10" fill="#FF4100"/>
+        <rect x="307.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="40.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="473.6" y="53.6" width="10" height="10" fill="#FF4100"/>
+        <rect x="486.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="53.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="371.2" y="66.4" width="10" height="10" fill="#FF4100"/>
+        <rect x="384.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="576.0" y="66.4" width="10" height="10" fill="#FF4100"/>
+        <rect x="588.8" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="66.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="537.6" y="79.2" width="10" height="10" fill="#FF4100"/>
+        <rect x="550.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="79.2" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="256.0" y="92.0" width="10" height="10" fill="#FF4100"/>
+        <rect x="268.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="92.0" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="460.8" y="104.8" width="10" height="10" fill="#FF4100"/>
+        <rect x="473.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect class="v-blip" x="524.8" y="104.8" width="10" height="10" fill="#FF4100"/>
+        <rect x="537.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="104.8" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="117.6" width="10" height="10" fill="#3A3D46"/>
+        <rect x="0.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="12.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="25.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="38.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="51.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="64.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="76.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="89.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="102.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="115.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="128.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="140.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="153.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="166.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="179.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="192.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="204.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="217.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="230.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="243.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="256.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="268.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="281.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="294.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="307.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="320.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="332.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="345.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="358.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="371.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="384.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="396.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="409.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="422.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="435.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="448.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="460.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="473.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="486.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="499.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="512.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="524.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="537.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="550.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="563.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="576.0" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="588.8" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="601.6" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="614.4" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <rect x="627.2" y="130.4" width="10" height="10" fill="#3A3D46"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <rect x="0" y="150" width="10" height="10" fill="#6B7280"/><text x="16" y="159" fill="#D7DBE4">8,838 AGREE</text>
+          <rect x="140" y="150" width="10" height="10" fill="#FF4100"/><text x="156" y="159" fill="#FF4100">164 DISAGREE &#183; EVERY ONE PUBLISHED</text>
+        </g>
+        <text x="0" y="184" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">CASES CLUSTER ON EVERY BOUNDARY, ONE CENT EITHER SIDE. EACH CACHED WITH THE CONDITIONS OF ITS MEASUREMENT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.5 · <b>98.2%, with the other 1.8% on the page.</b> Input, both outputs, the delta, and an explanation, for each of the 164.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">The government's calculator as an oracle, not a competitor</h2>
+
+    <p>The CRA runs its own Payroll Deductions Online Calculator. It is the authoritative answer and it
+    has no API. So a grid generator produces cases densely clustered around every boundary that
+    matters, bracket thresholds, pensionable earnings ceilings, credit phase-outs, surtax and health
+    premium tiers, one cent either side of each. A rate-limited harness runs each unique case through
+    the official calculator overnight and caches every result permanently.</p>
+
+    <p>The coverage gaps are published beside the number, in the same words. Quebec is not supported.
+    Four of the fourteen legal pay frequencies cannot be captured because the official calculator does
+    not expose them. And the interior of the grid is checked against invariants rather than against
+    the oracle, so 750,000 self-checked cases are not folded into the headline.</p>
+
+    <p class="v-pull">A bug in the harness is a defect: fixed and removed. Identical inputs producing
+    different outputs is a disagreement: published, even when the conclusion is unflattering.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Annual tax jumps by up to a dollar when income crosses a bracket threshold by one cent">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ANNUAL FEDERAL TAX AROUND A BRACKET THRESHOLD</text>
+        <line x1="40" y1="148" x2="620" y2="148" stroke="#2A2C33" stroke-width="1.4"/>
+        <line x1="40" y1="30" x2="40" y2="148" stroke="#2A2C33" stroke-width="1.4"/>
+        <path d="M40 128 L330 88" fill="none" stroke="#6B7280" stroke-width="2.4"/>
+        <path d="M330 74 L620 34" fill="none" stroke="#6B7280" stroke-width="2.4"/>
+        <line x1="330" y1="30" x2="330" y2="148" stroke="#FF4100" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <line class="v-blip" x1="342" y1="88" x2="342" y2="74" stroke="#FF4100" stroke-width="3"/>
+        <text x="352" y="86" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">up to $1</text>
+        <text x="252" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">threshold, &#177;1&#162;</text>
+        <text x="420" y="130" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">constants rounded to the</text>
+        <text x="420" y="143" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">whole dollar by the CRA</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.6 · <b>A property of the published tables, not a bug.</b> The official calculator does the same, so Takehome matches it deliberately.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">Finding one: the published constants make tax discontinuous</h2>
+
+    <p>The CRA publishes a constant for each bracket, rounded to the whole dollar, that corrects for
+    applying the top applicable rate to the entire income. Because those constants are rounded, annual
+    federal tax jumps by up to a dollar as income crosses a threshold by a single cent.</p>
+
+    <p>That was not the goal. It came out of building the conformance grid, because a grid clustered
+    one cent either side of every threshold is exactly the instrument that sees it. The measured jump
+    at every threshold in every supported jurisdiction is published, so the behaviour is documented
+    instead of surprising someone during a reconciliation.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Solving backward from the official calculator's output recovers the credit base it used, which matches only the year-to-date reading">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">SOLVE BACKWARD FROM THE CALCULATOR'S PUBLISHED FIGURE</text>
+        <rect x="0" y="30" width="200" height="40" fill="#2A2C33"/>
+        <text x="12" y="48" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">CALCULATOR OUTPUT</text>
+        <text x="12" y="62" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">the pay period at the CPP max</text>
+        <path class="v-flow" d="M202 50 H260" fill="none" stroke="#6B7280" stroke-width="2"/>
+        <rect x="262" y="30" width="130" height="40" fill="#2A2C33" stroke="#FF4100" stroke-width="1.6"/>
+        <text x="274" y="48" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">INVERT</text>
+        <text x="274" y="62" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">implied credit base</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="92" width="640" height="30" fill="#2A2C33"/>
+          <text x="12" y="111" fill="#D7DBE4">T4127 as written &#183; maximum base contribution</text><text x="440" y="111" fill="#D7DBE4">$3,519.45</text><text x="560" y="111" fill="#C4453A">no match</text>
+          <rect x="0" y="126" width="640" height="30" fill="#2A2C33" stroke="#16A34A" stroke-width="1.4"/>
+          <text x="12" y="145" fill="#D7DBE4">year-to-date contribution</text><text x="440" y="145" fill="#D7DBE4">$3,494.12</text><text x="560" y="145" fill="#16A34A">to the cent</text>
+        </g>
+        <text x="0" y="178" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">ABOUT 13&#162; OF WITHHOLDING IN THAT PAY PERIOD, FOR EVERY EMPLOYEE WHO REACHES THE CAP MID-YEAR.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.7 · <b>Established by inversion, not by argument.</b> Two candidate readings, one recovered number, one match.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">Finding two: the calculator does not follow the formula</h2>
+
+    <p>The T4127 instructs a calculator to use the maximum base CPP contribution for the tax credit in
+    the pay period where an employee first reaches the annual maximum. The official calculator does
+    not do this. It uses the year-to-date figure instead.</p>
+
+    <p>I did not establish that by reading the document harder. I solved backward from the official
+    calculator's published figure for the credit base it must have used, then compared that recovered
+    number against each candidate interpretation. The formula's reading gives $3,519.45. The
+    year-to-date reading gives $3,494.12. Only one matched, to the cent.</p>
+
+    <p>Takehome conforms to the calculator by default, because agreement with the calculator is what
+    customers reconcile against. The document's literal reading stays selectable. Both are documented,
+    with reproduction steps a reader can follow in five minutes.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three guards that read green while measuring nothing, and the rule that replaced them">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">GUARDS THAT PASSED WHILE WATCHING NOTHING</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="640" height="26" fill="#2A2C33"/><text x="12" y="45" fill="#D7DBE4">a property test that was being skipped</text><text x="560" y="45" fill="#16A34A">green</text>
+          <rect x="0" y="58" width="640" height="26" fill="#2A2C33"/><text x="12" y="75" fill="#D7DBE4">a watchdog that only saw the success path</text><text x="560" y="75" fill="#16A34A">green</text>
+          <rect x="0" y="88" width="640" height="26" fill="#2A2C33"/><text x="12" y="105" fill="#D7DBE4">a consistency check comparing two of four copies</text><text x="560" y="105" fill="#16A34A">green</text>
+        </g>
+        <line x1="0" y1="130" x2="640" y2="130" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="152" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#FF4100">NEW RULE: WHEN A GUARD PASSES, BREAK THE THING IT WATCHES AND CONFIRM IT GOES RED.</text>
+        <text x="0" y="170" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">A GUARD THAT MEASURES A SUBSET OF WHAT IT CLAIMS IS WORSE THAN NO GUARD.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 12.8 · <b>The watchdog fired during normal operation and stayed silent during a hang.</b> Exactly backwards, and green the whole time.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>Three guards that read green while measuring nothing.</b> A property test that was being
+    skipped. A watchdog that only noticed the successful code path, so it fired during normal
+    operation and stayed silent during a hang. A consistency check that compared two of four copies of
+    the same list. The standing rule now is that a passing guard is not evidence until I have broken
+    the thing it watches on purpose and watched it go red.</p>
+
+    <p><b>Quebec returns an error, not a number.</b> It is administered separately under its own
+    formulas and is roughly a fifth of Canadian employment. A Quebec request gets a typed error rather
+    than federal tax with the provincial line zeroed, because a confident wrong number in the one
+    province the engine does not calculate is worse than an outage. It also means no national
+    employer can use this alone yet.</p>
+
+    <p><b>What I would change, or at least say louder:</b> 98.2% is agreement with the official
+    calculator, not correctness. By conforming to the calculator by default, Takehome inherits its
+    departure from the formula on purpose, and the headline number is structurally unable to detect
+    any error the oracle shares. That is the right product decision, because employers reconcile
+    against the calculator. It is also a real limit of the instrument, and the conformance record
+    should state it in its first paragraph rather than leaving a reader to work it out.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://takehome.gautamkhosla.com" rel="noopener noreferrer external">Try the calculator &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://takehome.gautamkhosla.com/conformance/" rel="noopener noreferrer external">The conformance record</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-012 · TAKEHOME · 8,838 of 9,002 against CRA PDOC</span>
+    <span><a href="/mcppin.html">Previous log: GK-011 · mcp-pin &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>
