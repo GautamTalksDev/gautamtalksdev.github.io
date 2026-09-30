@@ -687,3 +687,39 @@
   @keyframes lsgrow { 0%{transform:scaleX(0)} 38%,90%{transform:scaleX(1)} 100%{transform:scaleX(1)} }
   .slide.active .lstop { opacity:0; animation:lstopin 4.4s steps(1) infinite; }
   @keyframes lstopin { 0%,52%{opacity:0} 58%,94%{opacity:1} 100%{opacity:0} }
+
+  /* Takehome: the oracle sweeps the grid, most cells agree, a few are published disagreements */
+  .slide.active .tkc { animation:tkscan 4.8s steps(1) infinite; }
+  .slide.active .tkc.k2 { animation-delay:.2s; }
+  .slide.active .tkc.k3 { animation-delay:.4s; }
+  .slide.active .tkc.k4 { animation-delay:.6s; }
+  .slide.active .tkc.k5 { animation-delay:.8s; }
+  .slide.active .tkc.k6 { animation-delay:1s; }
+  @keyframes tkscan { 0%,6%{fill:#2A2C33} 10%,92%{fill:#6B7280} 96%,100%{fill:#2A2C33} }
+  .slide.active .tkd { animation:tkdis 4.8s steps(1) infinite; }
+  @keyframes tkdis { 0%,34%{fill:#2A2C33} 38%,92%{fill:#FF4100} 96%,100%{fill:#2A2C33} }
+
+  /* commendations split in two: four publications, then what was judged */
+  .cmds-sub { padding:8px 18px; border-bottom:2px solid #2A2C33; font-family:"IBM Plex Mono",monospace;
+    font-size:10px; letter-spacing:2px; color:#6B7280; }
+  .cmds-grid + .cmds-sub { border-top:2px solid #2A2C33; }
+  .cmds-grid.cmds-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .cmds-grid.cmds-4 .cmd-org { letter-spacing:.4px; font-size:10.5px; overflow-wrap:anywhere; }
+  .cmds-grid.cmds-4 .cmd-proj { overflow-wrap:anywhere; }
+  .cmds-grid.cmds-4 .cmd { padding:20px 20px 18px 52px; }
+  .cmds-grid.cmds-4 .cmd-title { font-size:15px; }
+  .cmds-grid.cmds-4 .cmd-medal { left:18px; }
+  .cmds-grid.cmds-4 .cmd:nth-child(4n),
+  .cmds-grid.cmds-3 .cmd:nth-child(3n) { border-right:0; }
+  @media (max-width:1100px){
+    .cmds-grid.cmds-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .cmds-grid.cmds-4 .cmd:nth-child(2n) { border-right:0; }
+    .cmds-grid.cmds-4 .cmd:nth-child(-n+2) { border-bottom:2px solid #2A2C33; } }
+  @media (max-width:1000px){
+    .cmds-grid.cmds-3 .cmd { border-right:0; border-bottom:2px solid #2A2C33; }
+    .cmds-grid.cmds-3 .cmd:last-child { border-bottom:0; } }
+  @media (max-width:760px){
+    .cmds-grid.cmds-4 { grid-template-columns:1fr; }
+    .cmds-grid.cmds-4 .cmd { border-right:0; border-bottom:2px solid #2A2C33; }
+    .cmds-grid.cmds-4 .cmd:last-child { border-bottom:0; } }
+  @media print { .cmds-sub, .cmds-grid + .cmds-sub { border-color:#DEDED7; color:#14151A; } }
