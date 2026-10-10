@@ -412,7 +412,7 @@
         </g>
 
         <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">CAIRN DOES NOT COMPUTE POSITION. THAT IS THE ENTIRE POINT.</text>
-        <text x="376" y="155" font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">UNDER 1 ms PER EPOCH &#183; FITS ON BODY-WORN COMPUTE</text>
+        <text x="376" y="155" font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">ABOUT 0.5 ms PER CHECK ON A LAPTOP &#183; NOT YET ON A WEARABLE</text>
       </svg>
       <figcaption class="v-cap">FIG 07.8 · <b>It sits on top and says whether to believe them.</b> Better-resourced people are computing position, and all of them have the same silent failure. The LiDAR, inertial and UWB labels show the design, not what was tested: the tests on this page used three pseudo sources built from one CompSLAM trajectory.</figcaption>
     </figure>
@@ -421,8 +421,8 @@
     <h2 class="v-h2">Where it landed</h2>
 
     <p>Cairn is public, Apache 2.0, with tests, hash-pinned dependencies, a reproduce-everything
-    script, a security policy, and a slightly humiliating limitations page. It runs in under a
-    millisecond per epoch, so it fits on body-worn compute. It consumes pose estimates from any
+    script, a security policy, and a slightly humiliating limitations page. Each check takes about half a
+    millisecond on my laptop (median 0.56 ms, 99% under 1.1 ms). Not yet measured on a wearable. It consumes pose estimates from any
     source and emits three things: a protection level, an integrity state, and how long since
     anyone independently corroborated the position.</p>
 
