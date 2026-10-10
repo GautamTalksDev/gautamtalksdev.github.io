@@ -279,7 +279,7 @@
   <!-- ================= 06 ================= -->
   <section class="v-sec">
     <figure class="v-fig">
-      <svg viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Under injected drift the naive covariance monitor never alarms while error reaches 20.5 metres, and the consistency monitor leaves nominal after 12 seconds at 0.54 metres of error">
+      <svg viewBox="0 0 640 196" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Under injected drift the naive covariance monitor never alarms while error reaches 20.5 metres. The earlier 12 second consistency result is withdrawn: with no drift at all, the same check crosses its alarm threshold 12.9 seconds after the same onset">
         <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">INJECTED ALONG-TRACK DRIFT &#183; ONSET AT T=0</text>
 
         <line x1="60" y1="24" x2="60" y2="176" stroke="#6B7280" stroke-width="1.4" stroke-dasharray="4 4"/>
@@ -289,33 +289,43 @@
         <text x="470" y="22" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#C4453A">TRUE ERROR &#8594; 20.5 m</text>
 
         <circle class="v-pulse" cx="124" cy="144" r="5" fill="#FF4100"/>
-        <text x="134" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">CONSISTENCY LEAVES NOMINAL &#183; 12 s &#183; 0.54 m</text>
+        <text x="134" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">12 s CLAIM WITHDRAWN &#183; CLEAN RUN CROSSES AT 12.9 s</text>
 
         <rect x="0" y="182" width="640" height="0" fill="none"/>
         <g font-family="IBM Plex Mono, monospace" font-size="10.5">
           <rect x="0" y="184" width="310" height="0" fill="none"/>
         </g>
       </svg>
-      <figcaption class="v-cap">FIG 07.6 · <b>Twelve seconds versus never.</b> Half a metre versus twenty. Rolling 5 s alarm duty at or above 50%.</figcaption>
+      <figcaption class="v-cap">FIG 07.6 · <b>The twelve seconds did not hold.</b> With no drift injected, the same check crosses the same rolling 5 s, 50% alarm duty 12.9 s after the same onset. Corrected 10 Oct 2026.</figcaption>
     </figure>
 
     <p class="v-num">SEC. 06</p>
-    <h2 class="v-h2">Twelve seconds versus never</h2>
+    <h2 class="v-h2">Never, and a number I had to take back</h2>
 
     <table class="v-table">
       <thead><tr><th>Monitor</th><th>Alarm</th><th>Error when it noticed</th></tr></thead>
       <tbody>
         <tr><td>Naive self-reported covariance</td><td class="v-unev">never</td><td>reached 20.5 m, still NOMINAL</td></tr>
-        <tr><td>Cross-source consistency</td><td class="v-pass">12 s after onset</td><td>0.54 m</td></tr>
+        <tr><td>Cross-source consistency</td><td class="v-unev">12 s claim withdrawn</td><td>clean run with no drift crosses at 12.9 s</td></tr>
       </tbody>
     </table>
 
     <p>Naive covariance monitoring essentially never noticed. Error climbed to twenty and a half
-    metres while the system reported NOMINAL the entire way. Cross-source consistency left NOMINAL
-    twelve seconds after onset, when true error was fifty-four centimetres.</p>
+    metres while the system reported NOMINAL the entire way. But it can't alarm by construction, so
+    that is a weaker win than it looks.</p>
 
-    <p>That is the result, and it is a better one than I started with. I only found it because the
-    first one fell over.</p>
+    <p>I used to say cross-source consistency caught the drift twelve seconds after onset, at
+    fifty-four centimetres of error. I'm withdrawing that. Run the same check on the clean recording
+    with no drift at all, and it crosses the same alarm threshold 12.9 seconds after the same onset.
+    The timing number never showed drift detection.</p>
+
+    <p>What does hold up: across 8 onset points, the check is in alarm 91 to 98 percent of the time
+    after onset with the injected drift, and 5 to 12 percent without it. Two caveats. The injector
+    re-aims the drift along every 10 Hz step, so it jumps around; a smooth drift in one fixed
+    direction looks the same as clean. And the three sources in this test all came from one
+    CompSLAM trajectory (the current pose, a constant velocity prediction, the pose from 1 s
+    earlier), not three independent sensors. The README now says this, and the no-drift check is
+    in the repo as <code>scripts/smooth_drift_check.py</code> so anyone can rerun it.</p>
 
     <p>The solution-separation side holds up too, on synthetic independent sources: configured
     family-wise false-alarm probability of 0.05 across 2000 trials returned an empirical false-alarm
@@ -327,7 +337,7 @@
   <!-- ================= 07 ================= -->
   <section class="v-sec">
     <figure class="v-fig">
-      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="When all sources share a map or clock they fail together, look consistent, and the monitor misses 73 percent of faults">
+      <svg viewBox="0 0 640 186" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="When all sources share a map or clock they fail together, look consistent, and the monitor reports nominal while wrong for 73 percent of the run">
         <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">COMMON-MODE FAULT &#183; SHARED MAP, CLOCK, OR GEOMETRY</text>
 
         <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">
@@ -351,7 +361,7 @@
         <text x="204" y="132" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">they agree, so nothing</text>
         <text x="204" y="146" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">looks wrong</text>
       </svg>
-      <figcaption class="v-cap">FIG 07.7 · <b>The method that went 94 to 12 collapses here.</b> Consistency checking is structurally blind to unanimous lies.</figcaption>
+      <figcaption class="v-cap">FIG 07.7 · <b>The consistency check collapses here.</b> Consistency checking is structurally blind to unanimous lies. Synthetic: the same error added to all three pseudo sources.</figcaption>
     </figure>
 
     <p class="v-num">SEC. 07</p>
@@ -360,13 +370,12 @@
     <p>Cross-source consistency works by checking whether independent sensors agree. Disagreement is
     the signal. Which raises the obvious question: what happens when they are all wrong together?</p>
 
-    <p>Shared map. Shared clock. Shared degenerate geometry. Correlated corruption. Missed detection
-    goes to 73 percent. The method that just took drift detection from never to twelve seconds
-    collapses almost completely, because every source is telling the same lie and consistency
+    <p>Shared map. Shared clock. Shared degenerate geometry. Correlated corruption. For 73 percent of
+    the run it was wrong and said all good. The consistency check collapses almost completely, because every source is telling the same lie and consistency
     checking cannot see a unanimous lie by construction.</p>
 
-    <p>This is written in the README, the limitations section, the methodology doc, and the security
-    policy. Named, measured, stated plainly, in the first screen of the repository.</p>
+    <p>The README names this weakness in its limitations, and the 73 percent number is written in
+    four separate docs: limitations, methodology, concepts, and how it works.</p>
 
     <p class="v-pull">There is a version of this project where I quietly leave that out. That version
     demos better and is worth much less, because the first person to find it themselves stops
@@ -405,7 +414,7 @@
         <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">CAIRN DOES NOT COMPUTE POSITION. THAT IS THE ENTIRE POINT.</text>
         <text x="376" y="155" font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">UNDER 1 ms PER EPOCH &#183; FITS ON BODY-WORN COMPUTE</text>
       </svg>
-      <figcaption class="v-cap">FIG 07.8 · <b>It sits on top and says whether to believe them.</b> Better-resourced people are computing position, and all of them have the same silent failure.</figcaption>
+      <figcaption class="v-cap">FIG 07.8 · <b>It sits on top and says whether to believe them.</b> Better-resourced people are computing position, and all of them have the same silent failure. The LiDAR, inertial and UWB labels show the design, not what was tested: the tests on this page used three pseudo sources built from one CompSLAM trajectory.</figcaption>
     </figure>
 
     <p class="v-num">SEC. 08</p>
