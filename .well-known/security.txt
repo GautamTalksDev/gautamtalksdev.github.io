@@ -1,8 +1,10 @@
+Contact: https://github.com/GautamTalksDev/gautamtalksdev.github.io/security/advisories/new
 Contact: mailto:developwith.gt@gmail.com
-Expires: 2027-12-31T23:59:59.000Z
+Expires: 2027-10-01T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://gautamkhosla.com/.well-known/security.txt
+Policy: https://github.com/GautamTalksDev/gautamtalksdev.github.io/blob/main/SECURITY.md
 
-# This is a static site: one HTML file, one image, one service worker.
+# This is a static site: HTML, CSS, JavaScript, self-hosted fonts and images, one service worker.
 # No backend, no database, no user data collected or stored.
 # If you find something anyway, I would genuinely like to hear about it.
