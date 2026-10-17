@@ -777,7 +777,8 @@
   .evid-row:last-child { border-bottom:0; }
   .evid-row:hover { background:color-mix(in srgb, var(--orange) 7%, var(--panel)); }
   .evid-row:focus-visible { outline:3px solid var(--orange); outline-offset:-3px; }
-  .evid-k { font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:1.5px; color:var(--orange); padding-top:2px; }
+  .evid-k { font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:1.5px; color:var(--ink); padding-top:2px; }
+  .evid-k::before { content:""; display:inline-block; width:7px; height:7px; margin-right:6px; background:var(--orange); vertical-align:1px; }
   .evid-v { font-size:14px; line-height:1.5; color:#3c3f47; }
   .evid-v b { color:var(--ink); font-weight:800; }
   .evid-v sup { font-size:.7em; }

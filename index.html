@@ -255,14 +255,14 @@
           <a class="btn btn-primary" href="#work">Inspect the work</a>
           <a class="btn btn-ghost" href="https://github.com/GautamTalksDev">GitHub</a>
         </div>
-        <!-- EVIDENCE STRIP (Y8). Verified facts only; each line links to the log that holds its receipt.
+        <!-- EVIDENCE STRIP. Verified facts only; each line links to the log that holds its receipt.
              1: dodge.html; DODGE README "What one day looks like" (11,143 vs 4,502); docs/VALIDATION.md (80 of 80);
                 GitHub releases day-2026-10-06 to day-2026-10-17, one per day, checked 17 Oct 2026.
              2: aegis.html (QNX 8.0, C++20, four processes over MsgSend/MsgReceive, uplink async and optional).
              3: DOIs 10.5281/zenodo.22054179, 22099794, 22971491; assay.html (7.99 x 10^7 clean residuals, 76% vs a 90% bar). -->
         <div class="evid" aria-label="Evidence">
           <div class="evid-head"><span>EVIDENCE</span><span>EACH LINE LINKS TO ITS RECEIPT</span></div>
-          <a class="evid-row" href="dodge.html"><span class="evid-k">ORBITS</span><span class="evid-v"><b>DODGE</b> screens every Starlink satellite against everything else in its altitude band, every day, from public orbit data: 11,143 against 4,502 on day one. Its fast screen found 80 of 80 passes a brute force search found. One signed release per day since 6 Oct 2026.</span></a>
+          <a class="evid-row" href="dodge.html"><span class="evid-k">ORBITS</span><span class="evid-v"><b>DODGE</b> screens every Starlink satellite against everything else in its altitude band, every day, from public orbit data: 11,143 against 4,502 on day one. Its fast screen found 80 of 80 passes a brute force search found. One signed release per day from 6 Oct 2026 (as of 17 Oct).</span></a>
           <a class="evid-row" href="aegis.html"><span class="evid-k">REAL TIME</span><span class="evid-v"><b>AEGIS</b> runs C++20 on QNX 8.0 as four processes over MsgSend/MsgReceive. Detection to relay happens entirely on the device; the network is the only optional part.</span></a>
           <a class="evid-row" href="assay.html"><span class="evid-k">PUBLISHED</span><span class="evid-v"><b>Three DOI papers.</b> One calibrates a GPU checksum on 8 &#215; 10<sup>7</sup> clean residuals, then misses its own pre-registered 90% bar at 76%, and is published anyway.</span></a>
         </div>
@@ -369,7 +369,7 @@
             <div class="sk">SHOWCASE A/G &#183; ORBITS / OPEN DATA</div>
             <h3>DODGE <span class="net-tag cloud">SIGNED DAILY &#183; PUBLIC DATA</span></h3>
             <div class="tg">Who makes Starlink dodge</div>
-            <p>Starlink moved out of the way 355,848 times in a year, by SpaceX's own reports to the FCC. Screening is free; who causes the risk is not published. Every day DODGE propagates every tracked object with a public orbit in Starlink's altitude band with SGP4, finds each pass under 5 km and names the owner. Its fast screen found 80 of 80 passes a brute force search found, and each day's data is hash-chained and signed.</p>
+            <p>Starlink moved out of the way 355,848 times in a year, by SpaceX's count in its FCC reports as published by Space.com. Screening is free; who causes the risk is not published. Every day DODGE propagates every tracked object with a public orbit in Starlink's altitude band with SGP4, finds each pass under 5 km and names the owner. Its fast screen found 80 of 80 passes a brute force search found, and each day's data is hash-chained and signed.</p>
             <a href="dodge.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
@@ -810,12 +810,14 @@
 
 
 
-    <!-- THE RULE (Y1, 17 Oct 2026). A LOG (GK) needs all three: a public artifact; at least one measured result
+    <!-- THE RULE (17 Oct 2026). A LOG (GK) needs all three: a public artifact; at least one measured result
          checked by something other than me; a documented failure with a receipt. A CARD (A) is public, finished and
          working, but not yet measured that way, or team work where my part is a slice. Nothing in progress is listed:
          only finished work goes on this site. Not listed: private or undeployed work, merged or superseded projects,
-         forks, coursework, client work, anything on launch hold, and anything whose own page says something untrue. -->
-    <p class="rule-note"><b>GK LOGS</b> are public, carry a result checked by something other than me, and document what broke. <b>A CARDS</b> are public and working, not yet measured that way, or team work. Nothing in progress is listed.</p>
+         forks, coursework, client work, anything on launch hold, and anything whose own page says something untrue.
+         Exceptions logged before the rule: GK-004 Plumbline (pre-registered tests never evaluated) and GK-010 PLIMSOLL
+         (field data N = 0). Both pages state it. -->
+    <p class="rule-note"><b>GK LOGS</b> are public, carry a result checked by something other than me, and document what broke. Two were written before that rule and fall short of it, and their pages say so: GK-004 has no outside-judged result, and GK-010 has no field data yet. <b>A CARDS</b> are public and working, not yet measured that way, or team work. Nothing in progress is listed.</p>
 
     <div class="more-grid reveal">
       <div class="mini"><span class="mid">A-01</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><div class="mtags"><i>PYTHON</i><i>FASTAPI</i><i>SNOWFLAKE</i><i>MONGODB</i></div></div>
@@ -896,9 +898,9 @@
             app.js from api.github.com/users/GautamTalksDev/repos (paged, 100 per page). The baked 38 is the count on
             17 Oct 2026 (53 public, 15 forks), so it is labelled AS OF until the live count replaces it.
          3. OPEN-SOURCE RELEASES: published, non-prerelease GitHub releases on public, non-fork repos licensed MIT or
-            Apache-2.0, excluding DODGE's automated daily data releases (tags day-YYYY-MM-DD). 18 on 17 Oct 2026:
-            mcp-pin 8, plimsoll 4, Cairn 1, cra-clock 1, dodge 1 (v1.0.0), Vernier 1, and 2 on a repository not
-            listed here yet. Static and
+            Apache-2.0, excluding DODGE's automated daily data releases (tags day-YYYY-MM-DD) and repositories this
+            site does not list. 16 on 17 Oct 2026: mcp-pin 8, plimsoll 4, Cairn 1, cra-clock 1, dodge 1 (v1.0.0),
+            Vernier 1. Static and
             dated, because counting it live would cost one API request per repository per visitor.
          4. NETWORK DEPS IN THE AEGIS SAFETY LOOP: a design property documented in GK-002 (detection to relay runs
             on the device; the uplink is asynchronous and optional). A count of zero, not a measurement over time.
@@ -908,7 +910,7 @@
     <div class="stats reveal">
       <div class="stat"><div class="num" data-count="13">0</div><div class="lbl">ENGINEERING LOGS</div></div>
       <div class="stat"><div class="num" data-count="38" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS, NO FORKS <span id="dataSrc" title="Counted live from the GitHub API when it is reachable. Otherwise this is the count on 17 Oct 2026.">&#183; AS OF 17 OCT</span></div></div>
-      <div class="stat"><div class="num" data-count="18">0</div><div class="lbl">OPEN-SOURCE RELEASES <span title="Published GitHub releases on public, non-fork MIT or Apache-2.0 repos, excluding DODGE's automated daily data releases.">&#183; AS OF 17 OCT</span></div></div>
+      <div class="stat"><div class="num" data-count="16">0</div><div class="lbl">OPEN-SOURCE RELEASES <span title="Published GitHub releases on the public, non-fork MIT or Apache-2.0 repos this site lists, excluding DODGE's automated daily data releases.">&#183; AS OF 17 OCT</span></div></div>
       <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN THE AEGIS SAFETY LOOP</div></div>
     </div>
   </div>

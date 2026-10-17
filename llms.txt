@@ -1,6 +1,6 @@
 # Gautam Khosla
 
-> Computer Engineering student at the University of Ottawa who builds failure-aware systems and publishes engineering logs with measured results, including the ones that failed. Every log on this site has a public artifact, a result checked by something other than the author, and a documented failure.
+> Computer Engineering student at the University of Ottawa who builds failure-aware systems and publishes engineering logs with measured results, including the ones that failed. Each log has a public artifact and a documented failure, and all but two carry a result checked by something other than the author. The two exceptions were written before that rule and say so on their pages: GK-004 Plumbline (its pre-registered tests were never evaluated) and GK-010 PLIMSOLL (no field data yet).
 
 Each summary below is taken from the log's own description. Numbers are as published in each log.
 
@@ -16,7 +16,7 @@ Each summary below is taken from the log's own description. Numbers are as publi
 - [GK-007 Cairn](https://gautamkhosla.com/cairn.html): an integrity monitor for GPS-denied positioning, and how its own headline number turned out to come from an assumption.
 - [GK-006 Vernier](https://gautamkhosla.com/vernier.html): same model, same prompt, seed pinned, temperature 0, and 6.7% of agent runs still diverged. Includes what was retracted.
 - [GK-005 label-to-lab](https://gautamkhosla.com/labtolab.html): a pre-registered test of whether ingredient lists predict measured acrylamide. It failed its own threshold at 9.8% against a required 20%.
-- [GK-004 Plumbline](https://gautamkhosla.com/plumbline.html): an append-only transparency log for MCP tool metadata; its two pre-registered tests were never evaluated.
+- [GK-004 Plumbline](https://gautamkhosla.com/plumbline.html): an append-only transparency log for MCP tool metadata; its two pre-registered tests were never evaluated, so it has no outside-judged result.
 - [GK-003 Mayfly Guest](https://gautamkhosla.com/mayfly.html): a snapshot-optimised Linux guest for Firecracker microVMs, measured from restore to usable.
 - [GK-002 AEGIS](https://gautamkhosla.com/aegis.html): an edge-AI worksite safety system on QNX 8.0 RTOS in C++20, where the safety loop never touches the network.
 

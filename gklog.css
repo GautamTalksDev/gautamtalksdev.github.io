@@ -392,8 +392,8 @@ code{
   line-height:1.65;
   max-width:64ch;
 }
-.v-amend b{color:var(--orange); font-weight:600}
-.v-amend a{color:var(--orange); text-underline-offset:3px}
+.v-amend b{color:var(--ink); font-weight:600}
+.v-amend a{color:var(--ink); text-decoration-color:var(--orange); text-decoration-thickness:2px; text-underline-offset:3px}
 
 /* ---------- video button: hidden until a real URL is set ----------------- */
 .v-vid{margin-top:22px}

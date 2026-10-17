@@ -408,8 +408,9 @@
   </section>
 
   <!-- ================= AMENDMENT ================= -->
-  <!-- SOURCES: github.com/GautamTalksDev/mcp-pin README.md, sections "The 15 October goal (no longer a kill test)"
-       and the client re-prompt paragraph (Visual Studio 18.7, June 2026); npm registry mcp-pin dist-tags latest 0.2.3,
+  <!-- SOURCES: github.com/GautamTalksDev/mcp-pin README.md, section "The 15 October goal (no longer a kill test)";
+       learn.microsoft.com/en-us/visualstudio/ide/mcp-servers ("MCP server trust is available in Visual Studio 2026
+       version 18.7 and later", checked 17 Oct 2026); npm registry mcp-pin dist-tags latest 0.2.3,
        published 2026-10-06. -->
   <section class="v-sec" id="amendment">
     <p class="v-num">AMENDMENT · 17 OCTOBER 2026</p>
@@ -422,9 +423,9 @@
     edited away.</p>
 
     <p><b>Some clients do re-prompt.</b> Most clients still never re-prompt when tool definitions
-    change underneath an approved server. Visual Studio is the exception: since version 18.7 (June
-    2026) it compares a server's tools, prompts, resources and instructions with the last trusted
-    version when the server starts, and asks before running it. The opening paragraph's "no major
+    change underneath an approved server. Visual Studio is the exception: from Visual Studio 2026
+    version 18.7 it asks you to trust an MCP server again when the server has changed since you last
+    used it (<a href="https://learn.microsoft.com/en-us/visualstudio/ide/mcp-servers" rel="noopener noreferrer external">Microsoft's documentation</a>). The opening paragraph's "no major
     client re-prompts" and FIG 11.1's "no client re-prompts" were wrong on that point. mcp-pin does
     the same check for stdio servers in the other clients, and keeps checking for the whole
     session.</p>
