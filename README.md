@@ -21,7 +21,7 @@ That switch is not decoration. Turn your wifi off and the site loads anyway from
 | Live AEGIS simulation | The real detection to relay to uplink pipeline from my QNX project, reimplemented in about 150 lines of canvas JS. Relay fires at P30 before voice at P8, matching the SCHED_FIFO ordering on the device. |
 | Kill switch | Simulates a network outage. Wired to real `online` and `offline` browser events, so an actual outage triggers it too. |
 | Offline support | Service worker with a network-first strategy, so content is never stale but the site still works with zero connection. |
-| Live GitHub data | Public repo count and last push pulled from the GitHub API, with a 3.5s timeout and honest fallback to cached values. |
+| Live GitHub data | Public repo count (forks excluded) and the last push among listed projects, pulled from the GitHub API, with a 3.5s timeout and a dated fallback when GitHub is unreachable. |
 | Daily editions | Seven full palettes on a date seed. Paper, ink, accent, and every section channel colour change each day, deterministically. The masthead shows which edition you are looking at. |
 | Print to resume | Press Ctrl+P. The whole site collapses into a clean one page spec sheet with every project URL printed inline. |
 | Console | Press the backtick key. Try `whoami`, `outage`, `edition`, `uptime`, `sudo hire`. |
@@ -64,6 +64,18 @@ Two CSS variables at the top of `styles.css` control the badge photo:
 ```
 
 Daily editions are the `THEMES` array in `app.js`. Add an object to lengthen the cycle; the rotation adapts on its own.
+
+## What gets listed
+
+Only finished work goes on the site. Each project gets one of three things.
+
+| | Needs |
+|---|---|
+| **Log** (GK-0xx page) | A public artifact (repo, live tool or paper); at least one measured result checked by something other than me, stated with its conditions; and a documented failure with a receipt (commit, issue or retraction). Users and revenue are not required. |
+| **Card** (A-xx tile) | Public, finished and working, but not yet measured that way, or team work where my part is a slice. |
+| **Not listed** | Anything in progress; private or undeployed work; merged or superseded projects; forks, coursework and client work; anything on launch hold (it lists on launch day); anything whose own public page currently says something untrue (fix that first). |
+
+GK numbers follow the order the logs are written. GK-001 is the site itself. When a public claim stops being true, the correction is added next to it with a date and the original stays readable.
 
 ## Design notes
 

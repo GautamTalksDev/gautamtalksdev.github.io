@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Lmoe4UuUOjhBYH8M23K1fqGdqB9LzlbJEEV4mg/psi4='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-014 · Confident where people disagree · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-014. A preregistered, bias-corrected test of whether TypeSafe AI's Jev lowers its confidence when people disagree, on ChaosNLI. Where annotators split, Jev stayed 80.7% confident while 46.8% of annotators agreed with it. Published with a DOI, every deviation listed.">
+<link rel="canonical" href="https://gautamkhosla.com/jevbench.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Confident where people disagree">
+<meta property="og:description" content="A preregistered calibration study. Where people split, Jev stayed 80.7% confident while 46.8% of annotators agreed. One threshold, fixed before any scored call, and every deviation published.">
+<meta property="og:url" content="https://gautamkhosla.com/jevbench.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"Confident where people disagree: a preregistered test of Jev's calibration","description":"Engineering log for jevbench, a preregistered, equal-n, bias-corrected test of whether TypeSafe AI's Jev decision model lowers its confidence on ChaosNLI items where human annotators disagree.","url":"https://gautamkhosla.com/jevbench.html","datePublished":"2026-10-17","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":[{"@type":"ScholarlyArticle","name":"Confident Where People Disagree: A preregistered, bias-corrected test of whether TypeSafe AI's Jev lowers its confidence when humans disagree, on ChaosNLI","identifier":"https://doi.org/10.5281/zenodo.22971491","license":"https://creativecommons.org/licenses/by/4.0/"},{"@type":"SoftwareSourceCode","name":"jevbench","codeRepository":"https://github.com/GautamTalksDev/jevbench","programmingLanguage":"Python","license":"https://opensource.org/licenses/MIT"}],"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-014 · JEVBENCH</span>
+</nav>
+
+<main class="v-wrap">
+
+  <!-- SOURCES for every number on this page, all checked 17 Oct 2026:
+       Z  = Zenodo record 23032384 (paper v1.1, concept DOI 10.5281/zenodo.22971491), description and version history
+       ZP = Zenodo record 22971413 (preregistration), description: verdict rule, timing, identifiers
+       W  = github.com/GautamTalksDev/jevbench docs/WRITEUP.md (plain-language summary, "every number here comes from the paper")
+       RM = jevbench README.md (red CI note, v1.1 note, name collision note, data licence)
+       PR = jevbench PREREGISTRATION.md (amendments dated 2026-09-22 to 2026-09-24, before any paid scored run)
+       BTC = PREREGISTRATION.md.ots from ZP, parsed locally: Bitcoin attestations at heights 968519, 968537, 968555.
+             Block 968519 time 2026-09-25 07:14:16 UTC (blockstream.info; block hash cross-checked on mempool.space).
+       Video: youtube.com/watch?v=C6chAhTWvP4, public (oEmbed 200). -->
+
+  <div class="v-doc">
+    <span>DOC <b>GK-014</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>JEVBENCH</b></span>
+    <span>CORRECTED &#916;ECE <b>0.264</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    Confident<br>
+    <span class="v-out">where people</span><br>
+    <span class="v-acc">disagree.</span>
+  </h1>
+
+  <!-- SOURCE: Z (jev-1.13.0, released 15 Sep 2026; 750 vs 750; 0.807 vs 0.468); W disclosure -->
+  <p class="v-stand">
+    TypeSafe AI describes the probabilities its Jev decision model returns as calibrated. I tested
+    that on the hardest kind of question: ones that careful people genuinely disagree about. On 750
+    sentence pairs where annotators split, Jev was 80.7% confident on average while 46.8% of
+    annotators picked its answer. One threshold, fixed before any scored call, and the paper lists
+    every deviation from the plan. Paper:
+    <a href="https://doi.org/10.5281/zenodo.22971491" rel="noopener noreferrer external">DOI 10.5281/zenodo.22971491</a>.
+    Code: <a href="https://github.com/GautamTalksDev/jevbench" rel="noopener noreferrer external">jevbench</a>,
+    MIT. Independent study, not affiliated with or endorsed by TypeSafe AI.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <!-- SOURCE: W "Why this question", "What I did" (ChaosNLI 3,113 pairs, 100 labels each; soft scoring) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="One sentence pair labelled by 100 people: when they split, a single correct answer does not exist">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">CHAOSNLI · 100 PEOPLE LABEL EACH PAIR · ILLUSTRATIVE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="46" fill="#D7DBE4">CLEAR PAIR</text>
+          <rect x="120" y="34" width="440" height="16" fill="#2A2C33"/>
+          <rect x="120" y="34" width="396" height="16" fill="#6B7280"/>
+          <text x="570" y="47" fill="#D7DBE4">90 / 10</text>
+          <text x="0" y="82" fill="#FF4100">CONTESTED PAIR</text>
+          <rect x="120" y="70" width="440" height="16" fill="#2A2C33"/>
+          <rect x="120" y="70" width="198" height="16" fill="#FF4100"/>
+          <rect x="318" y="70" width="154" height="16" fill="#6B7280"/>
+          <text x="570" y="83" fill="#FF4100">45 / 35 / 20</text>
+        </g>
+        <line x1="0" y1="104" x2="640" y2="104" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="126" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">SCORED AGAINST THE SHARE OF ANNOTATORS WHO PICKED THE MODEL'S LABEL</text>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">IF CONFIDENCE DRIVES "ACT IF P &#8805; 0.9", IT HAS TO DROP WHERE PEOPLE SPLIT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 14.1 · <b>Splits drawn for illustration, not taken from the data.</b> No ChaosNLI sentence text appears on this page or in the repository.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">The claim, and the question it skips</h2>
+
+    <p>Most public tests of Jev used coin flips, dice or tasks with one correct label. Real inputs
+    often do not have one: two careful people read the same pair of sentences and disagree. If a
+    model's confidence is going to decide what software does on its own, the question that matters
+    is simple. When people genuinely disagree, does the confidence go down?</p>
+
+    <p>ChaosNLI answers the hard part of that for me. It has 3,113 natural language inference pairs,
+    each labelled by 100 people. I took the 750 pairs with the lowest annotator entropy and the 750
+    with the highest, equal counts on purpose, and scored each prediction against the share of the
+    100 annotators who picked Jev's label rather than against a single majority answer.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <!-- SOURCE: ZP (verdict rule; tracks if corrected dECE >= 0.09 and p < 0.05; holds if 0.09 rejected one-sided and <= 0.02;
+       OpenTimestamps submission 2026-09-25 06:29:11 UTC; scored run began 07:01:59 UTC; record deposited after data collection);
+       PR (amendments dated 2026-09-22 to 2026-09-24, made on simulated and fixture data before any paid scored run); BTC -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline on 25 September 2026: plan submitted to OpenTimestamps at 06:29, scored run began at 07:01, first Bitcoin block with the plan's hash mined at 07:14">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">25 SEPTEMBER 2026 · UTC</text>
+        <line x1="20" y1="66" x2="620" y2="66" stroke="#6B7280" stroke-width="2"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <circle cx="40" cy="66" r="6" fill="#16A34A"/>
+          <text x="20" y="44" fill="#16A34A">06:29:11</text>
+          <text x="20" y="92" fill="#D7DBE4">PLAN HASH SUBMITTED</text>
+          <text x="20" y="106" fill="#D7DBE4">TO OPENTIMESTAMPS</text>
+          <circle class="v-blip" cx="330" cy="66" r="6" fill="#FF4100"/>
+          <text x="300" y="44" fill="#FF4100">07:01:59</text>
+          <text x="270" y="92" fill="#D7DBE4">FIRST SCORED CALL</text>
+          <circle cx="430" cy="66" r="6" fill="#6B7280"/>
+          <text x="410" y="44" fill="#6B7280">07:14:16</text>
+          <text x="410" y="92" fill="#6B7280">FIRST BITCOIN BLOCK</text>
+          <text x="410" y="106" fill="#6B7280">968519</text>
+        </g>
+        <line x1="0" y1="124" x2="640" y2="124" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">TRACKS: &#916;ECE &#8805; 0.09, P &lt; 0.05 · HOLDS: 0.09 REJECTED, &#8804; 0.02 · ELSE INCONCLUSIVE</text>
+        <text x="0" y="166" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">BITCOIN PROVES THE PLAN EXISTED BY 07:14, HOURS BEFORE ANALYSIS. NOT BEFORE THE FIRST CALL.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 14.2 · <b>33 minutes is the submission, not the proof.</b> The first block that commits to the plan came 12 minutes after the run started.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">One test, fixed in advance</h2>
+
+    <p>Before any scored request, the preregistration fixed the metric, the analysis and the verdict
+    rule. The result tracks disagreement if the bias-corrected gap in calibration error between
+    contested and clear pairs is at least 0.09 with p under 0.05. It holds if a gap of 0.09 is
+    rejected and the corrected gap is at most 0.02. Anything else is inconclusive, and the plan committed to publishing whichever way
+    it went, including a null and including a result that supports TypeSafe's claims.</p>
+
+    <p>Every amendment to that plan is dated 22 to 24 September and was made on simulated and
+    fixture data, before any paid scored run. The frozen plan's hash was submitted to OpenTimestamps
+    at 06:29:11 UTC on 25 September, and the scored run began at 07:01:59.</p>
+
+    <p class="v-pull">I have been saying the plan was anchored in Bitcoin 33 minutes before the first
+    scored call. Checking the proof for this log, that is not quite what it shows.</p>
+
+    <p>The 33 minutes is the time from submitting the hash to the timestamp servers. The proof only
+    becomes independent once a Bitcoin block commits to it, and the first of the three blocks in the
+    proof, 968519, was mined at 07:14:16 UTC: 12 minutes after the first scored call. What the proof
+    does establish is that the plan existed within 12 minutes of the first call, hours before the
+    raw responses were sealed for analysis at 13:39 UTC. The preregistration record on Zenodo was also
+    deposited after data collection, and says so in its own description.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <!-- SOURCE: W "One trap" (100 simulated perfectly calibrated models; naive flags 1 in 10 at nominal 5%; corrected 0.051;
+       consistency resampling, Broecker and Smith 2007; Vaicenavicius et al. 2019; Beta-Binomial annotator model); RM "Bias correction" -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="On 100 simulated perfectly calibrated models, the naive comparison flagged about 1 in 10 at a nominal 5 percent rate; the corrected comparison flagged 0.051">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">100 SIMULATED, PERFECTLY CALIBRATED MODELS · NOMINAL RATE 5%</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <text x="0" y="48" fill="#FF4100">NAIVE &#916;ECE</text>
+          <rect class="v-bar v-b1" x="170" y="36" width="380" height="16" fill="#FF4100"/>
+          <text x="560" y="49" fill="#FF4100">~1 IN 10</text>
+          <text x="0" y="82" fill="#16A34A">BIAS-CORRECTED</text>
+          <rect class="v-bar v-b2" x="170" y="70" width="194" height="16" fill="#16A34A"/>
+          <text x="374" y="83" fill="#16A34A">0.051</text>
+        </g>
+        <line x1="364" y1="28" x2="364" y2="96" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <text x="300" y="112" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">5% NOMINAL</text>
+        <text x="0" y="138" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">FLAGGED AS "WORSE ON HARD ITEMS" WHEN NOTHING IS WORSE</text>
+      </svg>
+      <figcaption class="v-cap">FIG 14.3 · <b>The comparison itself is biased</b>, so the correction was locked in before any real data existed.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">The trap in comparing calibration</h2>
+
+    <p>Binned calibration error is biased even for a perfectly calibrated model, and comparing it
+    between two groups is biased toward finding a difference. In a simulation of 100 perfectly
+    calibrated models, the naive comparison flagged about 1 in 10 as worse on hard items at a
+    nominal 5% rate. A study that skipped this would have found the effect it was looking for
+    whether or not it existed.</p>
+
+    <p>The preregistration requires a parametric correction and publishes the raw number beside the
+    corrected one. With the correction, the false positive rate came back to 0.051. It is a form of
+    consistency resampling (Br&#246;cker and Smith 2007; Vaicenavicius et al. 2019), extended with a
+    Beta-Binomial model of how annotators sample labels. I credited that lineage properly only in
+    version 1.1; SEC. 07 has the details.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <!-- SOURCE: Z results (0.076 to 0.339; corrected 0.264, 95% interval 0.244 to 0.278, p <= 1/2001; 0.807 vs 0.468);
+       W short version (clear pairs 91.5% confident, 84.4% of annotators) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Clear pairs: 91.5 percent confident, 84.4 percent agreement. Contested pairs: 80.7 percent confident, 46.8 percent agreement">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">MEAN CONFIDENCE vs SHARE OF ANNOTATORS WHO AGREE · CHOICE FORMAT</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="42" fill="#D7DBE4">CLEAR · CONFIDENCE</text>
+          <rect class="v-bar v-b1" x="200" y="30" width="366" height="14" fill="#6B7280"/><text x="574" y="42" fill="#D7DBE4">91.5%</text>
+          <text x="0" y="62" fill="#D7DBE4">CLEAR · AGREE</text>
+          <rect class="v-bar v-b2" x="200" y="50" width="338" height="14" fill="#6B7280"/><text x="546" y="62" fill="#D7DBE4">84.4%</text>
+          <text x="0" y="96" fill="#FF4100">CONTESTED · CONFIDENCE</text>
+          <rect class="v-bar v-b1" x="200" y="84" width="323" height="14" fill="#FF4100"/><text x="531" y="96" fill="#FF4100">80.7%</text>
+          <text x="0" y="116" fill="#FF4100">CONTESTED · AGREE</text>
+          <rect class="v-bar v-b3" x="200" y="104" width="187" height="14" fill="#6B7280"/><text x="395" y="116" fill="#D7DBE4">46.8%</text>
+        </g>
+        <line x1="0" y1="132" x2="640" y2="132" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="152" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">CORRECTED &#916;ECE 0.264 · 95% INTERVAL 0.244 TO 0.278 · BAR WAS 0.09 · TRACKS</text>
+      </svg>
+      <figcaption class="v-cap">FIG 14.4 · <b>The signal is there and the scale is off.</b> Confidence fell 11 points where agreement fell 38.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">The result</h2>
+
+    <p>On clear pairs Jev was close to calibrated: 91.5% confident on average, with 84.4% of
+    annotators picking its answer. On contested pairs it was 80.7% confident while 46.8% of
+    annotators agreed. Calibration error rose from 0.076 to 0.339.</p>
+
+    <table class="v-table">
+      <thead><tr><th>Measure</th><th>Value</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>Corrected &#916;ECE, Choice format</td><td>0.264 (95% interval 0.244 to 0.278, p &#8804; 1/2001)</td><td class="v-pass">Tracks</td></tr>
+        <tr><td>Corrected &#916;ECE, Noul format</td><td>0.076 (interval 0.060 to 0.090)</td><td class="v-unev">Inconclusive</td></tr>
+        <tr><td>AUROC, confidence ranking contested pairs</td><td>0.744</td><td>Descriptive</td></tr>
+      </tbody>
+    </table>
+
+    <p>That clears the preregistered bar of 0.09 by a wide margin. The error is overconfidence, and
+    it is the kind that matters most if a threshold like "act if p is at least 0.9" decides what
+    happens without a person.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <!-- SOURCE: W plot twists 1 and 2 (Noul 0.076 inconclusive; TypeSafe documentation says the formats need not agree; AUROC 0.744) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Choice format clears the 0.09 bar at 0.264; Noul format lands at 0.076, between the thresholds">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">SAME CALLS, TWO FORMATS · CORRECTED &#916;ECE</text>
+        <line x1="40" y1="96" x2="620" y2="96" stroke="#6B7280" stroke-width="1.5"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5">
+          <line x1="40" y1="40" x2="40" y2="104" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="4 4"/><text x="20" y="118" fill="#16A34A">0.00</text>
+          <line x1="84" y1="40" x2="84" y2="104" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="4 4"/><text x="70" y="132" fill="#16A34A">0.02 HOLDS</text>
+          <line x1="238" y1="40" x2="238" y2="104" stroke="#FF4100" stroke-width="1.5" stroke-dasharray="4 4"/><text x="220" y="118" fill="#FF4100">0.09 TRACKS</text>
+          <circle class="v-blip" cx="207" cy="96" r="6" fill="#6B7280"/><text x="150" y="80" fill="#D7DBE4">NOUL 0.076</text>
+          <circle cx="621" cy="96" r="7" fill="#FF4100"/><text x="520" y="80" fill="#FF4100">CHOICE 0.264</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 14.5 · <b>Inconclusive stays inconclusive.</b> 0.076 is between the thresholds, and it is not rounded up.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Same question, different answer</h2>
+
+    <p>Jev can be asked the same thing two ways: Choice, one multiple choice question, or Noul,
+    three yes or no questions. Choice shows the gap clearly. Normalised Noul probabilities from the
+    same calls land at 0.076, between the thresholds, so the preregistered verdict for that arm is
+    inconclusive. TypeSafe's own documentation says the two formats need not agree, and here they
+    do not. Reporting only the arm that cleared the bar would have been easy and wrong.</p>
+
+    <p>The other half of the story is less damning. Use Jev's confidence to guess which pairs are
+    contested and it works reasonably well, with an AUROC of 0.744. Confidence does go down where
+    people split. It just does not go down nearly enough.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <!-- SOURCE: W "Can you just fix it?" (T = 11.94; contested 0.339 to 0.044; clear to 0.198) and plot twist 3 (BART-MNLI) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A single temperature of 11.94 takes contested pairs from 0.339 to 0.044 calibration error and makes clear pairs worse, at 0.198">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE TEMPERATURE, T = 11.94 · ECE</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="46" fill="#D7DBE4">CONTESTED</text>
+          <rect x="150" y="34" width="400" height="14" fill="#2A2C33"/>
+          <rect class="v-bar v-b1" x="150" y="34" width="52" height="14" fill="#16A34A"/>
+          <text x="214" y="46" fill="#16A34A">0.339 &#8594; 0.044</text>
+          <text x="0" y="82" fill="#D7DBE4">CLEAR</text>
+          <rect x="150" y="70" width="400" height="14" fill="#2A2C33"/>
+          <rect class="v-bar v-b2" x="150" y="70" width="234" height="14" fill="#FF4100"/>
+          <text x="396" y="82" fill="#FF4100">NOW 0.198</text>
+        </g>
+        <text x="0" y="118" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">ONE KNOB, TWO PROBLEMS. A SUPERVISED BART-MNLI SHOWS THE SAME PATTERN, LARGER.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 14.6 · <b>The obvious fix moves the error rather than removing it.</b></figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">One knob cannot fix both</h2>
+
+    <p>The obvious repair is temperature scaling: one number that rescales every probability. The
+    best single setting, T = 11.94, takes contested pairs from 0.339 to 0.044 and makes clear pairs
+    worse, at 0.198. A deployment cannot fix contested inputs this way without breaking the clear
+    ones it was already getting right.</p>
+
+    <p>It is also not a Jev-specific defect. A supervised BART-MNLI model, trained on exactly this
+    task, shows the same pattern with larger errors in both groups. The practical advice that
+    follows is plain: treat the confidence as a ranking of how contested an input is, and set
+    thresholds on your own labelled data.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <!-- SOURCE: Z ("All deviations are reported, including a baseline implementation bug and a secondary-analysis search
+       limit corrected after data collection"; v1.1 29 Sep 2026 adds related work, no data, numbers or conclusions changed);
+       W "Everything is logged" (BART client bug found, fixed, re-run) and disclosure ($5 credit, about $0.41 spent, paper sent to TypeSafe);
+       RM red CI note and name collision note; BTC -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five things that were wrong or weak, each disclosed in public">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT WAS WRONG, AND WHERE IT IS DISCLOSED</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <rect x="0" y="26" width="640" height="24" fill="#2A2C33"/><text x="12" y="42" fill="#D7DBE4">bug in my BART baseline client</text><text x="440" y="42" fill="#16A34A">FIXED, RE-RUN, IN PAPER</text>
+          <rect x="0" y="54" width="640" height="24" fill="#2A2C33"/><text x="12" y="70" fill="#D7DBE4">secondary analysis search limit</text><text x="440" y="70" fill="#16A34A">CORRECTED, IN PAPER</text>
+          <rect x="0" y="82" width="640" height="24" fill="#2A2C33"/><text x="12" y="98" fill="#D7DBE4">related work and method lineage missing</text><text x="440" y="98" fill="#16A34A">ADDED IN V1.1</text>
+          <rect x="0" y="110" width="640" height="24" fill="#2A2C33"/><text x="12" y="126" fill="#D7DBE4">two CI checks still red</text><text x="440" y="126" fill="#FF4100">OPEN, EXPLAINED</text>
+          <rect x="0" y="138" width="640" height="24" fill="#2A2C33"/><text x="12" y="154" fill="#D7DBE4">"anchored 33 minutes before" overstated</text><text class="v-blip" x="440" y="154" fill="#FF4100">CORRECTED HERE</text>
+        </g>
+      </svg>
+      <figcaption class="v-cap">FIG 14.7 · <b>None of these changed a result.</b> All of them would have been cheaper to leave out.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">What was wrong, and what I would say louder</h2>
+
+    <p><b>A bug in my BART baseline client.</b> I found it, fixed it and re-ran the baseline. A
+    secondary analysis also had a search limit that was corrected after data collection. Both are in
+    the paper's list of deviations rather than quietly patched.</p>
+
+    <p><b>Missing related work.</b> Version 1.1, three days after the first release, adds five
+    papers I should have cited, including Baan et al. 2024 on human label variation, and credits
+    consistency resampling as the basis of the bias correction. No data, numbers or conclusions
+    changed.</p>
+
+    <p><b>Two CI checks are still red.</b> The citation checker needs the full git history and
+    misreads one file hash in the preregistration changelog as a commit id, and the workflow linter
+    reports findings in the CI configuration. Neither touches the analysis, the unit tests pass,
+    and the README explains both near the top.</p>
+
+    <p><b>What I would say louder:</b> the timing claim in SEC. 02. Submitted 33 minutes before is
+    true, anchored 33 minutes before is not, and the version on my own site said the second one.
+    One task, one dataset and one model version, jev-1.13.0, is also all this study covers. Newer
+    versions may behave differently, and it measures agreement with people, not some deeper truth.
+    TypeSafe provided $5 of API credit, the run cost about $0.41, and I sent them the paper before
+    publishing.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://doi.org/10.5281/zenodo.22971491" rel="noopener noreferrer external">Read the paper &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://www.youtube.com/watch?v=C6chAhTWvP4" rel="noopener noreferrer external">Watch the 11-minute video</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-014 · JEVBENCH · MIT, paper CC BY 4.0 · corrected &#916;ECE 0.264, verdict tracks</span>
+    <span><a href="/dodge.html">Previous log: GK-013 · DODGE &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>

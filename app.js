@@ -96,7 +96,7 @@
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
-    work: () => 'Takehome [payroll · 98.2% vs the CRA]  assay-gpu + LADING + jevbench [papers]  PLIMSOLL [spec]  AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  Porchlight [offline mesh · 2nd, civic tech]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
+    work: () => 'DODGE [Starlink close approaches · 80/80 recall vs brute force]  Takehome [payroll · 98.2% vs the CRA]  jevbench [preregistered calibration study]  CRA Clock [EU CRA Art. 14 Action]  assay-gpu + LADING + jevbench [papers]  PLIMSOLL [spec]  AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  Porchlight [offline mesh · 2nd, civic tech]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
     edition: () => 'today: <b>' + (window.__EDITION ? window.__EDITION.id : 'SAFETY') + '</b> · this site reissues itself daily from a date seed. come back tomorrow.',
@@ -116,98 +116,74 @@
 
   /* ================= LIVE ENRICHMENT (GitHub API) =================
      Progressive enhancement, never a dependency:
-     - baked values render first, always
-     - 3.5s timeout; any failure = silent fallback to cached
-     - respects the kill switch: outage on = no fetch, honest CACHED tag */
+     - baked values render first, always, labelled with the date they were counted
+     - 3.5s timeout across every request; any failure = silent fallback to the baked value
+     - respects the kill switch: outage on = no fetch, the AS OF label stays
+     What is computed here (definitions also sit next to the stats in index.html):
+     - PUBLIC REPOS, NO FORKS: public repos owned by GautamTalksDev with fork === false, counted from
+       the full paged repo list. Shown only when every page was read, so a partial list never
+       renders as a smaller true-looking number.
+     - LATEST FROM THE LAB and LAST PUSH: the most recently pushed repos among the ones this site
+       lists (a GK log or an A card). An unlisted or in-progress repo never appears just because it
+       was pushed today.
+     Removed 17 Oct 2026: the COMMITS / PUBLIC EVENTS figure from /events/public. The feed returns at
+     most 100 events a page, and on 17 Oct every one of the 100 was an automated health-check comment
+     with no push among them, so the cell showed the page size, not work. */
   (async function liveData() {
     const src = $('#dataSrc');
     if (document.body.classList.contains('outage')) return;
+    const LISTED = new Set(['dodge', 'jevbench', 'takehome', 'mcp-pin', 'plimsoll', 'lading', 'assay-gpu', 'cairn',
+      'vernier', 'label-to-lab', 'plumbline', 'mayfly-guest', 'aegis', 'cra-clock', 'aeroguard-tech', 'ephemera',
+      'hypershift', 'metashift', 'groundhog', 'porchlight', 'bedrock', 'keyring']);
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 3500);
     try {
-      const [uRes, rRes] = await Promise.all([
-        fetch('https://api.github.com/users/GautamTalksDev', { signal: ctl.signal }),
-        fetch('https://api.github.com/users/GautamTalksDev/repos?sort=pushed&per_page=6', { signal: ctl.signal })
-      ]);
+      const all = [];
+      let complete = false;
+      for (let page = 1; page <= 5; page++) {           // 5 pages = 500 repos; never an open-ended fan-out
+        const res = await fetch('https://api.github.com/users/GautamTalksDev/repos?type=owner&sort=pushed&per_page=100&page=' + page, { signal: ctl.signal });
+        if (!res.ok) throw new Error('rate-limited or unreachable');
+        const batch = await res.json();
+        if (!Array.isArray(batch)) throw new Error('unexpected payload');
+        all.push(...batch);
+        if (batch.length < 100) { complete = true; break; }
+      }
       clearTimeout(timer);
-      if (!uRes.ok || !rRes.ok) throw new Error('rate-limited or unreachable');
-      const user = await uRes.json();
-      const repoList = await rRes.json();
-      const [latest] = repoList;
+      const own = all.filter(r => r && r.fork === false);
+      const listed = own.filter(r => LISTED.has(String(r.name).toLowerCase()));   // already newest push first
 
-      // LATEST FROM THE LAB: auto-synced strip, curated showcase stays curated
+      // LATEST FROM THE LAB: auto-synced strip, limited to listed work
       const strip = $('#labStrip'), lab = $('#lab');
-      if (strip && Array.isArray(repoList)) {
-        const picks = repoList.filter(r => r && !r.fork).slice(0, 3);
-        if (picks.length) {
-          strip.innerHTML = picks.map(r => {
-            const days = Math.max(0, Math.round((Date.now() - new Date(r.pushed_at)) / 864e5));
-            const when = days === 0 ? 'PUSHED TODAY' : days === 1 ? 'PUSHED YESTERDAY' : 'PUSHED ' + days + 'D AGO';
-            return '<a rel="noopener noreferrer external" href="' + esc(r.html_url) + '">'
-              + '<h4>' + esc(r.name) + '</h4>'
-              + '<p>' + esc(r.description || 'No description yet.') + '</p>'
-              + '<div class="lmeta">' + esc((r.language || 'MIXED').toUpperCase()) + ' · ' + when + '</div></a>';
-          }).join('');
-          lab.classList.remove('hidden');
-        }
+      const picks = listed.filter(r => /^https:\/\/github\.com\/GautamTalksDev\//.test(String(r.html_url))).slice(0, 3);
+      if (strip && lab && picks.length) {
+        strip.innerHTML = picks.map(r => {
+          const days = Math.max(0, Math.round((Date.now() - new Date(r.pushed_at)) / 864e5));
+          const when = days === 0 ? 'PUSHED TODAY' : days === 1 ? 'PUSHED YESTERDAY' : 'PUSHED ' + days + 'D AGO';
+          return '<a rel="noopener noreferrer external" href="' + esc(r.html_url) + '">'
+            + '<h4>' + esc(r.name) + '</h4>'
+            + '<p>' + esc(r.description || 'No description yet.') + '</p>'
+            + '<div class="lmeta">' + esc((r.language || 'MIXED').toUpperCase()) + ' · ' + when + '</div></a>';
+        }).join('');
+        lab.classList.remove('hidden');
       }
 
-      // live repo count
+      // live repo count, forks excluded, only from a complete list
       const reposEl = $('#liveRepos');
-      const repos = Number(user.public_repos);
-      if (Number.isFinite(repos) && repos >= 0 && repos < 10000) {
+      const repos = own.length;
+      if (complete && reposEl && Number.isFinite(repos) && repos > 0 && repos < 10000) {
         reposEl.dataset.count = repos;
-        reposEl.textContent = repos;   // textContent, never innerHTML
+        reposEl.textContent = repos.toLocaleString();   // textContent, never innerHTML
+        if (src) { src.textContent = '· LIVE'; src.classList.add('live'); }
       }
-      if (src) { src.textContent = '· LIVE'; src.classList.add('live'); }
 
-      // last push in ticker
+      // last push in ticker, listed work only
+      const latest = listed[0];
       if (latest) {
         const days = Math.max(0, Math.round((Date.now() - new Date(latest.pushed_at)) / 864e5));
         const when = days === 0 ? 'TODAY' : days === 1 ? 'YESTERDAY' : days + ' DAYS AGO';
         document.querySelectorAll('.live-slot').forEach(el =>
           el.innerHTML = 'LAST PUSH · <b>' + esc(String(latest.name).toUpperCase()) + '</b> · <i>' + esc(when) + '</i>');
       }
-      // Commits: counted from the public events feed. The window is derived
-      // from the data itself rather than asserted, so the label cannot go stale.
-      try {
-        const eRes = await fetch('https://api.github.com/users/GautamTalksDev/events/public?per_page=100', { signal: ctl.signal });
-        if (eRes.ok) {
-          const evs = await eRes.json();
-          if (Array.isArray(evs) && evs.length) {
-            let commits = 0, evCount = 0, oldest = Date.now();
-            for (const ev of evs) {
-              const t = new Date(ev.created_at).getTime();
-              if (t < oldest) oldest = t;
-              evCount++;
-              if (ev.type === 'PushEvent' && ev.payload) {
-                // distinct_size is 0 when a push carries commits GitHub has
-                // already seen, which is every pull-request merge. `??` does
-                // not fall through on 0, so the size fallback must be explicit.
-                const d = Number(ev.payload.distinct_size);
-                const s = Number(ev.payload.size);
-                const n = (Number.isFinite(d) && d > 0) ? d : (Number.isFinite(s) && s > 0 ? s : 0);
-                if (n > 0) commits += n;
-              }
-            }
-            const days = Math.max(1, Math.round((Date.now() - oldest) / 864e5));
-            const cEl = $('#liveCommits'), cSrc = $('#commitSrc');
-            // Never render a zero here. A true zero is still a false impression,
-            // so the cell keeps its baked value unless the feed beats it.
-            if (cEl && cSrc && commits > 0) {
-              cEl.dataset.count = commits;
-              cEl.textContent = commits.toLocaleString();
-              cSrc.textContent = 'COMMITS · LAST ' + days + ' DAYS';
-              cSrc.classList.add('live');
-            } else if (cEl && cSrc && evCount > 0) {
-              cEl.dataset.count = evCount;
-              cEl.textContent = evCount.toLocaleString();
-              cSrc.textContent = 'PUBLIC EVENTS · LAST ' + days + ' DAYS';
-              cSrc.classList.add('live');
-            }
-          }
-        }
-      } catch (e) {}
 
       logLine('<b>GITHUB UPLINK</b>: live data acquired');
     } catch (e) {
@@ -871,7 +847,7 @@
     window.__applyTheme(th);
     const ed = $('#edition');
     if (ed) ed.textContent = 'ED. ' + String(doy).padStart(3,'0') + ' · ' + th.id;
-    // REV auto-tracks today — the document is always current
+    // REV auto-tracks today: the document is always current
     const rev = $('#revDate');
     if (rev) rev.textContent = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
     // stamp rotates daily
@@ -917,7 +893,7 @@
     ['#showNext','#showPrev'].forEach(s => $(s).addEventListener('click', stopAuto));
     $('#showcase').addEventListener('pointerenter', () => auto && clearInterval(auto));
     $('#showcase').addEventListener('pointerleave', () => { if (auto !== null) auto = setInterval(() => go(idx+1), 7000); });
-    // daily seed picks the opening slide — the site literally leads with a different project each day
+    // daily seed picks the opening slide: the site leads with a different project each day
     const doy = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 864e5);
     go(doy % N);
   })();
@@ -1057,6 +1033,10 @@
       ['Read the mcp-pin log (the tool you approved is not the tool you are running)', 'GK-011', () => location.href = 'mcppin.html'],
       ['Read the Takehome log (the CRA disagrees with the CRA)', 'GK-012', () => location.href = 'takehome.html'],
       ['Open the Takehome payroll calculator', 'LIVE', () => open('https://takehome.gautamkhosla.com', '_blank', 'noopener')],
+      ['Read the DODGE log (who makes Starlink dodge)', 'GK-013', () => location.href = 'dodge.html'],
+      ['Open the DODGE live screen', 'LIVE', () => open('https://dodge.gautamkhosla.com', '_blank', 'noopener')],
+      ['Read the jevbench log (confident where people disagree)', 'GK-014', () => location.href = 'jevbench.html'],
+      ['Open CRA Clock on the GitHub Marketplace', 'LIVE', () => open('https://github.com/marketplace/actions/cra-clock', '_blank', 'noopener')],
       ['Read the PLIMSOLL log (how many times did you run it?)', 'GK-010', () => location.href = 'plimsoll.html'],
       ['Paper 1 \u00b7 Calibrating the Checksum (DOI)', 'PAPER', () => open('https://doi.org/10.5281/zenodo.22054179', '_blank', 'noopener')],
       ['Paper 2 \u00b7 Binary Grounded VEX Clearance (DOI)', 'PAPER', () => open('https://doi.org/10.5281/zenodo.22099794', '_blank', 'noopener')],

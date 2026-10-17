@@ -1,0 +1,40 @@
+# Gautam Khosla
+
+> Computer Engineering student at the University of Ottawa who builds failure-aware systems and publishes engineering logs with measured results, including the ones that failed. Every log on this site has a public artifact, a result checked by something other than the author, and a documented failure.
+
+Each summary below is taken from the log's own description. Numbers are as published in each log.
+
+## Engineering logs
+
+- [GK-014 jevbench](https://gautamkhosla.com/jevbench.html): a preregistered, bias-corrected test of whether TypeSafe AI's Jev lowers its confidence when people disagree, on ChaosNLI. Where annotators split, Jev stayed 80.7% confident while 46.8% of annotators agreed.
+- [GK-013 DODGE](https://gautamkhosla.com/dodge.html): a daily public screen of Starlink close approaches from public CelesTrak orbit data, with the owner of the other object named and every day's data hash-chained and signed. Recall 80 of 80 against brute force.
+- [GK-012 Takehome](https://gautamkhosla.com/takehome.html): Canadian payroll deductions from the CRA's T4127 formulas, checked against the CRA's own calculator. 8,838 of 9,002 boundary cases agree, and all 164 disagreements are published.
+- [GK-011 mcp-pin](https://gautamkhosla.com/mcppin.html): fingerprints MCP tool definitions at approval time, blocks the session when they change, and keeps a signed public history of every version. Amended 17 Oct 2026.
+- [GK-010 PLIMSOLL](https://gautamkhosla.com/plimsoll.html): a public append-only log for evaluation pre-registration that assigns the attempt number rather than the claimant.
+- [GK-009 LADING](https://gautamkhosla.com/lading.html): tried to prove vulnerabilities were absent from shipped binaries; 99.6% of findings stopped before a binary was opened, and the work stopped under its own pre-registered rule.
+- [GK-008 assay-gpu](https://gautamkhosla.com/assay.html): a checksum fault detector for bfloat16 matrix multiplication, calibrated where the classical threshold is undefined. It catches 76% against a pre-registered bar of 90%.
+- [GK-007 Cairn](https://gautamkhosla.com/cairn.html): an integrity monitor for GPS-denied positioning, and how its own headline number turned out to come from an assumption.
+- [GK-006 Vernier](https://gautamkhosla.com/vernier.html): same model, same prompt, seed pinned, temperature 0, and 6.7% of agent runs still diverged. Includes what was retracted.
+- [GK-005 label-to-lab](https://gautamkhosla.com/labtolab.html): a pre-registered test of whether ingredient lists predict measured acrylamide. It failed its own threshold at 9.8% against a required 20%.
+- [GK-004 Plumbline](https://gautamkhosla.com/plumbline.html): an append-only transparency log for MCP tool metadata; its two pre-registered tests were never evaluated.
+- [GK-003 Mayfly Guest](https://gautamkhosla.com/mayfly.html): a snapshot-optimised Linux guest for Firecracker microVMs, measured from restore to usable.
+- [GK-002 AEGIS](https://gautamkhosla.com/aegis.html): an edge-AI worksite safety system on QNX 8.0 RTOS in C++20, where the safety loop never touches the network.
+
+## Papers and specifications
+
+- [Calibrating the Checksum](https://doi.org/10.5281/zenodo.22054179): first paper, assay-gpu.
+- [Binary Grounded VEX Clearance Fails Three Times](https://doi.org/10.5281/zenodo.22099794): second paper, LADING. Dataset: [10.5281/zenodo.22093232](https://doi.org/10.5281/zenodo.22093232).
+- [Confident Where People Disagree](https://doi.org/10.5281/zenodo.22971491): third paper, jevbench. Preregistration: [10.5281/zenodo.22971413](https://doi.org/10.5281/zenodo.22971413).
+- [PLIMSOLL Pre-Registration Specification v1](https://doi.org/10.5281/zenodo.22107451): technical note, CC0.
+
+## Other public work
+
+- [CRA Clock](https://github.com/GautamTalksDev/cra-clock): a GitHub Action for the EU Cyber Resilience Act Article 14 reporting clock.
+- [Porchlight](https://github.com/GautamTalksDev/porchlight): an offline neighbour mesh, team of four, second place in Civic Technology at Hack the Hill III.
+- [Groundhog](https://github.com/GautamTalksDev/groundhog), [Bedrock](https://github.com/GautamTalksDev/Bedrock), [keyring](https://github.com/GautamTalksDev/keyring), [Ephemera](https://github.com/GautamTalksDev/Ephemera), [HyperShift](https://github.com/GautamTalksDev/HyperShift), [MetaShift](https://github.com/GautamTalksDev/MetaShift), [AeroGuard](https://github.com/GautamTalksDev/aeroguard-tech).
+
+## Contact
+
+- Email: developwith.gt@gmail.com
+- GitHub: https://github.com/GautamTalksDev
+- ORCID: https://orcid.org/0009-0006-7404-8877

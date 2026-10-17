@@ -73,13 +73,13 @@
   .cloud-dep { transition:opacity .4s, filter .4s; }
   body.outage .cloud-dep { opacity:.28; filter:grayscale(1); pointer-events:none; }
   body.outage .cloud-dep::before { content:"LINK LOST"; }
-  .net-tag { font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:1.5px; padding:2px 8px; border:1.5px solid currentColor; margin-left:10px; vertical-align:middle; }
+  .net-tag { font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:1.5px; padding:2px 8px; border:1.5px solid currentColor; margin-left:10px; vertical-align:middle; display:inline-block; white-space:nowrap; }
   .net-tag.cloud { color:var(--steel); }
   .net-tag.edge { color:var(--ok); }
   body.outage .net-tag.cloud { color:var(--orange); }
   body.outage .net-tag.cloud::after { content:" ✕"; }
 
-  /* safety loop pill — always alive */
+  /* safety loop pill: always alive */
   #pulse { position:fixed; left:18px; bottom:18px; z-index:80; background:var(--ink); color:#fff; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:1.5px; padding:9px 14px; display:flex; gap:9px; align-items:center; border:2px solid var(--ink); }
   #pulse .dot { width:9px; height:9px; border-radius:50%; background:#4ADE80; animation:beat 1.4s ease-in-out infinite; }
   @keyframes beat { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.35);opacity:1} }
@@ -126,7 +126,7 @@
   @media (max-width:1060px){ .stamp{right:24px;top:40px;} }
   @media (max-width:840px){ .stamp{display:none;} }
 
-  /* badge — draggable */
+  /* badge: draggable */
   .badge-zone { position:relative; padding:26px 30px 30px 0; justify-self:center; width:100%; }
   .badge { border:2px solid var(--ink); background:var(--panel); box-shadow:8px 8px 0 var(--orange); opacity:0; transform:translateY(20px); transition:opacity .8s cubic-bezier(.16,1,.3,1) .4s, transform .8s cubic-bezier(.16,1,.3,1) .4s; cursor:grab; touch-action:none; position:relative; z-index:4; overflow:hidden; }
   body.loaded .badge { opacity:1; transform:none; }
@@ -224,7 +224,7 @@
   .show-nav button:hover { background:var(--orange); color:#fff; }
   .show-nav button:active { background:var(--ink); }
 
-  /* SVG schematic animations — run only on active slide */
+  /* SVG schematic animations: run only on active slide */
   .slide .flow { stroke-dasharray:6 8; }
   .slide.active .flow { animation:dashflow 1s linear infinite; }
   @keyframes dashflow { to { stroke-dashoffset:-14; } }
@@ -747,3 +747,41 @@
   #townCv { width:100%; display:block; background:#0E0F13; touch-action:pan-y; cursor:grab; user-select:none; }
   #townCv.grabbing { cursor:grabbing; }
   .sim-note + .sim-note { margin-top:10px; }
+
+  /* DODGE (GK-013): an orbit track draws itself to the crossing, then the pass pip lights.
+     Same keyframes as the Cairn error line, so the two slides move with one rhythm. */
+  .slide .dtrk { stroke-dasharray:520; stroke-dashoffset:520; }
+  .slide.active .dtrk { animation:cdraw 4.4s ease-in-out infinite; }
+  .slide .dpip { opacity:0; }
+  .slide.active .dpip { animation:cpip 4.4s ease-in-out infinite; }
+  @media (prefers-reduced-motion:reduce){ .slide .dtrk { stroke-dashoffset:0; } .slide .dpip { opacity:1; } }
+  @media print { .slide .dpip { opacity:1; } }
+
+  /* card A-09 deals in after A-08; an odd last card spans the row instead of leaving a hole */
+  .more-grid.in .mini:nth-child(9){transition-delay:.36s}
+  .more-grid .mini:last-child:nth-child(odd) { grid-column:1 / -1; }
+
+  /* the log/card rule, stated where the cards start */
+  .rule-note { margin-top:36px; padding:7px 12px; border-left:3px solid var(--orange);
+    font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.6px; line-height:1.6; color:var(--steel); max-width:92ch; }
+  .rule-note b { color:var(--ink); font-weight:600; letter-spacing:1.2px; }
+  .rule-note + .more-grid { margin-top:16px; }
+
+  /* ===== EVIDENCE STRIP: three receipts under the hero, each a link to its log ===== */
+  .evid { margin-top:26px; border:2px solid var(--ink); background:var(--panel); max-width:640px; }
+  .evid-head { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:7px 14px;
+    background:var(--ink); color:#fff; font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:1.5px; }
+  .evid-head span + span { color:#9CA0AA; font-weight:500; }
+  .evid-row { display:grid; grid-template-columns:96px 1fr; gap:14px; padding:11px 14px; border-bottom:1px solid var(--hairline);
+    color:var(--ink); text-decoration:none; transition:background .15s; }
+  .evid-row:last-child { border-bottom:0; }
+  .evid-row:hover { background:color-mix(in srgb, var(--orange) 7%, var(--panel)); }
+  .evid-row:focus-visible { outline:3px solid var(--orange); outline-offset:-3px; }
+  .evid-k { font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:1.5px; color:var(--orange); padding-top:2px; }
+  .evid-v { font-size:14px; line-height:1.5; color:#3c3f47; }
+  .evid-v b { color:var(--ink); font-weight:800; }
+  .evid-v sup { font-size:.7em; }
+  @media (max-width:640px){ .evid-row { grid-template-columns:1fr; gap:3px; } }
+  @media print { .evid { border-width:1.5px; max-width:none; }
+    .evid-head { background:#fff; color:#14151A; border-bottom:1.5px solid #14151A; }
+    .evid-row::after { content:" · " attr(href); font-size:8pt; color:#6B7280; } }

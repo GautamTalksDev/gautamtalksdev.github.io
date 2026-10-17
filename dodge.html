@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Sjyx1bDk7jHl83EDt/JcuEfDlVXO4vtOV7iaGRnIDP8='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>GK-013 · Who makes Starlink dodge · Gautam Khosla</title>
+<meta name="description" content="Engineering log GK-013. DODGE screens every Starlink satellite against everything else in its altitude band once a day, from public CelesTrak data, names the owner of the other object, and signs the result. Its fast screen found 80 of 80 passes a brute force search found.">
+<link rel="canonical" href="https://gautamkhosla.com/dodge.html">
+<link rel="stylesheet" href="gklog.css">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Who makes Starlink dodge">
+<meta property="og:description" content="A daily public screen of Starlink close approaches from public orbit data. 80 of 80 passes found against brute force, and every day's data hash-chained and signed.">
+<meta property="og:url" content="https://gautamkhosla.com/dodge.html">
+<meta property="og:image" content="https://gautamkhosla.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"Who makes Starlink dodge: a daily public screen of Starlink close approaches","description":"Engineering log for DODGE, which propagates every public object in Starlink's altitude band with SGP4 once a day, finds each predicted pass under 5 km, attributes the other object to its owner, and publishes hash-chained, signed daily data.","url":"https://gautamkhosla.com/dodge.html","datePublished":"2026-10-17","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":[{"@type":"SoftwareApplication","name":"DODGE","url":"https://dodge.gautamkhosla.com","applicationCategory":"ScientificApplication","operatingSystem":"Web","codeRepository":"https://github.com/GautamTalksDev/dodge","license":"https://opensource.org/licenses/MIT"},{"@type":"Dataset","name":"DODGE daily Starlink close-approach screens","description":"Daily predicted passes under 5 km between Starlink satellites and other objects in low Earth orbit, screened from public CelesTrak orbit data, with owner attribution, SHA-256 manifests chained day to day and Sigstore attestations.","url":"https://github.com/GautamTalksDev/dodge/releases","license":"https://creativecommons.org/licenses/by/4.0/","creator":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com"},"temporalCoverage":"2026-10-06/..","isAccessibleForFree":true}],"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+</script>
+</head>
+<body>
+
+<div class="v-hazard"></div>
+
+<nav class="v-top">
+  <a class="v-back" href="/#work">&#8592; Back to spec</a>
+  <span class="v-top-id"><b>GK</b>-013 · DODGE</span>
+</nav>
+
+<main class="v-wrap">
+
+  <!-- SOURCES for every number on this page, all checked 17 Oct 2026:
+       R  = github.com/GautamTalksDev/dodge README.md (main)
+       M  = docs/METHOD.md        V = docs/VALIDATION.md
+       C  = CHANGELOG.md          VF = docs/VERIFYING.md
+       REL = GitHub API, repos/GautamTalksDev/dodge/releases (13 releases: day-2026-10-06 to day-2026-10-17, plus v1.0.0)
+       L  = raw.githubusercontent.com/GautamTalksDev/dodge/data/latest.json (screen of 17 Oct 2026, 06:16 UTC)
+       Commits: a9ea663 (PR #1), ed723fe, 3a9d097, e37071e, read through the GitHub API.
+       The 148,696 and 207,152 maneuver counts are cited in M from SpaceX's semiannual FCC reports via Space.com;
+       the Space.com article was re-read on 17 Oct 2026. The FCC filings themselves were not reopened. -->
+
+  <div class="v-doc">
+    <span>DOC <b>GK-013</b></span>
+    <span>TYPE <b>ENGINEERING LOG</b></span>
+    <span>SUBJECT <b>DODGE</b></span>
+    <span>RECALL <b>80 / 80</b></span>
+  </div>
+
+  <h1 class="v-h1">
+    Who makes<br>
+    <span class="v-out">Starlink</span><br>
+    <span class="v-acc">dodge?</span>
+  </h1>
+
+  <!-- SOURCE: R "Why" (355,848; about 40 per satellite), R "How it works", R "Credit and licences" -->
+  <p class="v-stand">
+    SpaceX reported that Starlink satellites moved out of the way of other objects 355,848 times
+    between June 2025 and May 2026. Screening for close approaches is free now. Who causes them is
+    not published. DODGE screens every Starlink satellite against everything else in its altitude
+    band once a day, from public CelesTrak data, names the owner of the other object, and signs the
+    result. Live:
+    <a href="https://dodge.gautamkhosla.com" rel="noopener noreferrer external">dodge.gautamkhosla.com</a>.
+    Code: <a href="https://github.com/GautamTalksDev/dodge" rel="noopener noreferrer external">dodge</a>,
+    MIT. Data: CC BY 4.0.
+  </p>
+
+  <!-- ================= 01 ================= -->
+  <!-- SOURCE: R "Why"; M "References" (148,696 Jun to Nov 2025 + 207,152 Dec 2025 to May 2026 = 355,848) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 176" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three public screening services find close approaches; none of them publishes who is on the other side">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHO SCREENS FOR CLOSE APPROACHES</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="30" width="130" height="50" fill="#2A2C33"/>
+          <text x="12" y="52" fill="#D7DBE4">STARGAZE</text><text x="12" y="69" font-size="9" fill="#6B7280">SPACEX</text>
+          <rect x="142" y="30" width="130" height="50" fill="#2A2C33"/>
+          <text x="154" y="52" fill="#D7DBE4">TRACSS</text><text x="154" y="69" font-size="9" fill="#6B7280">US GOVERNMENT</text>
+          <rect x="284" y="30" width="130" height="50" fill="#2A2C33"/>
+          <text x="296" y="52" fill="#D7DBE4">SPACE-TRACK</text><text x="296" y="69" font-size="9" fill="#6B7280">US GOVERNMENT</text>
+          <rect x="440" y="30" width="200" height="50" fill="none" stroke="#FF4100" stroke-width="2" stroke-dasharray="6 4"/>
+          <text x="452" y="52" fill="#FF4100">WHO IS ON THE OTHER SIDE</text><text x="452" y="69" font-size="9" fill="#FF4100">NOT PUBLISHED</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#16A34A">
+          <text x="12" y="98">SCREENS: YES</text><text x="154" y="98">SCREENS: YES</text><text x="296" y="98">SCREENS: YES</text>
+        </g>
+        <line x1="0" y1="116" x2="640" y2="116" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="#D7DBE4">148,696 + 207,152 = 355,848 AVOIDANCE MANEUVERS, JUN 2025 TO MAY 2026</text>
+        <text x="0" y="160" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">SPACEX SEMIANNUAL REPORTS TO THE FCC, AS REPORTED BY SPACE.COM. ABOUT 40 PER SATELLITE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.1 · <b>Screening is solved.</b> The record of who causes the risk is the part nobody keeps.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 01</p>
+    <h2 class="v-h2">Screening is free. Attribution is not.</h2>
+
+    <p>SpaceX's semiannual reports to the FCC put Starlink's avoidance maneuvers at 148,696 from June
+    to November 2025 and 207,152 from December 2025 to May 2026: 355,848 in a year, about 40 per
+    satellite. Finding close approaches is no longer the hard part. SpaceX's Stargaze, the US
+    government's TraCSS and Space-Track all screen for them.</p>
+
+    <p>What nobody publishes is the other half: which objects and operators cause the risk, who
+    shares where their satellites are, and who leaves spent hardware behind. DODGE is that record,
+    rebuilt every day from public data by code anyone can read and rerun.</p>
+
+    <p class="v-pull">It measures exposure and transparency, not blame. Most passes involve small
+    satellites without propulsion or old hardware, which sit where physics puts them.</p>
+  </section>
+
+  <!-- ================= 02 ================= -->
+  <!-- SOURCE: R step 1; M "Inputs" (SupGP operators list); C v1.0.0 "Recorder"; REL (day-2026-10-06 to day-2026-10-17, manifests on 06 to 16) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Twelve daily releases from 6 to 17 October 2026: eleven sealed with a manifest, the current day still open">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE RELEASE PER DAY SINCE 6 OCTOBER 2026 · NO GAPS</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5">
+          <rect x="0" y="32" width="46" height="40" fill="#2A2C33"/><text x="15" y="56" fill="#D7DBE4">06</text>
+          <rect x="53" y="32" width="46" height="40" fill="#2A2C33"/><text x="68" y="56" fill="#D7DBE4">07</text>
+          <rect x="106" y="32" width="46" height="40" fill="#2A2C33"/><text x="121" y="56" fill="#D7DBE4">08</text>
+          <rect x="159" y="32" width="46" height="40" fill="#2A2C33"/><text x="174" y="56" fill="#D7DBE4">09</text>
+          <rect x="212" y="32" width="46" height="40" fill="#2A2C33"/><text x="227" y="56" fill="#D7DBE4">10</text>
+          <rect x="265" y="32" width="46" height="40" fill="#2A2C33"/><text x="280" y="56" fill="#D7DBE4">11</text>
+          <rect x="318" y="32" width="46" height="40" fill="#2A2C33"/><text x="333" y="56" fill="#D7DBE4">12</text>
+          <rect x="371" y="32" width="46" height="40" fill="#2A2C33"/><text x="386" y="56" fill="#D7DBE4">13</text>
+          <rect x="424" y="32" width="46" height="40" fill="#2A2C33"/><text x="439" y="56" fill="#D7DBE4">14</text>
+          <rect x="477" y="32" width="46" height="40" fill="#2A2C33"/><text x="492" y="56" fill="#D7DBE4">15</text>
+          <rect x="530" y="32" width="46" height="40" fill="#2A2C33"/><text x="545" y="56" fill="#D7DBE4">16</text>
+          <rect class="v-blip" x="583" y="32" width="46" height="40" fill="none" stroke="#FF4100" stroke-width="2"/><text x="598" y="56" fill="#FF4100">17</text>
+        </g>
+        <path d="M0 88 H576" stroke="#16A34A" stroke-width="2"/>
+        <text x="0" y="104" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#16A34A">11 SEALED: MANIFEST + ATTESTATION</text>
+        <text x="583" y="104" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">OPEN</text>
+        <line x1="0" y1="118" x2="640" y2="118" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="138" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">CELESTRAK KEEPS ONLY THE LATEST ORBIT PER OBJECT. THE HISTORY EXISTS ONLY BECAUSE DODGE KEEPS IT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.2 · <b>A day is sealed the morning after it ends.</b> As of 17 October, days 6 to 16 carry a manifest; the 17th is still being recorded.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 02</p>
+    <h2 class="v-h2">The orbit history nobody keeps</h2>
+
+    <p>CelesTrak publishes the current orbit of every tracked object and keeps only the latest one.
+    There is no public history to download, so DODGE records its own, starting on 6 October 2026.
+    A GitHub Actions job pulls the public element sets for active satellites, analyst objects,
+    recent launches, all debris and all rocket bodies, plus the satellite catalog. It also pulls
+    the ephemerides that operators publish themselves through CelesTrak's SupGP: Starlink and ten
+    other fleets, including OneWeb, Kuiper, Planet and Iridium.</p>
+
+    <p>Operator ephemerides beat radar-based sets for the same object, so they win whenever both
+    exist. DODGE does not use Space-Track data at all. Everything it screens is something a reader
+    can download from the same public source.</p>
+  </section>
+
+  <!-- ================= 03 ================= -->
+  <!-- SOURCE: M sections 2 to 6 (10 s grid, 8,640 steps, 100 km cubes and 26 neighbours, tau formula,
+       0.12 m/s^2 and about 1.5 m over 5 s, 50 ms refine within 6 s, under 10 km refined, under 5 km kept,
+       one pass per pair per 10 minutes); commit ed723fe -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The daily pipeline: record, screen, attribute, seal and sign, publish">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">ONE DAY, END TO END</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="32" width="112" height="44" fill="#2A2C33"/><text x="12" y="52" fill="#D7DBE4">RECORD</text><text x="12" y="67" font-size="8.5" fill="#6B7280">CELESTRAK</text>
+          <rect x="132" y="32" width="112" height="44" fill="#2A2C33" stroke="#FF4100" stroke-width="1.8"/><text x="144" y="52" fill="#FF4100">SCREEN</text><text x="144" y="67" font-size="8.5" fill="#6B7280">SGP4 · 24 H</text>
+          <rect x="264" y="32" width="112" height="44" fill="#2A2C33"/><text x="276" y="52" fill="#D7DBE4">ATTRIBUTE</text><text x="276" y="67" font-size="8.5" fill="#6B7280">SATCAT OWNER</text>
+          <rect x="396" y="32" width="112" height="44" fill="#2A2C33"/><text x="408" y="52" fill="#D7DBE4">SEAL, SIGN</text><text x="408" y="67" font-size="8.5" fill="#6B7280">SHA-256 · SIGSTORE</text>
+          <rect x="528" y="32" width="112" height="44" fill="#2A2C33"/><text x="540" y="52" fill="#D7DBE4">PUBLISH</text><text x="540" y="67" font-size="8.5" fill="#6B7280">RELEASES · SITE</text>
+        </g>
+        <path class="v-flow" d="M112 54 H132 M244 54 H264 M376 54 H396 M508 54 H528" fill="none" stroke="#FF4100" stroke-width="2"/>
+        <line x1="0" y1="94" x2="640" y2="94" stroke="#2A2C33" stroke-width="1"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#D7DBE4">
+          <text x="0" y="114">10 S GRID FOR 24 H = 8,640 STEPS</text>
+          <text x="0" y="132">100 KM CUBES: OWN CELL + 26 NEIGHBOURS</text>
+          <text x="330" y="114">CLOSEST APPROACH: tau = -(r . v) / (v . v)</text>
+          <text x="330" y="132">UNDER 10 KM: SGP4 AGAIN AT 50 MS</text>
+        </g>
+        <text x="0" y="158" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">KEPT: EVERY PASS UNDER 5 KM, AT MOST ONE PER PAIR PER 10 MINUTES</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.3 · <b>The screen runs once a day</b> on every object whose orbit reaches Starlink's altitude band.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 03</p>
+    <h2 class="v-h2">The screen</h2>
+
+    <p>Every remaining object is propagated with SGP4, through Brandon Rhodes' wrapper of David
+    Vallado's reference code, for 24 hours on a 10 second grid: 8,640 steps. At each step the
+    positions go into 100 km cubes. For each Starlink, DODGE checks its own cube and the 26
+    around it and keeps every pair closer than 100 km. A unit test proves this finds exactly the
+    pairs a full distance matrix finds.</p>
+
+    <p>Inside a step, closest approach comes from straight-line relative motion. That is good
+    enough because two objects 100 km apart in low orbit feel almost the same gravity: the
+    relative acceleration is about 0.12 m/s&#178;, which bends the path by about 1.5 m over five
+    seconds. Any pass estimated under 10 km is propagated again with SGP4 at 50 ms steps, and
+    passes that refine to under 5 km are kept.</p>
+
+    <p><b>One early mistake was which orbit to use.</b> SupGP files can hold several fits
+    for the same object, some dated ahead, and the first version took the newest one. The newest fit
+    is not the right fit for a screen that starts now. The screen now takes the element set whose
+    epoch is closest to the screen start
+    (<a href="https://github.com/GautamTalksDev/dodge/commit/ed723fe" rel="noopener noreferrer external">ed723fe</a>),
+    and that decision is written into the changelog because it can move published numbers.</p>
+  </section>
+
+  <!-- ================= 04 ================= -->
+  <!-- SOURCE: V checks 1 to 3; R "Is it right?" -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Recall check on 6 October 2026: brute force found 80 passes, the fast screen found 80, none missed">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">RECALL · 6 OCT 2026 · 1,500 STARLINK &#215; 1,500 OTHERS · 3 H</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <text x="0" y="48" fill="#D7DBE4">BRUTE FORCE</text>
+          <rect class="v-blip" x="150" y="36" width="400" height="16" fill="#6B7280"/>
+          <text x="562" y="49" fill="#D7DBE4">80</text>
+          <text x="0" y="80" fill="#D7DBE4">FAST SCREEN</text>
+          <rect x="150" y="68" width="400" height="16" fill="#FF4100"/>
+          <text x="562" y="81" fill="#FF4100">80</text>
+          <text x="0" y="112" fill="#D7DBE4">MISSED</text>
+          <rect x="150" y="100" width="400" height="16" fill="none" stroke="#2A2C33"/>
+          <text x="562" y="113" fill="#16A34A">0</text>
+        </g>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">BRUTE FORCE: EVERY PAIR, EVERY SECOND, THEN THE SAME 50 MS REFINEMENT</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.4 · <b>The brute force is the judge, not the screen.</b> It is slow on purpose: every pair, every second, no spatial hash and no straight-line shortcut.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 04</p>
+    <h2 class="v-h2">Does it miss anything?</h2>
+
+    <p>A fast screen that quietly skips passes would still produce a convincing table, so the first
+    check had to be something that does not trust the shortcut. On 6 October I took a random
+    sample of real recorded objects, 1,500 Starlink and 1,500 others, and found every pass under
+    5 km over three hours by brute force: every pair, every second. Then I ran the fast screen on the
+    same sample.</p>
+
+    <table class="v-table">
+      <thead><tr><th>Check</th><th>Judge</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Recall on real data</td><td>Brute force, every pair every second</td><td class="v-pass">80 of 80 found, 0 missed</td></tr>
+        <tr><td>Spatial hash</td><td>Full distance matrix, points on cell edges</td><td class="v-pass">Identical pairs</td></tr>
+        <tr><td>Crafted 53&#176; vs 97.5&#176; crossing</td><td>20 ms brute force around the reported time</td><td class="v-pass">Found; line estimate within 200 m of SGP4</td></tr>
+      </tbody>
+    </table>
+
+    <p>The spatial hash test and the crafted crossing live in the engine's unit tests, which run in
+    CI before every daily screen; the screen does not publish if they fail. The recall check is
+    different, and SEC. 08 says how.</p>
+  </section>
+
+  <!-- ================= 05 ================= -->
+  <!-- SOURCE: V check 4 (about 4,500 objects in 160 to 600 km, 2.4e11 km^3, 1.9e-8 per km^3, 78.5 km^2, 10 km/s,
+       about 600 per hour predicted, about 12,300 per day = 512 per hour found; about 430 under 1 km per day,
+       about 157,000 a year, 355,848 maneuvers at 3 in 10 million) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A kinetic gas estimate predicts about 600 passes per hour; the screen found 512. About 157,000 passes under 1 km a year against 355,848 maneuvers">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">TWO OUTSIDE JUDGES</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10">
+          <text x="0" y="44" fill="#6B7280">PHYSICS, PREDICTED</text>
+          <rect class="v-bar v-b1" x="200" y="32" width="360" height="15" fill="#6B7280"/>
+          <text x="570" y="44" fill="#D7DBE4">~600/H</text>
+          <text x="0" y="68" fill="#FF4100">SCREEN, FOUND</text>
+          <rect class="v-bar v-b2" x="200" y="56" width="307" height="15" fill="#FF4100"/>
+          <text x="517" y="68" fill="#FF4100">512/H</text>
+          <line x1="0" y1="88" x2="640" y2="88" stroke="#2A2C33" stroke-width="1"/>
+          <text x="0" y="114" fill="#6B7280">SPACEX MANEUVERS</text>
+          <rect class="v-bar v-b3" x="200" y="102" width="360" height="15" fill="#6B7280"/>
+          <text x="570" y="114" fill="#D7DBE4">355,848</text>
+          <text x="0" y="138" fill="#FF4100">PASSES UNDER 1 KM</text>
+          <rect class="v-bar v-b1" x="200" y="126" width="159" height="15" fill="#FF4100"/>
+          <text x="369" y="138" fill="#FF4100">~157,000 / YEAR</text>
+        </g>
+        <text x="0" y="162" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">SPACEX MANEUVERS AT 3 IN 10 MILLION, NOT AT A FIXED 1 KM. SAME ORDER OF MAGNITUDE IS THE CLAIM.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.5 · <b>Neither judge is precise.</b> Both are independent of the code, which is the point.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 05</p>
+    <h2 class="v-h2">Physics and SpaceX as outside judges</h2>
+
+    <p>Recall says the screen finds what is in its input. It says nothing about whether the totals
+    are plausible, so I checked them against two things the code cannot influence.</p>
+
+    <p><b>A kinetic gas estimate.</b> On 6 October the screen kept about 4,500 non-Starlink objects
+    in the 160 to 600 km band, which holds about 2.4 &#215; 10&#185;&#185; km&#179;. A 5 km miss
+    radius is a cross-section of 78.5 km&#178;, and closing speeds average about 10 km/s. That
+    predicts about 600 passes under 5 km per hour. The screen found about 12,300 a day, which is
+    512 an hour.</p>
+
+    <p><b>SpaceX's own count.</b> About 430 passes under 1 km a day is roughly 157,000 a year,
+    against 355,848 maneuvers. SpaceX maneuvers at a 3 in 10 million collision probability, which is
+    far more cautious than a fixed kilometre and covers wider passes with large uncertainty. Same
+    order of magnitude is all this check claims, and all it can.</p>
+  </section>
+
+  <!-- ================= 06 ================= -->
+  <!-- SOURCE: R "What one day looks like" (6 Oct 2026 22:56 UTC screen: 11,143; 4,502; 12,290; 431; 50 m
+       STARLINK-30376 and a CZ-2D rocket body at 13.9 km/s; 2.77 and 2.67; 6.48; one in six);
+       V "Known limits" (under a few hundred metres reads as close);
+       L stats/totals for 17 Oct 2026 (11,156; 4,572; 12,591; 464) -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Passes per object per day on the first screen: no registered owner 6.48, China 2.77, United States 2.67">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">PASSES UNDER 5 KM PER OBJECT PER DAY · FIRST SCREEN</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <text x="0" y="48" fill="#FF4100">NO REGISTERED OWNER</text>
+          <rect class="v-bar v-b1" x="190" y="36" width="380" height="16" fill="#FF4100"/>
+          <text x="580" y="49" fill="#FF4100">6.48</text>
+          <text x="0" y="80" fill="#D7DBE4">CHINA</text>
+          <rect class="v-bar v-b2" x="190" y="68" width="162" height="16" fill="#6B7280"/>
+          <text x="362" y="81" fill="#D7DBE4">2.77</text>
+          <text x="0" y="112" fill="#D7DBE4">UNITED STATES</text>
+          <rect class="v-bar v-b3" x="190" y="100" width="157" height="16" fill="#6B7280"/>
+          <text x="357" y="113" fill="#D7DBE4">2.67</text>
+        </g>
+        <text x="0" y="140" font-family="IBM Plex Mono, monospace" font-size="9" fill="#6B7280">RAW TOTALS FOLLOW HOW MUCH HARDWARE SITS AT STARLINK'S ALTITUDES. PER OBJECT DOES NOT.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.6 · <b>Per object, Chinese and US hardware come close at the same rate.</b> Unregistered objects come close most often.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 06</p>
+    <h2 class="v-h2">What the first day said</h2>
+
+    <p>The first screen started on 6 October 2026 at 22:56 UTC and covered the next 24 hours:
+    11,143 Starlink satellites against 4,502 other objects crossing their altitudes, 12,290
+    predicted passes under 5 km and 431 under 1 km. The closest was 50 m, between STARLINK-30376
+    and a Chinese CZ-2D rocket body, closing at 13.9 km/s.</p>
+
+    <p class="v-pull">Per object, Chinese and US hardware come close at the same rate: 2.77 and 2.67
+    passes a day.</p>
+
+    <p>Objects with no registered owner come close most often, at 6.48 passes per object. Many are
+    recent rideshare deployments still waiting to be identified, including some from SpaceX's own
+    Transporter missions. About one pass in six involves a spent rocket stage or debris, hardware
+    nobody can steer.</p>
+
+    <p>Eleven days later the totals are similar. The screen of 17 October: 11,156 Starlink, 4,572 others,
+    12,591 passes under 5 km, 464 under 1 km.</p>
+
+    <p><b>Read the closest pass with care.</b> Public element sets are typically good to about a
+    kilometre near epoch. A single predicted pass under a few hundred metres means close, not a
+    measured 50 m. Totals and per-object rates are robust; single passes are indicative.</p>
+  </section>
+
+  <!-- ================= 07 ================= -->
+  <!-- SOURCE: R step 4; VF sections 2 and 3 (verify.py uses no network; manifest for day N attested in day N+1);
+       C "Added on 2026-10-07" (ClusterFuzzLite and Atheris, SLSA provenance); commit 3a9d097; REL assets -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Each day's manifest names the SHA-256 of the previous day's manifest, and each sealed day carries a Sigstore attestation">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">EACH MANIFEST NAMES THE ONE BEFORE IT</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5">
+          <rect x="0" y="32" width="140" height="52" fill="#2A2C33"/>
+          <text x="12" y="52" fill="#D7DBE4">MANIFEST 06</text><text x="12" y="70" fill="#6B7280">FIRST LINK</text>
+          <rect x="166" y="32" width="140" height="52" fill="#2A2C33"/>
+          <text x="178" y="52" fill="#D7DBE4">MANIFEST 07</text><text x="178" y="70" fill="#6B7280">PREV: SHA-256(06)</text>
+          <rect x="332" y="32" width="140" height="52" fill="#2A2C33"/>
+          <text x="344" y="52" fill="#D7DBE4">MANIFEST 08</text><text x="344" y="70" fill="#6B7280">PREV: SHA-256(07)</text>
+          <rect x="498" y="32" width="142" height="52" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="510" y="52" fill="#D7DBE4">... MANIFEST 16</text><text x="510" y="70" fill="#6B7280">PREV: SHA-256(15)</text>
+        </g>
+        <path class="v-flow" d="M140 58 H166 M306 58 H332 M472 58 H498" fill="none" stroke="#16A34A" stroke-width="2"/>
+        <text x="0" y="108" font-family="IBM Plex Mono, monospace" font-size="10" fill="#16A34A">CHANGE ONE BYTE OF AN OLD FILE AND THE CHAIN BREAKS FROM THAT DAY ON.</text>
+        <line x1="0" y1="122" x2="640" y2="122" stroke="#2A2C33" stroke-width="1"/>
+        <text x="0" y="142" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#FF4100">RULE: NEVER SEAL TODAY OR A FUTURE DAY. NEVER WRITE INTO A SEALED RELEASE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.7 · <b>You do not have to trust DODGE.</b> The verifier needs no network and no dependencies.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 07</p>
+    <h2 class="v-h2">Sealed, signed, and refusing to seal today</h2>
+
+    <p>A public record is only worth something if it cannot be quietly rewritten. Every day's files
+    get a SHA-256 manifest that names the exact hash of the previous day's manifest, and a Sigstore
+    attestation from the repository's own screen workflow, recorded in the public Rekor log. Every
+    daily release also carries SLSA provenance. A reader checks the hashes and the chain with a
+    Python script that uses no network and no dependencies, and the signatures with
+    <code>gh attestation verify</code>.</p>
+
+    <p>The guard I care most about is a refusal. The screen will not seal today or a future day, and
+    it will never write into a release that is already sealed
+    (<a href="https://github.com/GautamTalksDev/dodge/commit/3a9d097" rel="noopener noreferrer external">3a9d097</a>).
+    A day that is still being recorded cannot be sealed without freezing a partial set of files, and
+    a sealed day that can still change is not sealed. The parsers for incoming orbit data and the
+    verifier itself are fuzzed with ClusterFuzzLite and Atheris, because they are the first code to
+    touch input from outside.</p>
+  </section>
+
+  <!-- ================= 08 ================= -->
+  <!-- SOURCE: PR #1 body (run at 06:07 UTC on 7 Oct failed; retries 20/60/120 s; miss logged; empty upload skipped; tests) / a9ea663 "Recorder survives CelesTrak outages" (7 Oct 2026); e37071e "Fix CodeQL findings";
+       ed723fe; V table has a single recall row (2026-10-06); V "Known limits"; M section 10 -->
+  <section class="v-sec">
+    <figure class="v-fig">
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three things that broke or are still weak, with their status">
+        <text x="0" y="14" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4" fill="#6B7280">WHAT BROKE, AND WHERE IT STANDS</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="0" y="28" width="640" height="26" fill="#2A2C33"/><text x="12" y="45" fill="#D7DBE4">recorder died on a CelesTrak outage</text><text x="520" y="45" fill="#16A34A">FIXED · PR #1</text>
+          <rect x="0" y="58" width="640" height="26" fill="#2A2C33"/><text x="12" y="75" fill="#D7DBE4">newest orbit fit picked, not the closest</text><text x="520" y="75" fill="#16A34A">FIXED · ed723fe</text>
+          <rect x="0" y="88" width="640" height="26" fill="#2A2C33"/><text x="12" y="105" fill="#D7DBE4">recall against brute force checked once, not daily</text><text class="v-blip" x="520" y="105" fill="#FF4100">OPEN</text>
+        </g>
+        <text x="0" y="138" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">SCREENING GRADE. NOT A COLLISION PROBABILITY. NEVER FOR COLLISION AVOIDANCE.</text>
+      </svg>
+      <figcaption class="v-cap">FIG 13.8 · <b>The headline number has one row behind it.</b> That row should be a column.</figcaption>
+    </figure>
+
+    <p class="v-num">SEC. 08</p>
+    <h2 class="v-h2">What broke, and what I would change</h2>
+
+    <p><b>The recorder died on a CelesTrak outage.</b> The scheduled run at 06:07 UTC on 7 October
+    hit a CelesTrak timeout, the recorder raised, and the publish step then tried to upload a release
+    with no files in it. Downloads now retry timeouts, connection errors and server errors at 20, 60
+    and 120 seconds; a run that still gets nothing is logged as a miss instead of crashing, and an
+    empty upload is skipped with a warning. A real crash still fails the job
+    (<a href="https://github.com/GautamTalksDev/dodge/pull/1" rel="noopener noreferrer external">PR #1</a>,
+    with tests for each case).</p>
+
+    <p><b>CodeQL found files left open, unused imports and a redundant assignment</b>
+    (<a href="https://github.com/GautamTalksDev/dodge/commit/e37071e" rel="noopener noreferrer external">e37071e</a>).
+    Small, but it was in code that runs unattended every day.</p>
+
+    <p><b>The limits are in the data, not the code.</b> Public element sets are good to about a
+    kilometre. The screen does not model maneuvers after an element set's epoch, and Starlink
+    maneuvers often, so some predicted passes will never happen. Objects without public element
+    sets cannot be screened at all. DODGE has no covariance, so it cannot compute a collision
+    probability and must not be used for collision avoidance.</p>
+
+    <p><b>What I would change:</b> the 80 of 80 is one sample, on one day, over three hours. It is
+    the strongest number on this page and it has a single row behind it. The recall check should
+    run against brute force on a fresh sample every day, with the result sealed into that day's
+    release next to the passes it vouches for.</p>
+
+    <div class="v-cta">
+      <a class="v-btn" href="https://dodge.gautamkhosla.com" rel="noopener noreferrer external">Open the live screen &#8599;</a>
+      <a class="v-btn v-btn-ghost" href="https://github.com/GautamTalksDev/dodge/blob/main/docs/VERIFYING.md" rel="noopener noreferrer external">Verify a day's data</a>
+    </div>
+  </section>
+
+  <div class="v-foot">
+    <span>DOC GK-013 · DODGE · MIT, data CC BY 4.0 · recall 80 of 80 against brute force</span>
+    <span><a href="/takehome.html">Previous log: GK-012 · Takehome &#8594;</a></span>
+  </div>
+
+</main>
+
+<div class="v-hazard v-hazard-bottom"></div>
+
+</body>
+</html>

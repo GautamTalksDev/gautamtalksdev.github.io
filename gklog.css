@@ -379,3 +379,23 @@ code{
   .v-stand{font-size:18px}
   .v-top{font-size:10px; padding:9px 14px}
 }
+
+/* ---------- dated amendment note ----------------------------------------
+   Corrections go next to the claim with a date; the original text stays. */
+.v-amend{
+  margin:22px 0 0;
+  padding:12px 16px;
+  border-left:4px solid var(--orange);
+  background:var(--panel);
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:12.5px;
+  line-height:1.65;
+  max-width:64ch;
+}
+.v-amend b{color:var(--orange); font-weight:600}
+.v-amend a{color:var(--orange); text-underline-offset:3px}
+
+/* ---------- video button: hidden until a real URL is set ----------------- */
+.v-vid{margin-top:22px}
+.v-vid:not([href]), .v-vid[href=""]{display:none}
+@media print{ .v-vid{display:none} }

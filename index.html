@@ -8,7 +8,7 @@
      ignored here, so clickjacking is handled by a frame-buster in the script below. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-hfWhMenYQvwAiBTXoL+C1pDOWMYeVa+G/L+R6LPnbsg=';
+  script-src 'self' 'sha256-JE2vJFDegVS2ZtnzP0yGQ6NHQ7j2tqU7qPQQn/kYMVU=';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -25,7 +25,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gautam Khosla · Software Engineer, Computer Engineering @ uOttawa</title>
-<meta name="description" content="Gautam Khosla is a Computer Engineering student at the University of Ottawa building failure-aware systems: edge AI on QNX RTOS, autonomous infrastructure with approval gates, and multi-tenant SaaS platforms. Open to co-op placements.">
+<meta name="description" content="Gautam Khosla is a Computer Engineering student at the University of Ottawa building failure-aware systems: edge AI on QNX RTOS, a daily public screen of Starlink close approaches, autonomous infrastructure with approval gates, and multi-tenant SaaS platforms. Open to co-op placements.">
 <meta name="author" content="Gautam Khosla">
 <link rel="canonical" href="https://gautamkhosla.com/">
 
@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-09-29",
+  "dateModified": "2026-10-17",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -101,7 +101,10 @@
       "Integrity monitoring and GPS-denied positioning",
       "SLAM and state estimation",
       "Model Context Protocol tool integrity",
-      "Supply chain security and signed release provenance"
+      "Supply chain security and signed release provenance",
+      "Orbital mechanics and SGP4 propagation",
+      "Conjunction screening in low Earth orbit",
+      "EU Cyber Resilience Act vulnerability reporting"
     ],
     "award": [
       "MLH Best Use of Snowflake API, HackConcordia",
@@ -184,7 +187,18 @@
       {
         "@type": "ScholarlyArticle",
         "name": "Confident Where People Disagree: A preregistered, bias-corrected test of whether TypeSafe AI's Jev lowers its confidence when humans disagree, on ChaosNLI",
-        "identifier": "https://doi.org/10.5281/zenodo.22971491"
+        "identifier": "https://doi.org/10.5281/zenodo.22971491",
+        "url": "https://gautamkhosla.com/jevbench.html"
+      },
+      {
+        "@type": "Article",
+        "name": "DODGE Engineering Log",
+        "url": "https://gautamkhosla.com/dodge.html"
+      },
+      {
+        "@type": "Article",
+        "name": "jevbench Engineering Log",
+        "url": "https://gautamkhosla.com/jevbench.html"
       }
     ]
   }
@@ -241,6 +255,17 @@
           <a class="btn btn-primary" href="#work">Inspect the work</a>
           <a class="btn btn-ghost" href="https://github.com/GautamTalksDev">GitHub</a>
         </div>
+        <!-- EVIDENCE STRIP (Y8). Verified facts only; each line links to the log that holds its receipt.
+             1: dodge.html; DODGE README "What one day looks like" (11,143 vs 4,502); docs/VALIDATION.md (80 of 80);
+                GitHub releases day-2026-10-06 to day-2026-10-17, one per day, checked 17 Oct 2026.
+             2: aegis.html (QNX 8.0, C++20, four processes over MsgSend/MsgReceive, uplink async and optional).
+             3: DOIs 10.5281/zenodo.22054179, 22099794, 22971491; assay.html (7.99 x 10^7 clean residuals, 76% vs a 90% bar). -->
+        <div class="evid" aria-label="Evidence">
+          <div class="evid-head"><span>EVIDENCE</span><span>EACH LINE LINKS TO ITS RECEIPT</span></div>
+          <a class="evid-row" href="dodge.html"><span class="evid-k">ORBITS</span><span class="evid-v"><b>DODGE</b> screens every Starlink satellite against everything else in its altitude band, every day, from public orbit data: 11,143 against 4,502 on day one. Its fast screen found 80 of 80 passes a brute force search found. One signed release per day since 6 Oct 2026.</span></a>
+          <a class="evid-row" href="aegis.html"><span class="evid-k">REAL TIME</span><span class="evid-v"><b>AEGIS</b> runs C++20 on QNX 8.0 as four processes over MsgSend/MsgReceive. Detection to relay happens entirely on the device; the network is the only optional part.</span></a>
+          <a class="evid-row" href="assay.html"><span class="evid-k">PUBLISHED</span><span class="evid-v"><b>Three DOI papers.</b> One calibrates a GPU checksum on 8 &#215; 10<sup>7</sup> clean residuals, then misses its own pre-registered 90% bar at 76%, and is published anyway.</span></a>
+        </div>
       </div>
 
       <div class="badge-zone">
@@ -269,8 +294,8 @@
 
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track" id="tickerTrack">
-      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>APACHE-2.0</b> · OPEN HARNESSES</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>2ND</b> · CIVIC TECH · HACK THE HILL III</span><span><b>8,838 / 9,002</b> · AGREE WITH THE CRA</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
-      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>APACHE-2.0</b> · OPEN HARNESSES</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>2ND</b> · CIVIC TECH · HACK THE HILL III</span><span><b>8,838 / 9,002</b> · AGREE WITH THE CRA</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
+      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>APACHE-2.0</b> · OPEN HARNESSES</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>2ND</b> · CIVIC TECH · HACK THE HILL III</span><span><b>80 / 80</b> · RECALL VS BRUTE FORCE · DODGE</span><span><b>8,838 / 9,002</b> · AGREE WITH THE CRA</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
+      <span class="live-slot">LAST PUSH · <i>CHECKING…</i></span><span><b>APACHE-2.0</b> · OPEN HARNESSES</span><span><b>MLH</b> BEST USE OF SNOWFLAKE API</span><span><b>2ND</b> · CIVIC TECH · HACK THE HILL III</span><span><b>80 / 80</b> · RECALL VS BRUTE FORCE · DODGE</span><span><b>8,838 / 9,002</b> · AGREE WITH THE CRA</span><span><b>C++20</b> ON QNX RTOS</span><span><b>0</b> NETWORK DEPS IN THE SAFETY LOOP</span><span><b>4</b> QNX PROCESSES · 0 DROPS</span>
     </div>
   </div>
 </header>
@@ -321,7 +346,35 @@
     <div class="showcase reveal" id="showcase" aria-roledescription="carousel">
       <div class="rail" id="rail">
 
+        <!-- DODGE (GK-013). SOURCES: DODGE README (355,848; first screen 11,143 / 4,502 / 12,290), docs/VALIDATION.md
+             (80 of 80; 53 vs 97.5 degree crossing), docs/METHOD.md (SGP4, under 5 km kept, not collision probabilities). -->
         <div class="slide active">
+          <div class="slide-viz" aria-hidden="true">
+            <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">CLOSE APPROACHES · NEXT 24 H · PUBLIC DATA</text>
+              <path d="M10 150 C120 40, 300 40, 410 120" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+              <path d="M20 48 C150 160, 290 170, 410 70" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+              <text x="390" y="134" fill="#6B7280" font-family="monospace" font-size="9">53&#176;</text>
+              <text x="26" y="40" fill="#6B7280" font-family="monospace" font-size="9">97.5&#176;</text>
+              <path class="dtrk" d="M10 150 C108.1 51.9, 261.9 41.3, 372.1 96.9" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+              <circle class="dpip" cx="372.1" cy="96.9" r="5" fill="#C4453A"/>
+              <path class="dpip" d="M318 100 L364 97.5" stroke="#C4453A" stroke-width="1"/>
+              <text class="dpip" x="252" y="104" fill="#C4453A" font-family="monospace" font-size="9.5">PASS &lt; 5 KM</text>
+              <text x="10" y="176" fill="#D7DBE4" font-family="monospace" font-size="9">11,143 STARLINK &#183; 4,502 OTHERS &#183; 12,290 PASSES &lt; 5 KM (DAY 1)</text>
+              <text x="10" y="192" fill="#D7DBE4" font-family="monospace" font-size="9">RECALL 80 / 80 VS BRUTE FORCE</text>
+              <text x="10" y="210" fill="#C4453A" font-family="monospace" font-size="9">SCREENING GRADE. NOT A COLLISION PROBABILITY.</text>
+            </svg>
+          </div>
+          <div class="slide-txt">
+            <div class="sk">SHOWCASE A/G &#183; ORBITS / OPEN DATA</div>
+            <h3>DODGE <span class="net-tag cloud">SIGNED DAILY &#183; PUBLIC DATA</span></h3>
+            <div class="tg">Who makes Starlink dodge</div>
+            <p>Starlink moved out of the way 355,848 times in a year, by SpaceX's own reports to the FCC. Screening is free; who causes the risk is not published. Every day DODGE propagates every tracked object with a public orbit in Starlink's altitude band with SGP4, finds each pass under 5 km and names the owner. Its fast screen found 80 of 80 passes a brute force search found, and each day's data is hash-chained and signed.</p>
+            <a href="dodge.html">READ THE ENGINEERING LOG &#8594;</a>
+          </div>
+        </div>
+
+        <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
               <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">EDGE PIPELINE · QNX · SCHED_FIFO</text>
@@ -340,7 +393,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE A/F · EDGE / RTOS</div>
+            <div class="sk">SHOWCASE B/G · EDGE / RTOS</div>
             <h3>AEGIS <span class="net-tag edge">EDGE · SURVIVES OUTAGE</span></h3>
             <div class="tg">The safety loop never touches the network</div>
             <p>C++20 on QNX 8.0, four processes over MsgSend/MsgReceive, detection to relay entirely on-device. The dashed uplink box is the point: it's the only optional part.</p>
@@ -374,7 +427,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE B/F &#183; AGENT SECURITY</div>
+            <div class="sk">SHOWCASE C/G &#183; AGENT SECURITY</div>
             <h3>mcp-pin <span class="net-tag edge">SIGNED PUBLIC LOG</span></h3>
             <div class="tg">The tool you approved is not the tool you're running</div>
             <p>You approve an MCP server's tools once and that decision is never revisited, even though a tool description is an instruction with the reach of a system prompt. mcp-pin fingerprints what you approved, blocks the session when it moves, and keeps a signed public history of every version across 248 servers. Its own recrawl corrected 17 of its earlier numbers.</p>
@@ -411,7 +464,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE C/F &#183; NUMERICS / PUBLISHED</div>
+            <div class="sk">SHOWCASE D/G &#183; NUMERICS / PUBLISHED</div>
             <h3>assay-gpu <span class="net-tag edge">PEER-SHAREABLE &#183; DOI</span></h3>
             <div class="tg">The detector that failed its own test</div>
             <p>Silicon sometimes returns a wrong answer silently. The 1984 checksum that catches it has a threshold that is undefined at bfloat16, so I measured the distribution instead and calibrated one. It catches 76% of exponent-bit flips against a 90% bar I registered first, and none of 600 low-mantissa flips. Four predictions failed, four findings retracted, all published.</p>
@@ -442,14 +495,14 @@
               </g>
               <text x="10" y="152" fill="#6B7280" font-family="monospace" font-size="9">83% OF BINARIES STRIPPED. THE STRIPPED GATES NEVER FIRED ONCE.</text>
               <rect class="lstop" x="10" y="164" width="150" height="22" fill="none" stroke="#C4453A" stroke-width="2"/>
-              <text class="lstop" x="22" y="180" fill="#C4453A" font-family="monospace" font-size="11" letter-spacing="1">ARCHIVED</text>
+              <text class="lstop" x="22" y="180" fill="#C4453A" font-family="monospace" font-size="11" letter-spacing="1">STOPPED</text>
               <text x="174" y="180" fill="#6B7280" font-family="monospace" font-size="9">STOPPED BY ITS OWN PRE-REGISTERED RULE</text>
               <text x="10" y="206" fill="#6B7280" font-family="monospace" font-size="9">KT-1 NOT EVALUABLE &#183; KT-2 FAIL &#183; PAPER + DATASET PUBLISHED</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE D/F &#183; SUPPLY CHAIN / PUBLISHED</div>
-            <h3>LADING <span class="net-tag cloud">ARCHIVED &#183; DOI</span></h3>
+            <div class="sk">SHOWCASE E/G &#183; SUPPLY CHAIN / PUBLISHED</div>
+            <h3>LADING <span class="net-tag cloud">PROJECT &#183; DOI</span></h3>
             <div class="tg">It failed three times, and the third found the other two</div>
             <p>Regulators now ask which known flaws actually reach your product. I built the tool that answers it from the shipped binary. 99.6% of findings stopped before a binary was ever opened, every clearance it did make was unfalsifiable, and the fix for that was aimed one layer too shallow. Both kill tests resolved against it, so the project stopped. The paper, the dataset and two upstream bug reports are the output.</p>
             <a href="lading.html">READ THE ENGINEERING LOG &#8594;</a>
@@ -712,7 +765,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE E/F &#183; PAYROLL / CONFORMANCE</div>
+            <div class="sk">SHOWCASE F/G &#183; PAYROLL / CONFORMANCE</div>
             <h3>Takehome <span class="net-tag edge">OFFLINE AFTER FIRST LOAD</span></h3>
             <div class="tg">98.2% against the CRA's own calculator</div>
             <p>Canadian payroll deductions from the CRA's T4127 formulas, in one Rust engine compiled to WebAssembly and native. Checked against the official calculator on 9,002 boundary cases: 8,838 agree, and every one of the 164 disagreements is published. Building that check showed the calculator does not follow its own formula for the CPP credit.</p>
@@ -737,7 +790,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE F/F &#183; ROBOTICS / SAFETY</div>
+            <div class="sk">SHOWCASE G/G &#183; ROBOTICS / SAFETY</div>
             <h3>Cairn <span class="net-tag edge">~0.5 ms ON A LAPTOP</span></h3>
             <div class="tg">Catching a robot that is confidently lost</div>
             <p>GPS dies underground and SLAM fails silently: the pose drifts while the covariance stays tight. Cairn is the error bar, not the dot. On injected drift a naive monitor never alarmed and error hit 20.5 m; an earlier 12 s detection claim is withdrawn, because the same check alarms just as fast with no drift at all. Its own worst case, common-mode faults (wrong but reporting all good for 73% of the run), is written up in the docs.</p>
@@ -748,7 +801,7 @@
       </div>
       <div class="show-nav">
         <button id="showPrev" aria-label="Previous project">◀ PREV</button>
-        <div class="dots" id="showDots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="dots" id="showDots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         <button id="showNext" aria-label="Next project">NEXT ▶</button>
       </div>
     </div>
@@ -756,6 +809,13 @@
 
 
 
+
+    <!-- THE RULE (Y1, 17 Oct 2026). A LOG (GK) needs all three: a public artifact; at least one measured result
+         checked by something other than me; a documented failure with a receipt. A CARD (A) is public, finished and
+         working, but not yet measured that way, or team work where my part is a slice. Nothing in progress is listed:
+         only finished work goes on this site. Not listed: private or undeployed work, merged or superseded projects,
+         forks, coursework, client work, anything on launch hold, and anything whose own page says something untrue. -->
+    <p class="rule-note"><b>GK LOGS</b> are public, carry a result checked by something other than me, and document what broke. <b>A CARDS</b> are public and working, not yet measured that way, or team work. Nothing in progress is listed.</p>
 
     <div class="more-grid reveal">
       <div class="mini"><span class="mid">A-01</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><div class="mtags"><i>PYTHON</i><i>FASTAPI</i><i>SNOWFLAKE</i><i>MONGODB</i></div></div>
@@ -766,6 +826,10 @@
       <div class="mini"><span class="mid">A-06</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/porchlight">Porchlight</a></h4><p>An emergency network neighbours run themselves. A signed beacon press hops laptop to laptop with no power, internet or cell service, and reaches the City when any link returns. 200 of 200 calls delivered in chaos simulation; not yet field tested.</p><div class="mtags"><i>ED25519</i><i>GOSSIP MESH</i><i>ARDUINO BLE</i><i>TEAM OF 4</i></div></div>
       <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Bedrock">Bedrock</a></h4><p>Every scraper heals itself with AI now; nobody checks the repair was correct. Bedrock verifies each heal against golden fixtures before it ships, and every row carries a receipt naming the heals it refused.</p><div class="mtags"><i>NEXT.JS</i><i>POSTGRES</i><i>MCP</i><i>BRIGHT DATA</i></div></div>
       <div class="mini"><span class="mid">A-08</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/keyring">keyring</a></h4><p>Access governance for people and AI agents. Every grant into one approval queue, protected resources never bulk-approved, and a hash-chained ledger that stopped forking under concurrent writes once review caught it.</p><div class="mtags"><i>TYPESCRIPT</i><i>MCP</i><i>HASH CHAIN</i><i>APPROVAL GATES</i></div></div>
+      <!-- A-09 CRA Clock. SOURCE: github.com/GautamTalksDev/cra-clock README (Article 14: early warning 24 hours after
+           becoming aware; 12 lockfile formats; CycloneDX 1.6; OSV, CISA KEV, FIRST EPSS; "Could not confirm exploitation
+           status" when KEV cannot be read); release v1.0.0 (10 Oct 2026); github.com/marketplace/actions/cra-clock. -->
+      <div class="mini"><span class="mid">A-09</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/cra-clock">CRA Clock</a></h4><p>The EU Cyber Resilience Act gives a manufacturer 24 hours from becoming aware that a vulnerability in its product is actively exploited to send an early warning. This GitHub Action builds a CycloneDX SBOM from 12 lockfile formats, checks OSV, CISA KEV and EPSS, and opens an issue with the deadlines and draft reports. If the KEV catalog can't be read, it says so instead of reporting clean.</p><div class="mtags"><i>GITHUB ACTION</i><i>CYCLONEDX</i><i>CISA KEV</i><i>MARKETPLACE</i></div></div>
     </div>
 
     <div class="cmds reveal">
@@ -776,7 +840,7 @@
           <span class="cmd-medal" aria-hidden="true">&#128220;</span>
           <div class="cmd-title">Confident Where People Disagree</div>
           <div class="cmd-org">Third paper &#183; DOI 10.5281/zenodo.22971491</div>
-          <div class="cmd-proj"><a rel="noopener noreferrer external" href="https://doi.org/10.5281/zenodo.22971491">jevbench</a> <span class="cmd-sub">&#183; plan anchored in Bitcoin 33 minutes before the first scored call</span></div>
+          <div class="cmd-proj"><a href="jevbench.html">jevbench</a> <span class="cmd-sub">&#183; plan submitted to OpenTimestamps 33 minutes before the first scored call</span></div>
         </div>
         <div class="cmd">
           <span class="cmd-medal" aria-hidden="true">&#128220;</span>
@@ -825,11 +889,27 @@
       <div class="lab-grid" id="labStrip"></div>
     </div>
 
+    <!-- STATS STRIP. Each number is defined here; app.js computes the live one.
+         1. ENGINEERING LOGS: GK log pages on this site, GK-002 to GK-014 (GK-001 is the site itself). Static, counted
+            from the log files. Change it in the same commit that adds a log.
+         2. PUBLIC REPOS, NO FORKS: public repositories owned by GautamTalksDev with fork == false. Computed live in
+            app.js from api.github.com/users/GautamTalksDev/repos (paged, 100 per page). The baked 38 is the count on
+            17 Oct 2026 (53 public, 15 forks), so it is labelled AS OF until the live count replaces it.
+         3. OPEN-SOURCE RELEASES: published, non-prerelease GitHub releases on public, non-fork repos licensed MIT or
+            Apache-2.0, excluding DODGE's automated daily data releases (tags day-YYYY-MM-DD). 18 on 17 Oct 2026:
+            mcp-pin 8, plimsoll 4, Cairn 1, cra-clock 1, dodge 1 (v1.0.0), Vernier 1, and 2 on a repository not
+            listed here yet. Static and
+            dated, because counting it live would cost one API request per repository per visitor.
+         4. NETWORK DEPS IN THE AEGIS SAFETY LOOP: a design property documented in GK-002 (detection to relay runs
+            on the device; the uplink is asynchronous and optional). A count of zero, not a measurement over time.
+         Removed 17 Oct 2026: a live "COMMITS" / "PUBLIC EVENTS" figure read from the public events feed. That feed
+         returns at most 100 events per page, and on 17 Oct all 100 were automated health-check comments on one
+         issue, so the number on screen was the page size, not engineering activity. -->
     <div class="stats reveal">
-      <div class="stat"><div class="num" data-count="11" id="liveCommits">0</div><div class="lbl"><span id="commitSrc" title="Counted live from the public GitHub events feed. Merge pushes report zero distinct commits, so this holds a true static count rather than showing a misleading zero.">ENGINEERING LOGS</span></div></div>
-      <div class="stat"><div class="num" data-count="10" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS <span id="dataSrc" title="Falls back to cached values if GitHub is unreachable, by design.">· CACHED</span></div></div>
-      <div class="stat"><div class="num" data-count="14">0</div><div class="lbl">OPEN-SOURCE RELEASES</div></div>
-      <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN SAFETY LOOP</div></div>
+      <div class="stat"><div class="num" data-count="13">0</div><div class="lbl">ENGINEERING LOGS</div></div>
+      <div class="stat"><div class="num" data-count="38" id="liveRepos">0</div><div class="lbl">PUBLIC REPOS, NO FORKS <span id="dataSrc" title="Counted live from the GitHub API when it is reachable. Otherwise this is the count on 17 Oct 2026.">&#183; AS OF 17 OCT</span></div></div>
+      <div class="stat"><div class="num" data-count="18">0</div><div class="lbl">OPEN-SOURCE RELEASES <span title="Published GitHub releases on public, non-fork MIT or Apache-2.0 repos, excluding DODGE's automated daily data releases.">&#183; AS OF 17 OCT</span></div></div>
+      <div class="stat"><div class="num" data-count="0">0</div><div class="lbl">NETWORK DEPS IN THE AEGIS SAFETY LOOP</div></div>
     </div>
   </div>
 </section>
@@ -838,17 +918,22 @@
   <div class="ghost-no">02</div>
   <div class="wrap">
     <div class="sec-head reveal"><span class="sec-no">SEC. 02</span><h2>Operating principles</h2></div>
+    <!-- PRINCIPLES, reworked 17 Oct 2026 against how the work is actually done: receipts, an outside judge,
+         dated corrections. Changes: P-01 absorbs the old P-02 (both were the AEGIS outage rule); new P-02 is the
+         outside judge; P-07 adds dated corrections next to the claim; P-08 moves from "kill test" to "write the bar
+         before the data"; P-10 drops "archive" for "keep the rule".
+         Every PROVEN link points at a page that holds the receipt. -->
     <div class="prin reveal">
-      <div><span class="pgh" aria-hidden="true">01</span><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation, and chaos harnesses go in the initial plan, not the retro.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05: the chaos harness that caught the lossy flush</a></div>
-      <div><span class="pgh" aria-hidden="true">02</span><div class="pn">P-02</div><h3>Cloud makes it smarter, never dependent</h3><p>Enrichment and dashboards live upstream. Correctness lives on-device, where the network can't take it away.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §02: the voice baked in at build time</a></div>
+      <div><span class="pgh" aria-hidden="true">01</span><div class="pn">P-01</div><h3>Design for the outage first</h3><p>Offline buffering, graceful degradation and chaos harnesses go in the initial plan, not the retro. The cloud can make it smarter; correctness lives on the device, where the network can't take it away.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05: the chaos harness that caught the lossy flush</a></div>
+      <div><span class="pgh" aria-hidden="true">02</span><div class="pn">P-02</div><h3>Let something else grade it</h3><p>My own tests agree with me by construction. The number that counts comes from a judge I don't control: the government's own calculator, a brute force search, a back-of-envelope physics model. When the judge disagrees, the disagreement is published.</p><a class="pref" href="takehome.html">PROVEN · GK-012: 8,838 of 9,002 against the CRA's calculator, all 164 misses published</a></div>
       <div><span class="pgh" aria-hidden="true">03</span><div class="pn">P-03</div><h3>Autonomy needs a leash</h3><p>Approval gates, audit trails, rollback. Every autonomous system I ship can be stopped, questioned, and reversed.</p><a class="pref" rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">PROVEN · HyperShift: nothing deploys past the approval gate</a></div>
       <div><span class="pgh" aria-hidden="true">04</span><div class="pn">P-04</div><h3>Prove it without the hardware</h3><p>Mock generators, load testers, fault injection, so the stack ships while the Pi is still in the mail.</p><a class="pref" href="aegis.html">PROVEN · GK-002 §05: the upper stack shipped before the Pi arrived</a></div>
       <div><span class="pgh" aria-hidden="true">05</span><div class="pn">P-05</div><h3>Publish the negative result</h3><p>A study that only reports its wins is not evidence. I pre-register the threshold, then report the number I actually got.</p><a class="pref" href="labtolab.html">PROVEN · GK-005: needed 20%, got 9.8%, published in full</a></div>
       <div><span class="pgh" aria-hidden="true">06</span><div class="pn">P-06</div><h3>Caveat louder than you claim</h3><p>A measurement without its conditions is a rumour. If the harness distorts the number, that warning goes above the number, not in a footnote.</p><a class="pref" href="mayfly.html">PROVEN · GK-003: WSL2-relative timings, flagged before the table</a></div>
-      <div><span class="pgh" aria-hidden="true">07</span><div class="pn">P-07</div><h3>Retract it when it's wrong</h3><p>Clearing your own pre-registered bar by five times is an alarm, not a triumph. The broken write-up stays published, marked do-not-cite, because deleting it makes the repo look better and the record worse.</p><a class="pref" href="vernier.html">PROVEN · GK-006: the 100% that turned out to be a dead hostname</a></div>
-      <div><span class="pgh" aria-hidden="true">08</span><div class="pn">P-08</div><h3>Write the kill test before the code</h3><p>Name the number that ends the project while you still have nothing invested in the answer. Two of mine are still sitting at UNEVALUATED in public.</p><a class="pref" href="plumbline.html">PROVEN · GK-004: KT-1 and KT-2 committed before the first commit</a></div>
+      <div><span class="pgh" aria-hidden="true">07</span><div class="pn">P-07</div><h3>Retract it when it's wrong</h3><p>Clearing your own pre-registered bar by five times is an alarm, not a triumph. The broken write-up stays published, marked do-not-cite, and the correction goes next to the claim with a date, because deleting it makes the repo look better and the record worse.</p><a class="pref" href="vernier.html">PROVEN · GK-006: the 100% that turned out to be a dead hostname</a></div>
+      <div><span class="pgh" aria-hidden="true">08</span><div class="pn">P-08</div><h3>Write the bar before the data</h3><p>Name the number that counts as a pass while nothing is invested in the answer, and timestamp it somewhere I can't edit. Then say exactly what the timestamp proves. Plumbline's two bars were never evaluated, and its page says so.</p><a class="pref" href="jevbench.html">PROVEN · GK-014: bar fixed before the first scored call, and the timing claim corrected</a></div>
       <div><span class="pgh" aria-hidden="true">09</span><div class="pn">P-09</div><h3>The refusal is the product</h3><p>A gate with an override is decorative. If a sealed rule can be amended by a flag, a config or a paid tier, the artifact is worth nothing to the person it was meant to convince.</p><a class="pref" href="plimsoll.html">PROVEN · GK-010: a test that fails if a code path to mutate a sealed field ever appears</a></div>
-      <div><span class="pgh" aria-hidden="true">10</span><div class="pn">P-10</div><h3>Stop when your own rule says stop</h3><p>A stop condition you argue your way past was never a stop condition. Three not-evaluable readings, and the pre-registered action was to archive it.</p><a class="pref" href="lading.html">PROVEN · GK-009: both kill tests resolved against it, so the project ended</a></div>
+      <div><span class="pgh" aria-hidden="true">10</span><div class="pn">P-10</div><h3>Keep the rule you wrote first</h3><p>A rule you argue your way past was never a rule. Three not-evaluable readings, and that line of work stopped exactly where its pre-registered rule said it would. The repo, the paper and the data stay public.</p><a class="pref" href="lading.html">PROVEN · GK-009: both pre-registered tests resolved against it, so it stopped</a></div>
       <div><span class="pgh" aria-hidden="true">11</span><div class="pn">P-11</div><h3>Name the competitor who did it better</h3><p>Finding prior art that beats you on the job it does is uncomfortable and burying it is cheap. A security tool that hides the alternative has already told you what kind of tool it is.</p><a class="pref" href="mcppin.html">PROVEN · GK-011 §06: the README recommends mcp-warden over my own project</a></div>
       <div><span class="pgh" aria-hidden="true">12</span><div class="pn">P-12</div><h3>Store the conditions with the measurement</h3><p>A number whose environment was not recorded cannot be re-derived, only re-argued. I have written that caveat on other people's results and then failed to apply it to my own crawl.</p><a class="pref" href="mcppin.html">PROVEN · GK-011 §08: the recrawl that disproved my own explanation</a></div>
     </div>
@@ -865,7 +950,7 @@
       <div class="fnode" aria-hidden="true"></div>
       <header class="ftab">
         <span class="fid">FILE 03-A</span>
-        <span class="fwhen">SEP 2026 – PRESENT</span>
+        <span class="fwhen">SEP 2026 TO PRESENT</span>
         <span class="fstat live">● ACTIVE DUTY</span>
       </header>
       <div class="fbody">
@@ -881,7 +966,7 @@
       <div class="fnode" aria-hidden="true"></div>
       <header class="ftab">
         <span class="fid">FILE 03-B</span>
-        <span class="fwhen">JUL – AUG 2026</span>
+        <span class="fwhen">JUL TO AUG 2026</span>
         <span class="fstat">TOUR COMPLETE</span>
       </header>
       <div class="fbody">
@@ -897,7 +982,7 @@
       <div class="fnode" aria-hidden="true"></div>
       <header class="ftab">
         <span class="fid">FILE 03-C</span>
-        <span class="fwhen">OCT 2025 – JAN 2026</span>
+        <span class="fwhen">OCT 2025 TO JAN 2026</span>
         <span class="fstat">TOUR COMPLETE</span>
       </header>
       <div class="fbody">
@@ -913,7 +998,7 @@
       <div class="fnode" aria-hidden="true"></div>
       <header class="ftab">
         <span class="fid">FILE 03-D</span>
-        <span class="fwhen">2024 – PRESENT</span>
+        <span class="fwhen">2024 TO PRESENT</span>
         <span class="fstat live">● IN PROGRESS</span>
       </header>
       <div class="fbody">

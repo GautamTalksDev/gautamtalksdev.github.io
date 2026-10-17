@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BVE/fDjK596cDl24fl/BUs3yUmCQBS5FoJYUv7Xb/58='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DkyXYrq6yyjTpR7ZcAiAyAJvqJ438Qvwf6DIF5NvWYE='; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'; frame-src 'none'; child-src 'none'; media-src 'none'; upgrade-insecure-requests;">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>GK-011 · The tool you approved is not the tool you're running · Gautam Khosla</title>
@@ -12,12 +12,12 @@
 
 <meta property="og:type" content="article">
 <meta property="og:title" content="The tool you approved is not the tool you're running">
-<meta property="og:description" content="A changed tool description has the same reach as a changed system prompt, and nobody re-prompts you.">
+<meta property="og:description" content="A changed tool description has the same reach as a changed system prompt, and most clients never re-prompt you.">
 <meta property="og:url" content="https://gautamkhosla.com/mcppin.html">
 <meta property="og:image" content="https://gautamkhosla.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"TechArticle","headline":"The tool you approved is not the tool you're running","description":"mcp-pin fingerprints the full metadata of every MCP tool at approval time, re-derives that decision on every connect, and publishes a hash linked signed history of every version it can reach. Zero inference: it computes a hash and compares it.","url":"https://gautamkhosla.com/mcppin.html","datePublished":"2026-09-05","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"mcp-pin","codeRepository":"https://github.com/GautamTalksDev/mcp-pin","programmingLanguage":"JavaScript","license":"https://opensource.org/licenses/MIT"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
+{"@context":"https://schema.org","@type":"TechArticle","headline":"The tool you approved is not the tool you're running","description":"mcp-pin fingerprints the full metadata of every MCP tool at approval time, re-derives that decision on every connect, and publishes a hash linked signed history of every version it can reach. Zero inference: it computes a hash and compares it.","url":"https://gautamkhosla.com/mcppin.html","datePublished":"2026-09-05","dateModified":"2026-10-17","inLanguage":"en","author":{"@type":"Person","name":"Gautam Khosla","url":"https://gautamkhosla.com","identifier":"https://orcid.org/0009-0006-7404-8877","sameAs":["https://github.com/GautamTalksDev","https://orcid.org/0009-0006-7404-8877"]},"about":{"@type":"SoftwareSourceCode","name":"mcp-pin","codeRepository":"https://github.com/GautamTalksDev/mcp-pin","programmingLanguage":"JavaScript","license":"https://opensource.org/licenses/MIT"},"isPartOf":{"@type":"WebSite","name":"Gautam Khosla","url":"https://gautamkhosla.com"}}
 </script>
 </head>
 <body>
@@ -54,6 +54,10 @@
     MIT, zero runtime dependencies.
   </p>
 
+  <p class="v-amend"><b>Amended 17 Oct 2026.</b> Two things on this page are no longer true: the stop condition in
+    SEC. 05 was cancelled on 9 October, and Visual Studio 18.7 does re-prompt. The original text stays as written.
+    <a href="#amendment">Read the amendment</a>.</p>
+
   <!-- ================= 01 ================= -->
   <section class="v-sec">
     <figure class="v-fig">
@@ -78,7 +82,7 @@
         <text x="0" y="146" font-family="IBM Plex Mono, monospace" font-size="10" fill="#D7DBE4">A TOOL DESCRIPTION IS NOT DATA THE MODEL READS AND SETS ASIDE.</text>
         <text x="0" y="166" font-family="IBM Plex Mono, monospace" font-size="10" fill="#FF4100">IT IS AN INSTRUCTION. CHANGING IT HAS THE REACH OF A CHANGED SYSTEM PROMPT.</text>
       </svg>
-      <figcaption class="v-cap">FIG 11.1 · <b>The problem is not that the model will certainly obey.</b> It is that nobody checked, and nobody was told.</figcaption>
+      <figcaption class="v-cap">FIG 11.1 · <b>The problem is not that the model will certainly obey.</b> It is that nobody checked, and nobody was told. <b>Corrected 17 Oct 2026:</b> most clients never re-prompt; Visual Studio 18.7 is the exception.</figcaption>
     </figure>
 
     <p class="v-num">SEC. 01</p>
@@ -246,7 +250,7 @@
         <line x1="0" y1="132" x2="640" y2="132" stroke="#2A2C33" stroke-width="1"/>
         <text x="0" y="154" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#6B7280">IT LIVES IN THE README SO IT CANNOT BE QUIETLY RENEGOTIATED LATER.</text>
       </svg>
-      <figcaption class="v-cap">FIG 11.5 · <b>Adoption, not correctness.</b> The code working is not evidence that anyone needed it.</figcaption>
+      <figcaption class="v-cap">FIG 11.5 · <b>Adoption, not correctness.</b> The code working is not evidence that anyone needed it. <b>Superseded 17 Oct 2026:</b> cancelled on 9 October, nothing archived. See the amendment.</figcaption>
     </figure>
 
     <p class="v-num">SEC. 05</p>
@@ -401,6 +405,33 @@
       <a class="v-btn" href="https://github.com/GautamTalksDev/mcp-pin" rel="noopener noreferrer external">Read the code &#8599;</a>
       <a class="v-btn v-btn-ghost" href="https://mcp-pin.gautamkhosla.com" rel="noopener noreferrer external">The public log</a>
     </div>
+  </section>
+
+  <!-- ================= AMENDMENT ================= -->
+  <!-- SOURCES: github.com/GautamTalksDev/mcp-pin README.md, sections "The 15 October goal (no longer a kill test)"
+       and the client re-prompt paragraph (Visual Studio 18.7, June 2026); npm registry mcp-pin dist-tags latest 0.2.3,
+       published 2026-10-06. -->
+  <section class="v-sec" id="amendment">
+    <p class="v-num">AMENDMENT · 17 OCTOBER 2026</p>
+    <h2 class="v-h2">What changed after this was written</h2>
+
+    <p><b>The stop condition in SEC. 05 was cancelled on 9 October 2026.</b> The 15 October goal is no
+    longer a shutdown condition. mcp-pin stays public and maintained as a project, nothing was archived
+    on 15 October, and the drift data keeps publishing from the daily crawl. The commitment is left
+    exactly as it was written, here and in the README, so the change is visible instead of quietly
+    edited away.</p>
+
+    <p><b>Some clients do re-prompt.</b> Most clients still never re-prompt when tool definitions
+    change underneath an approved server. Visual Studio is the exception: since version 18.7 (June
+    2026) it compares a server's tools, prompts, resources and instructions with the last trusted
+    version when the server starts, and asks before running it. The opening paragraph's "no major
+    client re-prompts" and FIG 11.1's "no client re-prompts" were wrong on that point. mcp-pin does
+    the same check for stdio servers in the other clients, and keeps checking for the whole
+    session.</p>
+
+    <p><b>Versions.</b> SEC. 08 says to use 0.1.2. The current release is 0.2.3, published on npm on
+    6 October 2026. The log counts on this page (4,812 entries across 248 servers) are as of its
+    publication on 5 September 2026.</p>
   </section>
 
   <div class="v-foot">
