@@ -5,10 +5,10 @@
 <!-- Security. GitHub Pages cannot send HTTP headers, so this is the meta equivalent.
      Placed first in <head>: a meta CSP only governs markup parsed after it.
      Known limits of meta-CSP (per OWASP / MDN): frame-ancestors and sandbox are
-     ignored here, so clickjacking is handled by a frame-buster in the script below. -->
+     ignored here, so clickjacking is handled by a frame-buster at the top of app.js. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'sha256-hfWhMenYQvwAiBTXoL+C1pDOWMYeVa+G/L+R6LPnbsg=';
+  script-src 'self';
   style-src 'self';
   font-src 'self';
   img-src 'self' data:;
@@ -939,7 +939,7 @@
         <a href="resume.pdf" download>RESUME (PDF)</a>
         <a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev">GITHUB</a>
         <a rel="noopener noreferrer external" href="https://www.linkedin.com/in/gautam-khosla/">LINKEDIN</a>
-        <a rel="noopener noreferrer external" href="http://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE · GAUTAM TALKS</a>
+        <a rel="noopener noreferrer external" href="https://www.youtube.com/@GautamKhoslaOfficial">YOUTUBE · GAUTAM TALKS</a>
         <a rel="noopener noreferrer external" href="https://www.instagram.com/gautamk.talks/">INSTAGRAM</a>
         <a rel="noopener noreferrer external" href="https://x.com/HeyGautamTalks">X</a>
       </div>
