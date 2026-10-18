@@ -215,6 +215,9 @@
   .slide-txt p { color:#3c3f47; font-size:15px; margin-bottom:18px; }
   .slide-txt a { align-self:flex-start; font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; letter-spacing:1px; color:var(--ink); text-decoration:none; border:2px solid var(--ink); padding:8px 16px; transition:all .18s; }
   .slide-txt a:hover { background:var(--orange); border-color:var(--orange); color:#fff; }
+  .slide-txt p.fup { font-size:13.5px; margin-top:-8px; }
+  .slide-txt p.fup a { font:inherit; font-weight:600; letter-spacing:0; color:var(--ink); border:0; padding:0; text-decoration:underline; text-underline-offset:3px; }
+  .slide-txt p.fup a:hover { background:none; color:var(--orange-dark); }
   .show-nav { display:flex; justify-content:space-between; align-items:center; border-top:2px solid var(--ink); }
   .show-nav .dots { display:flex; gap:8px; padding:0 18px; }
   .show-nav .dots i { width:26px; height:5px; background:var(--hairline); cursor:pointer; transition:background .2s; }

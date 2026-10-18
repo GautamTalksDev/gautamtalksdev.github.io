@@ -7,7 +7,7 @@ Each summary below is taken from the log's own description. Numbers are as publi
 ## Engineering logs
 
 - [GK-014 jevbench](https://gautamkhosla.com/jevbench.html): a preregistered, bias-corrected test of whether TypeSafe AI's Jev lowers its confidence when people disagree, on ChaosNLI. Where annotators split, Jev stayed 80.7% confident while 46.8% of annotators agreed.
-- [GK-013 DODGE](https://gautamkhosla.com/dodge.html): a daily public screen of Starlink close approaches from public CelesTrak orbit data, with the owner of the other object named and every day's data hash-chained and signed. Recall 80 of 80 against brute force.
+- [GK-013 DODGE](https://gautamkhosla.com/dodge.html): a daily public screen of Starlink close approaches from public CelesTrak orbit data, with the owner of the other object named and every day's data hash-chained and signed. Recall 80 of 80 against brute force. Follow-up, [Maneuver Ledger](https://dodge.gautamkhosla.com/ledger/) ([code](https://github.com/GautamTalksDev/maneuver-ledger)): SpaceX filed 207,152 avoidance maneuvers with the FCC, and public element sets cannot rebuild them.
 - [GK-012 Takehome](https://gautamkhosla.com/takehome.html): Canadian payroll deductions from the CRA's T4127 formulas, checked against the CRA's own calculator. 8,838 of 9,002 boundary cases agree, and all 164 disagreements are published.
 - [GK-011 mcp-pin](https://gautamkhosla.com/mcppin.html): fingerprints MCP tool definitions at approval time, blocks the session when they change, and keeps a signed public history of every version. Amended 17 Oct 2026.
 - [GK-010 PLIMSOLL](https://gautamkhosla.com/plimsoll.html): a public append-only log for evaluation pre-registration that assigns the attempt number rather than the claimant.
