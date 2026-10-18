@@ -29,6 +29,7 @@ Each summary below is taken from the log's own description. Numbers are as publi
 
 ## Other public work
 
+- [Domino](https://domino.gautamkhosla.com) ([code](https://github.com/GautamTalksDev/domino), [demo video](https://youtu.be/9OHJUJJjd0Q)): find the pill that's treating another pill. Three AI agents on one FalkorDB medication graph find prescribing cascades in older adults for pharmacists and prescribers; every action waits for a human, and the output is a question, never "stop this drug". Synthetic patients only; decision support for clinicians, not medical advice. Built solo, with AI assistance, for WeMakeDevs x FalkorDB Graph Hacks 2026.
 - [CRA Clock](https://github.com/GautamTalksDev/cra-clock): a GitHub Action for the EU Cyber Resilience Act Article 14 reporting clock.
 - [Porchlight](https://github.com/GautamTalksDev/porchlight): an offline neighbour mesh, team of four, second place in Civic Technology at Hack the Hill III.
 - [Bedrock](https://github.com/GautamTalksDev/Bedrock), [keyring](https://github.com/GautamTalksDev/keyring), [Ephemera](https://github.com/GautamTalksDev/Ephemera), [HyperShift](https://github.com/GautamTalksDev/HyperShift), [AeroGuard](https://github.com/GautamTalksDev/aeroguard-tech).

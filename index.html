@@ -51,7 +51,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-10-17",
+  "dateModified": "2026-10-18",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://gautamkhosla.com/#gautam-khosla",
@@ -104,7 +104,9 @@
       "Supply chain security and signed release provenance",
       "Orbital mechanics and SGP4 propagation",
       "Conjunction screening in low Earth orbit",
-      "EU Cyber Resilience Act vulnerability reporting"
+      "EU Cyber Resilience Act vulnerability reporting",
+      "Graph databases and Cypher",
+      "Clinical decision support with CDS Hooks and FHIR"
     ],
     "award": [
       "MLH Best Use of Snowflake API, HackConcordia",
@@ -784,11 +786,16 @@
            becoming aware; 12 lockfile formats; CycloneDX 1.6; OSV, CISA KEV, FIRST EPSS; "Could not confirm exploitation
            status" when KEV cannot be read); release v1.0.0 (10 Oct 2026); github.com/marketplace/actions/cra-clock. -->
       <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/cra-clock">CRA Clock</a></h4><p>The EU Cyber Resilience Act gives a manufacturer 24 hours from becoming aware that a vulnerability in its product is actively exploited to send an early warning. This GitHub Action builds a CycloneDX SBOM from 12 lockfile formats, checks OSV, CISA KEV and EPSS, and opens an issue with the deadlines and draft reports. If the KEV catalog can't be read, it says so instead of reporting clean.</p><div class="mtags"><i>GITHUB ACTION</i><i>CYCLONEDX</i><i>CISA KEV</i><i>MARKETPLACE</i></div></div>
-      <!-- A-08 LADING. SOURCE: lading.html (GK-009) only. Title of the paper; "STATUS PROJECT &#183; DOI";
-           "Out of 15,385 attributed findings across 55 scanned directories, 99.60% stopped before any file was opened";
-           JSON-LD "55 scanned artifacts", programmingLanguage Go; FIG 09.4 "35 OF 35 CLEARANCES" UNFALSIFIABLE;
-           "The work stopped under its own pre-registered rule"; "The paper, the dataset, and two upstream bug reports are the output". -->
-      <div class="mini"><span class="mid">A-08</span><h4><a href="lading.html">LADING</a></h4><p>Binary grounded VEX clearance fails three times. Across 55 scanned directories, 99.60% of findings stopped before any binary was opened, and all 35 clearances it made were unfalsifiable. It stopped under its own pre-registered rule; the paper, the dataset and two upstream bug reports are the output.</p><div class="mtags"><i>GO</i><i>VEX</i><i>PROJECT</i><i>DOI</i></div></div>
+      <!-- A-08 Domino (in 18 Oct 2026, replacing the LADING card; LADING keeps its GK-009 log page, its paper in
+           PUBLISHED below and P-10). SOURCE: Gautam's Graph Hacks submission and github.com/GautamTalksDev/domino
+           README (read 18 Oct 2026): three agents on one FalkorDB medication graph; every action waits for a human;
+           output is a question, never "stop this drug"; prevention replay over 600 synthetic patients, "401 of the
+           534 cascade drugs it met (75%) at the first downstream prescription"; synthetic patients only; decision
+           support, not medical advice; built solo with AI assistance (README disclosure) for WeMakeDevs x FalkorDB
+           Graph Hacks 2026. A CARD, not a log: the replay is self-graded (generator and engine share one knowledge
+           graph, as the README says) and the 8 of 8 vs 5 of 8 comparison is my own runs (results vary), so no result
+           is checked by something other than me yet. -->
+      <div class="mini"><span class="mid">A-08</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/domino">Domino</a></h4><p>Find the pill that's treating another pill. Three AI agents walk one FalkorDB medication graph to find prescribing cascades in older adults. Every action waits for a human, and the output is a question for the pharmacist, never "stop this drug". Replayed over 600 synthetic patients, it would have stopped 401 of the 534 cascade drugs it met at the first extra prescription. Built solo, with AI assistance, for Graph Hacks 2026. Synthetic patients only; decision support for clinicians, not medical advice.</p><div class="mtags"><i>FALKORDB</i><i>CYPHER</i><i>CDS HOOKS</i><i>MCP</i></div></div>
     </div>
 
     <div class="cmds reveal">

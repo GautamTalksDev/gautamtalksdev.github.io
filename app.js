@@ -96,7 +96,7 @@
   const CMDS = {
     help: () => 'commands: <b>whoami</b>, <b>work</b>, <b>outage</b>, <b>uptime</b>, <b>contact</b>, <b>edition</b>, <b>sudo hire</b>, <b>clear</b>, <b>exit</b>',
     whoami: () => 'gautam khosla · failure-aware systems engineer. CE @ uOttawa. builds things that survive 2 a.m.',
-    work: () => 'DODGE [Starlink close approaches · 80/80 recall vs brute force]  Takehome [payroll · 98.2% vs the CRA]  jevbench [preregistered calibration study]  CRA Clock [EU CRA Art. 14 Action]  assay-gpu + LADING + jevbench [papers]  PLIMSOLL [spec]  AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  Porchlight [offline mesh · 2nd, civic tech]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
+    work: () => 'DODGE [Starlink close approaches · 80/80 recall vs brute force]  Takehome [payroll · 98.2% vs the CRA]  jevbench [preregistered calibration study]  CRA Clock [EU CRA Art. 14 Action]  Domino [prescribing cascades · FalkorDB agents]  assay-gpu + LADING + jevbench [papers]  PLIMSOLL [spec]  AEGIS [edge/QNX]  Cairn [robot integrity]  Vernier [agent eval]  Mayfly [microVM]  Plumbline [transparency log]  Porchlight [offline mesh · 2nd, civic tech]  AeroGuard [SOC triage · MLH award]\n→ github.com/GautamTalksDev',
     outage: () => { setOutage(!document.body.classList.contains('outage')); return document.body.classList.contains('outage') ? '<b>uplink severed.</b> notice anything still works?' : '<span class="ok">uplink restored. backlog flushed.</span>'; },
     uptime: () => 'safety loop: <span class="ok">100%</span> · cloud: eventually consistent · caffeine: elevated',
     edition: () => 'today: <b>' + (window.__EDITION ? window.__EDITION.id : 'SAFETY') + '</b> · this site reissues itself daily from a date seed. come back tomorrow.',
@@ -134,7 +134,7 @@
     if (document.body.classList.contains('outage')) return;
     const LISTED = new Set(['dodge', 'jevbench', 'takehome', 'mcp-pin', 'plimsoll', 'lading', 'assay-gpu', 'cairn',
       'vernier', 'label-to-lab', 'plumbline', 'mayfly-guest', 'aegis', 'cra-clock', 'aeroguard-tech', 'ephemera',
-      'hypershift', 'porchlight', 'bedrock', 'keyring']);
+      'hypershift', 'porchlight', 'bedrock', 'keyring', 'domino']);
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 3500);
     try {
@@ -1037,6 +1037,8 @@
       ['Open the DODGE live screen', 'LIVE', () => open('https://dodge.gautamkhosla.com', '_blank', 'noopener')],
       ['Read the jevbench log (confident where people disagree)', 'GK-014', () => location.href = 'jevbench.html'],
       ['Open CRA Clock on the GitHub Marketplace', 'LIVE', () => open('https://github.com/marketplace/actions/cra-clock', '_blank', 'noopener')],
+      ['Open Domino (find the pill that’s treating another pill)', 'LIVE', () => open('https://domino.gautamkhosla.com', '_blank', 'noopener')],
+      ['Watch the Domino demo video', 'VIDEO', () => open('https://youtu.be/9OHJUJJjd0Q', '_blank', 'noopener')],
       ['Read the PLIMSOLL log (how many times did you run it?)', 'GK-010', () => location.href = 'plimsoll.html'],
       ['Paper 1 \u00b7 Calibrating the Checksum (DOI)', 'PAPER', () => open('https://doi.org/10.5281/zenodo.22054179', '_blank', 'noopener')],
       ['Paper 2 \u00b7 Binary Grounded VEX Clearance (DOI)', 'PAPER', () => open('https://doi.org/10.5281/zenodo.22099794', '_blank', 'noopener')],
