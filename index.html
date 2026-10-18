@@ -255,17 +255,6 @@
           <a class="btn btn-primary" href="#work">Inspect the work</a>
           <a class="btn btn-ghost" href="https://github.com/GautamTalksDev">GitHub</a>
         </div>
-        <!-- EVIDENCE STRIP. Verified facts only; each line links to the log that holds its receipt.
-             1: dodge.html; DODGE README "What one day looks like" (11,143 vs 4,502); docs/VALIDATION.md (80 of 80);
-                GitHub releases day-2026-10-06 to day-2026-10-17, one per day, checked 17 Oct 2026.
-             2: aegis.html (QNX 8.0, C++20, four processes over MsgSend/MsgReceive, uplink async and optional).
-             3: DOIs 10.5281/zenodo.22054179, 22099794, 22971491; assay.html (7.99 x 10^7 clean residuals, 76% vs a 90% bar). -->
-        <div class="evid" aria-label="Evidence">
-          <div class="evid-head"><span>EVIDENCE</span><span>EACH LINE LINKS TO ITS RECEIPT</span></div>
-          <a class="evid-row" href="dodge.html"><span class="evid-k">ORBITS</span><span class="evid-v"><b>DODGE</b> screens every Starlink satellite against everything else in its altitude band, every day, from public orbit data: 11,143 against 4,502 on day one. Its fast screen found 80 of 80 passes a brute force search found. One signed release per day from 6 Oct 2026 (as of 17 Oct).</span></a>
-          <a class="evid-row" href="aegis.html"><span class="evid-k">REAL TIME</span><span class="evid-v"><b>AEGIS</b> runs C++20 on QNX 8.0 as four processes over MsgSend/MsgReceive. Detection to relay happens entirely on the device; the network is the only optional part.</span></a>
-          <a class="evid-row" href="assay.html"><span class="evid-k">PUBLISHED</span><span class="evid-v"><b>Three DOI papers.</b> One calibrates a GPU checksum on 8 &#215; 10<sup>7</sup> clean residuals, then misses its own pre-registered 90% bar at 76%, and is published anyway.</span></a>
-        </div>
       </div>
 
       <div class="badge-zone">
@@ -817,7 +806,6 @@
          forks, coursework, client work, anything on launch hold, and anything whose own page says something untrue.
          Exceptions logged before the rule: GK-004 Plumbline (pre-registered tests never evaluated) and GK-010 PLIMSOLL
          (field data N = 0). Both pages state it. -->
-    <p class="rule-note"><b>GK LOGS</b> are public, carry a result checked by something other than me, and document what broke. Two were written before that rule and fall short of it, and their pages say so: GK-004 has no outside-judged result, and GK-010 has no field data yet. <b>A CARDS</b> are public and working, not yet measured that way, or team work. Nothing in progress is listed.</p>
 
     <div class="more-grid reveal">
       <div class="mini"><span class="mid">A-01</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><div class="mtags"><i>PYTHON</i><i>FASTAPI</i><i>SNOWFLAKE</i><i>MONGODB</i></div></div>
