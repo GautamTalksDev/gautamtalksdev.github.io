@@ -22,7 +22,7 @@ Each summary below is taken from the log's own description. Numbers are as publi
 
 ## Papers and specifications
 
-- [Calibrating the Checksum](https://doi.org/10.5281/zenodo.22054179): first paper, assay-gpu.
+- [Calibrating the Checksum](https://arxiv.org/abs/2610.02240): first paper, assay-gpu (arXiv:2610.02240; code, data and pre-registration at https://doi.org/10.5281/zenodo.22054179).
 - [Binary Grounded VEX Clearance Fails Three Times](https://doi.org/10.5281/zenodo.22099794): second paper, LADING. Dataset: [10.5281/zenodo.22093232](https://doi.org/10.5281/zenodo.22093232).
 - [Confident Where People Disagree](https://doi.org/10.5281/zenodo.22971491): third paper, jevbench. Preregistration: [10.5281/zenodo.22971413](https://doi.org/10.5281/zenodo.22971413).
 - [PLIMSOLL Pre-Registration Specification v1](https://doi.org/10.5281/zenodo.22107451): technical note, CC0.
