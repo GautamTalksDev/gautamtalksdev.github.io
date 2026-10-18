@@ -757,7 +757,7 @@
   @media (prefers-reduced-motion:reduce){ .slide .dtrk { stroke-dashoffset:0; } .slide .dpip { opacity:1; } }
   @media print { .slide .dpip { opacity:1; } }
 
-  /* card A-09 deals in after A-08; an odd last card spans the row instead of leaving a hole */
+  /* a ninth card would deal in after A-08 (the limit is 8); an odd last card spans the row instead of leaving a hole */
   .more-grid.in .mini:nth-child(9){transition-delay:.36s}
   .more-grid .mini:last-child:nth-child(odd) { grid-column:1 / -1; }
 

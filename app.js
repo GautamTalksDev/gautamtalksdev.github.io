@@ -134,7 +134,7 @@
     if (document.body.classList.contains('outage')) return;
     const LISTED = new Set(['dodge', 'jevbench', 'takehome', 'mcp-pin', 'plimsoll', 'lading', 'assay-gpu', 'cairn',
       'vernier', 'label-to-lab', 'plumbline', 'mayfly-guest', 'aegis', 'cra-clock', 'aeroguard-tech', 'ephemera',
-      'hypershift', 'metashift', 'groundhog', 'porchlight', 'bedrock', 'keyring']);
+      'hypershift', 'porchlight', 'bedrock', 'keyring']);
     const ctl = new AbortController();
     const timer = setTimeout(() => ctl.abort(), 3500);
     try {

@@ -31,7 +31,7 @@ Each summary below is taken from the log's own description. Numbers are as publi
 
 - [CRA Clock](https://github.com/GautamTalksDev/cra-clock): a GitHub Action for the EU Cyber Resilience Act Article 14 reporting clock.
 - [Porchlight](https://github.com/GautamTalksDev/porchlight): an offline neighbour mesh, team of four, second place in Civic Technology at Hack the Hill III.
-- [Groundhog](https://github.com/GautamTalksDev/groundhog), [Bedrock](https://github.com/GautamTalksDev/Bedrock), [keyring](https://github.com/GautamTalksDev/keyring), [Ephemera](https://github.com/GautamTalksDev/Ephemera), [HyperShift](https://github.com/GautamTalksDev/HyperShift), [MetaShift](https://github.com/GautamTalksDev/MetaShift), [AeroGuard](https://github.com/GautamTalksDev/aeroguard-tech).
+- [Bedrock](https://github.com/GautamTalksDev/Bedrock), [keyring](https://github.com/GautamTalksDev/keyring), [Ephemera](https://github.com/GautamTalksDev/Ephemera), [HyperShift](https://github.com/GautamTalksDev/HyperShift), [AeroGuard](https://github.com/GautamTalksDev/aeroguard-tech).
 
 ## Contact
 

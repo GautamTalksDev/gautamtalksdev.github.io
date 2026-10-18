@@ -75,6 +75,8 @@ Only finished work goes on the site. Each project gets one of three things.
 | **Card** (A-xx tile) | Public, finished and working, but not yet measured that way, or team work where my part is a slice. |
 | **Not listed** | Anything in progress; private or undeployed work; merged or superseded projects; forks, coursework and client work; anything on launch hold (it lists on launch day); anything whose own public page currently says something untrue (fix that first). |
 
+Limits: 6 log slides, 8 cards, one in one out. The homepage carousel shows 6 logs and the grid shows 8 cards; adding one means removing one. A log page stays published when its slide comes off the carousel.
+
 Two logs were written before this rule and fall short of it: GK-004 Plumbline has no outside-judged result (its pre-registered tests were never evaluated) and GK-010 PLIMSOLL has no field data yet. Both pages say so.
 
 GK numbers follow the order the logs are written. GK-001 is the site itself. When a public claim stops being true, the correction is added next to it with a date and the original stays readable.

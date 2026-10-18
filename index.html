@@ -355,7 +355,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE A/G &#183; ORBITS / OPEN DATA</div>
+            <div class="sk">SHOWCASE A/F &#183; ORBITS / OPEN DATA</div>
             <h3>DODGE <span class="net-tag cloud">SIGNED DAILY &#183; PUBLIC DATA</span></h3>
             <div class="tg">Who makes Starlink dodge</div>
             <p>Starlink moved out of the way 355,848 times in a year, by SpaceX's count in its FCC reports as published by Space.com. Screening is free; who causes the risk is not published. Every day DODGE propagates every tracked object with a public orbit in Starlink's altitude band with SGP4, finds each pass under 5 km and names the owner. Its fast screen found 80 of 80 passes a brute force search found, and each day's data is hash-chained and signed.</p>
@@ -382,7 +382,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE B/G · EDGE / RTOS</div>
+            <div class="sk">SHOWCASE B/F · EDGE / RTOS</div>
             <h3>AEGIS <span class="net-tag edge">EDGE · SURVIVES OUTAGE</span></h3>
             <div class="tg">The safety loop never touches the network</div>
             <p>C++20 on QNX 8.0, four processes over MsgSend/MsgReceive, detection to relay entirely on-device. The dashed uplink box is the point: it's the only optional part.</p>
@@ -416,7 +416,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE C/G &#183; AGENT SECURITY</div>
+            <div class="sk">SHOWCASE C/F &#183; AGENT SECURITY</div>
             <h3>mcp-pin <span class="net-tag edge">SIGNED PUBLIC LOG</span></h3>
             <div class="tg">The tool you approved is not the tool you're running</div>
             <p>You approve an MCP server's tools once and that decision is never revisited, even though a tool description is an instruction with the reach of a system prompt. mcp-pin fingerprints what you approved, blocks the session when it moves, and keeps a signed public history of every version across 248 servers. Its own recrawl corrected 17 of its earlier numbers.</p>
@@ -427,74 +427,25 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">DETECTION BY BIT POSITION &#183; bf16 GEMM</text>
-              <g font-family="monospace" font-size="9.5" fill="#D7DBE4">
-                <text x="10" y="46">EXP</text>
-                <rect x="86" y="36" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <rect class="abar a1" x="86" y="36" width="175" height="13" fill="#FF4100"/>
-                <text x="326" y="46" fill="#FF4100">76%</text>
-                <text x="10" y="76">SIGN</text>
-                <rect x="86" y="66" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <rect class="abar a2" x="86" y="66" width="178" height="13" fill="#6B7280"/>
-                <text x="326" y="76" fill="#6B7280">77%</text>
-                <text x="10" y="106">MAN HI</text>
-                <rect x="86" y="96" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <rect class="abar a3" x="86" y="96" width="16" height="13" fill="#6B7280"/>
-                <text x="326" y="106" fill="#6B7280">5%</text>
-                <text x="10" y="136">MAN LO</text>
-                <rect x="86" y="126" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <text x="326" y="136" fill="#C4453A">0%</text>
-                <text x="96" y="136" fill="#C4453A" font-size="9">blind</text>
-              </g>
-              <line class="abar-line" x1="293" y1="28" x2="293" y2="146" stroke="#C4453A" stroke-width="2" stroke-dasharray="5 4"/>
-              <text x="228" y="166" fill="#C4453A" font-family="monospace" font-size="9">PRE-REGISTERED BAR 90%</text>
-              <text x="10" y="188" fill="#6B7280" font-family="monospace" font-size="9">CALIBRATED ON 8 x 10^7 CLEAN RESIDUALS &#183; FPR 1e-6 PER GEMM</text>
-              <text x="10" y="206" fill="#6B7280" font-family="monospace" font-size="9">INJECTED AT THE OUTPUT TENSOR. NOT A CLAIM ABOUT REAL SILICON.</text>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">TRUE ERROR vs CLAIMED PROTECTION LEVEL</text>
+              <line x1="10" y1="150" x2="410" y2="150" stroke="#2A2C33" stroke-width="1"/>
+              <line x1="10" y1="112" x2="300" y2="112" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5"/>
+              <text x="306" y="116" fill="#6B7280" font-family="monospace" font-size="9">CLAIMED PL</text>
+              <path class="cerr" d="M10 148 L70 144 L130 134 L190 116 L250 88 L310 56 L400 36" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
+              <text x="300" y="30" fill="#FF4100" font-family="monospace" font-size="9.5">TRUE ERROR</text>
+              <circle class="cpip" cx="196" cy="113" r="4.5" fill="#C4453A"/>
+              <text x="120" y="176" fill="#C4453A" font-family="monospace" font-size="9">error escapes the bound here</text>
+              <rect x="10" y="186" width="400" height="18" fill="#2A2C33"/>
+              <text x="20" y="199" fill="#16A34A" font-family="monospace" font-size="9.5">STATE: NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL</text>
+              <text x="10" y="216" fill="#6B7280" font-family="monospace" font-size="8.5">FAULTS INJECTED SYNTHETICALLY. NOT FIELD-OBSERVED MINE DRIFT.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE D/G &#183; NUMERICS / PUBLISHED</div>
-            <h3>assay-gpu <span class="net-tag edge">PEER-SHAREABLE &#183; DOI</span></h3>
-            <div class="tg">The detector that failed its own test</div>
-            <p>Silicon sometimes returns a wrong answer silently. The 1984 checksum that catches it has a threshold that is undefined at bfloat16, so I measured the distribution instead and calibrated one. It catches 76% of exponent-bit flips against a 90% bar I registered first, and none of 600 low-mantissa flips. Four predictions failed, four findings retracted, all published.</p>
-            <a href="assay.html">READ THE ENGINEERING LOG &#8594;</a>
-          </div>
-        </div>
-
-        <div class="slide">
-          <div class="slide-viz" aria-hidden="true">
-            <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">WHERE 15,385 FINDINGS TERMINATED</text>
-              <g font-family="monospace" font-size="9" fill="#D7DBE4">
-                <text x="10" y="46">IDENTITY</text>
-                <rect x="86" y="36" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <rect class="lbar-s l1" x="86" y="36" width="212" height="13" fill="#FF4100"/>
-                <text x="326" y="46" fill="#FF4100">91.9%</text>
-                <text x="10" y="72">MANIFEST</text>
-                <rect x="86" y="62" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <rect class="lbar-s l2" x="86" y="62" width="18" height="13" fill="#6B7280"/>
-                <text x="326" y="72" fill="#6B7280">7.7%</text>
-                <text x="10" y="98" fill="#C4453A">SYMBOLS</text>
-                <rect x="86" y="88" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <text x="326" y="98" fill="#C4453A">0.0%</text>
-                <text x="96" y="98" fill="#C4453A" font-size="8">the zero is the finding</text>
-                <text x="10" y="124">DECIDED</text>
-                <rect x="86" y="114" width="230" height="13" fill="none" stroke="#2A2C33"/>
-                <text x="326" y="124" fill="#6B7280">0.03%</text>
-              </g>
-              <text x="10" y="152" fill="#6B7280" font-family="monospace" font-size="9">83% OF BINARIES STRIPPED. THE STRIPPED GATES NEVER FIRED ONCE.</text>
-              <rect class="lstop" x="10" y="164" width="150" height="22" fill="none" stroke="#C4453A" stroke-width="2"/>
-              <text class="lstop" x="22" y="180" fill="#C4453A" font-family="monospace" font-size="11" letter-spacing="1">STOPPED</text>
-              <text x="174" y="180" fill="#6B7280" font-family="monospace" font-size="9">STOPPED BY ITS OWN PRE-REGISTERED RULE</text>
-              <text x="10" y="206" fill="#6B7280" font-family="monospace" font-size="9">KT-1 NOT EVALUABLE &#183; KT-2 FAIL &#183; PAPER + DATASET PUBLISHED</text>
-            </svg>
-          </div>
-          <div class="slide-txt">
-            <div class="sk">SHOWCASE E/G &#183; SUPPLY CHAIN / PUBLISHED</div>
-            <h3>LADING <span class="net-tag cloud">PROJECT &#183; DOI</span></h3>
-            <div class="tg">It failed three times, and the third found the other two</div>
-            <p>Regulators now ask which known flaws actually reach your product. I built the tool that answers it from the shipped binary. 99.6% of findings stopped before a binary was ever opened, every clearance it did make was unfalsifiable, and the fix for that was aimed one layer too shallow. Both kill tests resolved against it, so the project stopped. The paper, the dataset and two upstream bug reports are the output.</p>
-            <a href="lading.html">READ THE ENGINEERING LOG &#8594;</a>
+            <div class="sk">SHOWCASE D/F &#183; ROBOTICS / SAFETY</div>
+            <h3>Cairn <span class="net-tag edge">~0.5 ms ON A LAPTOP</span></h3>
+            <div class="tg">Catching a robot that is confidently lost</div>
+            <p>GPS dies underground and SLAM fails silently: the pose drifts while the covariance stays tight. Cairn is the error bar, not the dot. On injected drift a naive monitor never alarmed and error hit 20.5 m; an earlier 12 s detection claim is withdrawn, because the same check alarms just as fast with no drift at all. Its own worst case, common-mode faults (wrong but reporting all good for 73% of the run), is written up in the docs.</p>
+            <a href="cairn.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
 
@@ -754,7 +705,7 @@
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE F/G &#183; PAYROLL / CONFORMANCE</div>
+            <div class="sk">SHOWCASE E/F &#183; PAYROLL / CONFORMANCE</div>
             <h3>Takehome <span class="net-tag edge">OFFLINE AFTER FIRST LOAD</span></h3>
             <div class="tg">98.2% against the CRA's own calculator</div>
             <p>Canadian payroll deductions from the CRA's T4127 formulas, in one Rust engine compiled to WebAssembly and native. Checked against the official calculator on 9,002 boundary cases: 8,838 agree, and every one of the 164 disagreements is published. Building that check showed the calculator does not follow its own formula for the CPP credit.</p>
@@ -765,32 +716,44 @@
         <div class="slide">
           <div class="slide-viz" aria-hidden="true">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
-              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">TRUE ERROR vs CLAIMED PROTECTION LEVEL</text>
-              <line x1="10" y1="150" x2="410" y2="150" stroke="#2A2C33" stroke-width="1"/>
-              <line x1="10" y1="112" x2="300" y2="112" stroke="#6B7280" stroke-width="2" stroke-dasharray="6 5"/>
-              <text x="306" y="116" fill="#6B7280" font-family="monospace" font-size="9">CLAIMED PL</text>
-              <path class="cerr" d="M10 148 L70 144 L130 134 L190 116 L250 88 L310 56 L400 36" fill="none" stroke="#FF4100" stroke-width="2.4" stroke-linecap="round"/>
-              <text x="300" y="30" fill="#FF4100" font-family="monospace" font-size="9.5">TRUE ERROR</text>
-              <circle class="cpip" cx="196" cy="113" r="4.5" fill="#C4453A"/>
-              <text x="120" y="176" fill="#C4453A" font-family="monospace" font-size="9">error escapes the bound here</text>
-              <rect x="10" y="186" width="400" height="18" fill="#2A2C33"/>
-              <text x="20" y="199" fill="#16A34A" font-family="monospace" font-size="9.5">STATE: NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL &#183; NOMINAL</text>
-              <text x="10" y="216" fill="#6B7280" font-family="monospace" font-size="8.5">FAULTS INJECTED SYNTHETICALLY. NOT FIELD-OBSERVED MINE DRIFT.</text>
+              <text x="10" y="18" fill="#6B7280" font-family="monospace" font-size="10" letter-spacing="2">DETECTION BY BIT POSITION &#183; bf16 GEMM</text>
+              <g font-family="monospace" font-size="9.5" fill="#D7DBE4">
+                <text x="10" y="46">EXP</text>
+                <rect x="86" y="36" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a1" x="86" y="36" width="175" height="13" fill="#FF4100"/>
+                <text x="326" y="46" fill="#FF4100">76%</text>
+                <text x="10" y="76">SIGN</text>
+                <rect x="86" y="66" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a2" x="86" y="66" width="178" height="13" fill="#6B7280"/>
+                <text x="326" y="76" fill="#6B7280">77%</text>
+                <text x="10" y="106">MAN HI</text>
+                <rect x="86" y="96" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <rect class="abar a3" x="86" y="96" width="16" height="13" fill="#6B7280"/>
+                <text x="326" y="106" fill="#6B7280">5%</text>
+                <text x="10" y="136">MAN LO</text>
+                <rect x="86" y="126" width="230" height="13" fill="none" stroke="#2A2C33"/>
+                <text x="326" y="136" fill="#C4453A">0%</text>
+                <text x="96" y="136" fill="#C4453A" font-size="9">blind</text>
+              </g>
+              <line class="abar-line" x1="293" y1="28" x2="293" y2="146" stroke="#C4453A" stroke-width="2" stroke-dasharray="5 4"/>
+              <text x="228" y="166" fill="#C4453A" font-family="monospace" font-size="9">PRE-REGISTERED BAR 90%</text>
+              <text x="10" y="188" fill="#6B7280" font-family="monospace" font-size="9">CALIBRATED ON 8 x 10^7 CLEAN RESIDUALS &#183; FPR 1e-6 PER GEMM</text>
+              <text x="10" y="206" fill="#6B7280" font-family="monospace" font-size="9">INJECTED AT THE OUTPUT TENSOR. NOT A CLAIM ABOUT REAL SILICON.</text>
             </svg>
           </div>
           <div class="slide-txt">
-            <div class="sk">SHOWCASE G/G &#183; ROBOTICS / SAFETY</div>
-            <h3>Cairn <span class="net-tag edge">~0.5 ms ON A LAPTOP</span></h3>
-            <div class="tg">Catching a robot that is confidently lost</div>
-            <p>GPS dies underground and SLAM fails silently: the pose drifts while the covariance stays tight. Cairn is the error bar, not the dot. On injected drift a naive monitor never alarmed and error hit 20.5 m; an earlier 12 s detection claim is withdrawn, because the same check alarms just as fast with no drift at all. Its own worst case, common-mode faults (wrong but reporting all good for 73% of the run), is written up in the docs.</p>
-            <a href="cairn.html">READ THE ENGINEERING LOG &#8594;</a>
+            <div class="sk">SHOWCASE F/F &#183; NUMERICS / PUBLISHED</div>
+            <h3>assay-gpu <span class="net-tag edge">PEER-SHAREABLE &#183; DOI</span></h3>
+            <div class="tg">The detector that failed its own test</div>
+            <p>Silicon sometimes returns a wrong answer silently. The 1984 checksum that catches it has a threshold that is undefined at bfloat16, so I measured the distribution instead and calibrated one. It catches 76% of exponent-bit flips against a 90% bar I registered first, and none of 600 low-mantissa flips. Four predictions failed, four findings retracted, all published.</p>
+            <a href="assay.html">READ THE ENGINEERING LOG &#8594;</a>
           </div>
         </div>
 
       </div>
       <div class="show-nav">
         <button id="showPrev" aria-label="Previous project">◀ PREV</button>
-        <div class="dots" id="showDots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="dots" id="showDots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
         <button id="showNext" aria-label="Next project">NEXT ▶</button>
       </div>
     </div>
@@ -805,21 +768,25 @@
          only finished work goes on this site. Not listed: private or undeployed work, merged or superseded projects,
          forks, coursework, client work, anything on launch hold, and anything whose own page says something untrue.
          Exceptions logged before the rule: GK-004 Plumbline (pre-registered tests never evaluated) and GK-010 PLIMSOLL
-         (field data N = 0). Both pages state it. -->
+         (field data N = 0). Both pages state it.
+         Limits: 6 log slides, 8 cards, one in one out. -->
 
     <div class="more-grid reveal">
       <div class="mini"><span class="mid">A-01</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/aeroguard-tech">AeroGuard</a></h4><p>Confidence-scored SOC incident triage, dual-store: MongoDB for live reads, Snowflake for analytics, so analytics never contend with real-time state. 7-test E2E suite, shipped in 24 hours.</p><div class="mtags"><i>PYTHON</i><i>FASTAPI</i><i>SNOWFLAKE</i><i>MONGODB</i></div></div>
       <div class="mini"><span class="mid">A-02</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Ephemera">Ephemera</a></h4><p>Open a PR, get a full stack; close it and it's gone. A webhook writes desired state only, and a crash-safe reconciler advances one step per tick against idempotent providers.</p><div class="mtags"><i>TYPESCRIPT</i><i>HONO</i><i>BULLMQ</i><i>POSTGRES</i></div></div>
       <div class="mini"><span class="mid">A-03</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/HyperShift">HyperShift</a></h4><p>Five agents turn plain English into deployed infrastructure. Approval gates, rollback, immutable audit log. Nothing reaches prod without a human.</p><div class="mtags"><i>5 AGENTS</i><i>BULLMQ</i><i>ZOD</i><i>TURBOREPO</i></div></div>
-      <div class="mini"><span class="mid">A-04</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/MetaShift">MetaShift</a></h4><p>Multi-tenant SaaS end to end: Postgres RLS, JWT and API keys, live conflict resolution over WebSockets, metering, billing, audit.</p><div class="mtags"><i>POSTGRES RLS</i><i>WEBSOCKETS</i><i>STRIPE</i><i>METERING</i></div></div>
-      <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/groundhog">Groundhog</a></h4><p>Ranks the chores you keep paying an agent to redo, from local session history that never leaves the machine. It refuses to render a partial scan as a clean null, and every missing file is named in a NOT COUNTED ledger.</p><div class="mtags"><i>PYTHON</i><i>LOCAL ONLY</i><i>STDLIB ONLY</i><i>SELF-CHECK</i></div></div>
-      <div class="mini"><span class="mid">A-06</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/porchlight">Porchlight</a></h4><p>An emergency network neighbours run themselves. A signed beacon press hops laptop to laptop with no power, internet or cell service, and reaches the City when any link returns. 200 of 200 calls delivered in chaos simulation; not yet field tested.</p><div class="mtags"><i>ED25519</i><i>GOSSIP MESH</i><i>ARDUINO BLE</i><i>TEAM OF 4</i></div></div>
-      <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Bedrock">Bedrock</a></h4><p>Every scraper heals itself with AI now; nobody checks the repair was correct. Bedrock verifies each heal against golden fixtures before it ships, and every row carries a receipt naming the heals it refused.</p><div class="mtags"><i>NEXT.JS</i><i>POSTGRES</i><i>MCP</i><i>BRIGHT DATA</i></div></div>
-      <div class="mini"><span class="mid">A-08</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/keyring">keyring</a></h4><p>Access governance for people and AI agents. Every grant into one approval queue, protected resources never bulk-approved, and a hash-chained ledger that stopped forking under concurrent writes once review caught it.</p><div class="mtags"><i>TYPESCRIPT</i><i>MCP</i><i>HASH CHAIN</i><i>APPROVAL GATES</i></div></div>
-      <!-- A-09 CRA Clock. SOURCE: github.com/GautamTalksDev/cra-clock README (Article 14: early warning 24 hours after
+      <div class="mini"><span class="mid">A-04</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/porchlight">Porchlight</a></h4><p>An emergency network neighbours run themselves. A signed beacon press hops laptop to laptop with no power, internet or cell service, and reaches the City when any link returns. 200 of 200 calls delivered in chaos simulation; not yet field tested.</p><div class="mtags"><i>ED25519</i><i>GOSSIP MESH</i><i>ARDUINO BLE</i><i>TEAM OF 4</i></div></div>
+      <div class="mini"><span class="mid">A-05</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/Bedrock">Bedrock</a></h4><p>Every scraper heals itself with AI now; nobody checks the repair was correct. Bedrock verifies each heal against golden fixtures before it ships, and every row carries a receipt naming the heals it refused.</p><div class="mtags"><i>NEXT.JS</i><i>POSTGRES</i><i>MCP</i><i>BRIGHT DATA</i></div></div>
+      <div class="mini"><span class="mid">A-06</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/keyring">keyring</a></h4><p>Access governance for people and AI agents. Every grant into one approval queue, protected resources never bulk-approved, and a hash-chained ledger that stopped forking under concurrent writes once review caught it.</p><div class="mtags"><i>TYPESCRIPT</i><i>MCP</i><i>HASH CHAIN</i><i>APPROVAL GATES</i></div></div>
+      <!-- A-07 CRA Clock. SOURCE: github.com/GautamTalksDev/cra-clock README (Article 14: early warning 24 hours after
            becoming aware; 12 lockfile formats; CycloneDX 1.6; OSV, CISA KEV, FIRST EPSS; "Could not confirm exploitation
            status" when KEV cannot be read); release v1.0.0 (10 Oct 2026); github.com/marketplace/actions/cra-clock. -->
-      <div class="mini"><span class="mid">A-09</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/cra-clock">CRA Clock</a></h4><p>The EU Cyber Resilience Act gives a manufacturer 24 hours from becoming aware that a vulnerability in its product is actively exploited to send an early warning. This GitHub Action builds a CycloneDX SBOM from 12 lockfile formats, checks OSV, CISA KEV and EPSS, and opens an issue with the deadlines and draft reports. If the KEV catalog can't be read, it says so instead of reporting clean.</p><div class="mtags"><i>GITHUB ACTION</i><i>CYCLONEDX</i><i>CISA KEV</i><i>MARKETPLACE</i></div></div>
+      <div class="mini"><span class="mid">A-07</span><h4><a rel="noopener noreferrer external" href="https://github.com/GautamTalksDev/cra-clock">CRA Clock</a></h4><p>The EU Cyber Resilience Act gives a manufacturer 24 hours from becoming aware that a vulnerability in its product is actively exploited to send an early warning. This GitHub Action builds a CycloneDX SBOM from 12 lockfile formats, checks OSV, CISA KEV and EPSS, and opens an issue with the deadlines and draft reports. If the KEV catalog can't be read, it says so instead of reporting clean.</p><div class="mtags"><i>GITHUB ACTION</i><i>CYCLONEDX</i><i>CISA KEV</i><i>MARKETPLACE</i></div></div>
+      <!-- A-08 LADING. SOURCE: lading.html (GK-009) only. Title of the paper; "STATUS PROJECT &#183; DOI";
+           "Out of 15,385 attributed findings across 55 scanned directories, 99.60% stopped before any file was opened";
+           JSON-LD "55 scanned artifacts", programmingLanguage Go; FIG 09.4 "35 OF 35 CLEARANCES" UNFALSIFIABLE;
+           "The work stopped under its own pre-registered rule"; "The paper, the dataset, and two upstream bug reports are the output". -->
+      <div class="mini"><span class="mid">A-08</span><h4><a href="lading.html">LADING</a></h4><p>Binary grounded VEX clearance fails three times. Across 55 scanned artifacts, 99.60% of findings stopped before any binary was opened, and all 35 clearances it made were unfalsifiable. It stopped under its own pre-registered rule; the paper, the dataset and two upstream bug reports are the output.</p><div class="mtags"><i>GO</i><i>VEX</i><i>PROJECT</i><i>DOI</i></div></div>
     </div>
 
     <div class="cmds reveal">
