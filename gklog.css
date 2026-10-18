@@ -283,8 +283,12 @@ code{
 }
 .v-rare{ animation:v-rare 4.2s ease-in-out infinite }
 
-@keyframes v-grow{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
-.v-bar{ transform-origin:center bottom; animation:v-grow 1.5s cubic-bezier(.2,.8,.3,1) infinite alternate }
+/* Bars grow once from their own left edge (fill-box), then stay put. v-vert grows upward. */
+@keyframes v-grow{ from{ transform:scaleX(0) } to{ transform:scaleX(1) } }
+@keyframes v-grow-y{ from{ transform:scaleY(0) } to{ transform:scaleY(1) } }
+.v-bar{ transform-box:fill-box; transform-origin:left center; animation:v-grow 1.5s cubic-bezier(.2,.8,.3,1) both }
+.v-bar.v-vert{ transform-origin:center bottom; animation-name:v-grow-y }
+@media (prefers-reduced-motion: reduce){ .v-bar{ animation:none } }
 .v-b1{ animation-duration:1.9s }
 .v-b2{ animation-duration:2.3s }
 .v-b3{ animation-duration:1.6s }
