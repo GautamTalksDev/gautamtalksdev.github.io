@@ -656,6 +656,8 @@
     .cmd:last-child{ border-bottom:0; } }
   .cmd-medal { position:absolute; left:20px; top:21px; font-size:20px; line-height:1; }
   .cmd-title { font-size:17px; font-weight:900; text-transform:uppercase; letter-spacing:-.3px; color:#fff; }
+  .cmd-org a { color:inherit; text-decoration:underline; text-underline-offset:2px; }
+  .cmd-org a:hover { color:#fff; }
   .cmd-org { font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:1.5px;
     color:var(--orange); font-weight:600; margin-top:3px; }
   .cmd-proj { font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:#B9BDC7; margin-top:9px; }
